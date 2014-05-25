@@ -1,8 +1,5 @@
 * {
-	padding: 0;
-	margin: 0;
-	border: 0;
-	outline: 0;
+	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -10,27 +7,42 @@ header, article, footer, section {
 	height: 100%;
 	width: 100%;
 	position: absolute;
-	text-align: center;
-}
-
-h1, h2, h3 {
-	padding-top: 100px;
 }
 
 html, body {
-	font-family: "Helvetica Neue";
+	font-family: "Lato";
+	font-weight: 400;
+	line-height: 1.6em;
 	width: 100%;
 	height: 100%;
 	position: relative;
 }
+
+h1,h2,h3,h4,h5,h6 {
+	font-weight: 300;
+}
+
 body {
 	padding: 20px;
 }
+
+h2 {
+	font-size: 1.625em;
+	line-height: 1em;
+	margin: 1em 0;
+}
+
+h2 p {
+	font-size: 0.55em;
+	margin: 0;
+}
+
 #cubeContainer { 
 	width: 100%;
 	height: 100%;
 	-webkit-transform-style: preserve-3d;
 }
+
 #cube {
 	width: 100%;
 	height: 100%;
@@ -41,4 +53,57 @@ body {
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	backface-visibility: hidden;
+}
+
+@font-face {
+	font-family: 'nikwhite';
+	src:url('/font/nikwhite/fonts/nikwhite.eot?-snistt');
+	src:url('/font/nikwhite/fonts/nikwhite.eot?#iefix-snistt') format('embedded-opentype'),
+		url('/font/nikwhite/fonts/nikwhite.woff?-snistt') format('woff'),
+		url('/font/nikwhite/fonts/nikwhite.ttf?-snistt') format('truetype'),
+		url('/font/nikwhite/fonts/nikwhite.svg?-snistt#nikwhite') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'nikwhite';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-desktop:before {
+	content: "\e002";
+}
+.icon-tablet:before {
+	content: "\e003";
+}
+.icon-phone:before {
+	content: "\e004";
+}
+.icon-raquo:before {
+	content: "\e055";
+}
+.icon-cross:before {
+	content: "\e117";
+}
+
+.screenshots {
+	width: 30%;
+	float: right;
+	margin-top: 1em;
+	font-size: 2.5em;
+	text-align: right;
+}
+
+.screenshots a {
+	margin-left: 0.5em;
 }

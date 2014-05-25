@@ -125,7 +125,7 @@ var Cube = function(){
 		topFace = { },
 		bottomFace = { },
 		
-		bounceTransition = 'all 400ms cubic-bezier(.36,.15,.14,1.23) 0',
+		bounceTransition = 'all 400ms ease-out 0',
 		noTransition = 'none',
 	
 	// Define reused variables
@@ -338,7 +338,7 @@ var Cube = function(){
 			console.log(totalChange.x + ', ' + totalChange.y);
 			
 			// snap the active, left and right sides based on total change
-			if ( direction === 'x' ){
+			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var totalX = totalChange.x;
 
 				middleFaces.eq( activeFace-1 ).snapY();
@@ -367,14 +367,12 @@ var Cube = function(){
 
 						activePerspective = perspectives[activePerspective - 1] ? 
 								activePerspective - 1 : 0;
-						console.log('active perspective: ' + activePerspective);
 
 					// finger moving down - ratating down
 					} else {
 
 						activePerspective = perspectives[activePerspective + 1] ?
 								activePerspective + 1 : numPerspectives - 1;
-						console.log('active perspective: ' + activePerspective);
 
 					}
 
