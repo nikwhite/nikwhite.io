@@ -5,6 +5,15 @@ module.exports = function(grunt) {
 	};
 
 	grunt.initConfig({
+
+		sass: {
+			css: {
+				src: ['sass/*.scss'],
+				dest: dirConfig.distPath + 'css/nikwhite.css'
+			}
+			
+		},
+
 		uglify: {
 			options: {
 				//TODO: banner
@@ -14,17 +23,13 @@ module.exports = function(grunt) {
 			},
 			dev: {
 				src: ['js/*.js'],
-				dest: dirConfig.distPath + '/js/nikwhite.min.js'
+				dest: dirConfig.distPath + 'js/nikwhite.min.js'
 			}
 		},
 
 		copy: {
 			index: {
 				src: 'index.html',
-				dest: dirConfig.distPath
-			},
-			css: {
-				src: 'css/styles.css',
 				dest: dirConfig.distPath
 			}, 
 			images: {
@@ -39,7 +44,7 @@ module.exports = function(grunt) {
 
 		watch: {
 			project: {
-				files: ['css/*.css', 'js/*.js', 'index.html'],
+				files: ['sass/**', 'js/*.js', 'index.html'],
 				tasks: ['default']
 			}
 		}
@@ -51,5 +56,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('default', ['uglify', 'copy']);
+	grunt.registerTask('default', ['sass', 'uglify', 'copy']);
 }
