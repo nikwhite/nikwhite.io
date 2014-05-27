@@ -122,6 +122,9 @@ var Cube = function(){
 		bottom = document.getElementsByClassName('bottom')[0],
 		middle = document.getElementsByClassName('middle')[0],
 
+		perspectives = [ top, middle, bottom ],
+		numPerspectives = perspectives.length,
+
 		topFace = { },
 		bottomFace = { },
 		
@@ -149,8 +152,6 @@ var Cube = function(){
 		xRotationPerChange = height / 90,
 		
 	// pointer and DOM element caches
-		perspectives = [ ],
-		numPerspectives = 0,
 		activeFace = 0,
 		activePerspective = 0,
 		middleFaces = [ ],
@@ -167,11 +168,7 @@ var Cube = function(){
 		return this[ (this.length + (index % this.length)) % this.length ];
 	}
 	
-	NodeList.prototype.each = Array.prototype.each = function( fn ){
-		for ( var i=0, l = this.length; i < l; i++){
-			fn.call(this[i], i);
-		}
-	}
+	
 	
 	
 	function init(){		
@@ -192,23 +189,31 @@ var Cube = function(){
 	
 	function setup(){
 
-		var currentState = history.state;
+		var currentState = history.state || {};
 
+		contentsides = Array.prototype.slice.call( document.querySelectorAll('.middle .face') );
+
+		// use state in local history store if possible
 		if ( currentState.indices ) {
 			activePerspective = currentState.indices[0];
 			activeFace = currentState.indices[1];
 		
+		// pull state from URL
+		} else if ( window.location.hash ) {
+			var ids = parseUrl(window.location.hash);
+
+			activePerspective = getPerspectiveIndex( ids[0] );
+			activeFace = getSideIndex( ids[1] );
+
+		// resort to defaults
 		} else {
 			activePerspective = 0;
 			activeFace = 0;		
 		}
 
-		console.log(currentState.indices)
-
 		var perspectiveDiff = activePerspective * 90;
 
 		// cache all sides
-		contentsides = document.querySelectorAll('.middle .face');
 		
 		topFace = new Face( top, {
 			xRotation: perspectiveDiff,
@@ -220,11 +225,9 @@ var Cube = function(){
 			zTranslation: halfHeight
 		});
 
-		perspectives = [ top, middle, bottom ];
-		numPerspectives = perspectives.length;
 		
 		
-		contentsides.each(function(i){
+		contentsides.forEach(function(side, i){
 			var settings = {
 				zTranslation: translateWidth
 			}
@@ -236,7 +239,7 @@ var Cube = function(){
 				settings.yRotation = 90;
 			}
 
-			middleFaces.push( new Face(this, settings) );
+			middleFaces.push( new Face(side, settings) );
 
 		});
 	}
@@ -249,7 +252,35 @@ var Cube = function(){
 			indices: [ activePerspective, activeFace ]
 		}
 
-		history.pushState( state, '', '#/' + state.perspective + '/' + state.side);
+		history.pushState( state, '', '#/' + state.perspective + '/' + state.side );
+	}
+
+	function getSideIndex(id) {
+		var ret = 0;
+		contentsides.forEach(function(side, i){
+			if ( side.id === id ) {
+				ret = i;
+				return;
+			}
+		});
+		return ret;
+	}
+
+	function getPerspectiveIndex(id) {
+		var ret = 0;
+		perspectives.forEach(function(perspective, i) {
+			if ( perspective.id === id ) {
+				ret = i;
+				return;
+			}
+		});
+		return ret;
+	}
+
+	function parseUrl(url) {
+		var path = url.substring( url.indexOf('#/') + 2 );
+		
+		return path.split('/');
 	}
 		
 // ======== Event Handlers =========	
