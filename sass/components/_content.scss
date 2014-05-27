@@ -1,12 +1,24 @@
+
+h1 {
+	font-size: 3.25em;
+	line-height: 1em;
+	margin: 0.5em 0;
+
+	p {
+		font-size: 1rem;
+		margin: 0;
+		line-height: 1.625em;
+	}
+}
 h2 {
 	font-size: 1.625em;
 	line-height: 1em;
 	margin: 1em 0;
-}
-
-h2 p {
-	font-size: 0.55em;
-	margin: 0;
+	
+	p {
+		font-size: 0.55em;
+		margin: 0;
+	}
 }
 
 .inner {
@@ -24,4 +36,6 @@ h2 p {
 
 .screenshots a {
 	margin-left: 0.5em;
+	margin-bottom: 0.5em;
+	display: inline-block;
 }

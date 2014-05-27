@@ -118,14 +118,14 @@ var Cube = function(){
 	
 	// Find elements
 	var cube = document.getElementById('cube'),
-		top = document.getElementById('top'),
-		bottom = document.getElementById('bottom'),
-		middles = document.querySelectorAll('.middle'),
+		top = document.getElementsByClassName('top')[0],
+		bottom = document.getElementsByClassName('bottom')[0],
+		middle = document.getElementsByClassName('middle')[0],
 
 		topFace = { },
 		bottomFace = { },
 		
-		bounceTransition = 'all 400ms ease-out 0',
+		bounceTransition = 'all 350ms ease-out 0',
 		noTransition = 'none',
 	
 	// Define reused variables
@@ -191,33 +191,46 @@ var Cube = function(){
 	}
 	
 	function setup(){
+
+		var currentState = history.state;
+
+		if ( currentState.indices ) {
+			activePerspective = currentState.indices[0];
+			activeFace = currentState.indices[1];
+		
+		} else {
+			activePerspective = 0;
+			activeFace = 0;		
+		}
+
+		console.log(currentState.indices)
+
+		var perspectiveDiff = activePerspective * 90;
+
 		// cache all sides
 		contentsides = document.querySelectorAll('.middle .face');
+		
 		topFace = new Face( top, {
-			zTranslation: halfHeight
-		});
-		bottomFace = new Face( bottom, {
-			xRotation: 180,
+			xRotation: perspectiveDiff,
 			zTranslation: halfHeight
 		});
 
-		perspectives = [ topFace, middles, bottomFace ];
+		bottomFace = new Face( bottom, {
+			xRotation: -180 + perspectiveDiff,
+			zTranslation: halfHeight
+		});
+
+		perspectives = [ top, middle, bottom ];
 		numPerspectives = perspectives.length;
 		
-		activePerspective = 0;
-		activeFace = 0;
 		
 		contentsides.each(function(i){
 			var settings = {
 				zTranslation: translateWidth
 			}
 
-			if ( i === 0 ) {
-				settings.xRotation = -90;
-				settings.zTranslation = halfHeight;
-			
-			} else if ( i === contentsides.length - 1 ) {
-				settings.yRotation = -90;
+			if ( i === activeFace ) {
+				settings.xRotation = -90 + perspectiveDiff;
 			
 			} else {
 				settings.yRotation = 90;
@@ -227,7 +240,18 @@ var Cube = function(){
 
 		});
 	}
-	
+
+	function setCurrentState() {
+
+		var state = {
+			perspective: perspectives[activePerspective].id,
+			side: middleFaces[activeFace].el.id,
+			indices: [ activePerspective, activeFace ]
+		}
+
+		history.pushState( state, '', '#/' + state.perspective + '/' + state.side);
+	}
+		
 // ======== Event Handlers =========	
 	var events = {
 		
@@ -350,6 +374,8 @@ var Cube = function(){
 					activeFace = totalX < 0 ?
 						middleFaces.nextIndex(activeFace) :
 						middleFaces.prevIndex(activeFace) ;
+
+					setCurrentState();
 					
 				}
 				
@@ -376,10 +402,11 @@ var Cube = function(){
 
 					}
 
+					setCurrentState();
+
 				}
 				
-			}
-			
+			}	
 		}
 	};
 	
