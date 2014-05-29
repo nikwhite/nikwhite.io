@@ -1,6 +1,9 @@
 @charset 'UTF-8';
 
+$small: 30em;
+
 @import "components/page";
 @import "components/icons";
 @import "components/cube";
 @import "components/content";
+@import "components/gallery";

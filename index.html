@@ -2,10 +2,9 @@
 <html>
 	<head>
 		<title>Nik White</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, height=device-height">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, height=device-height, minimal-ui">
 		<link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
 		<link href="/dist/css/nikwhite.css" rel="stylesheet">
-		<script src="/dist/js/nikwhite.min.js"></script>
 	</head>
 	<body>
 		<div id="cubeContainer">
@@ -19,9 +18,12 @@
 							Nik White
 						</h1>
 						<nav>
-							<a href="/work">work</a>
-							<a href="/contact">contact</a>
+							<a href="/work">Work</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;  
+							<a href="/contact">Contact</a>
 						</nav>
+						<br><br>
+						<p>I love the web, and I love interfaces. Creating application features and interfaces used by millions of people every day gets my blood pumping and drives me to constantly improve and experiment.</p>
+						<p class="touch-only">Explore this site by touch &mdash; start by sliding up.</p>
 					</div>
 				</header>
 				
@@ -49,7 +51,9 @@
 					<article id="chase" class="face">
 						<div class="inner">
 							<div class="screenshots">
-
+								<a class="icon-desktop" href="/img/jpmc_full.jpg"></a>
+								<a class="icon-tablet" href="/img/jpmc_768.jpg"></a>
+								<a class="icon-phone" href="/img/jpmc_480.jpg"></a>
 							</div>
 							<div class="summary">
 								<h2>
@@ -66,7 +70,9 @@
 					<article id="jake-lewis" class="face">
 						<div class="inner">
 							<div class="screenshots">
-
+								<a class="icon-desktop" href="/img/jpmc_full.jpg"></a>
+								<a class="icon-tablet" href="/img/jpmc_768.jpg"></a>
+								<a class="icon-phone" href="/img/jpmc_480.jpg"></a>
 							</div>
 							<div class="summary">
 								<h2>
@@ -83,7 +89,9 @@
 					<article id="sauk-valley" class="face">
 						<div class="inner">
 							<div class="screenshots">
-
+								<a class="icon-desktop" href="/img/jpmc_full.jpg"></a>
+								<a class="icon-tablet" href="/img/jpmc_768.jpg"></a>
+								<a class="icon-phone" href="/img/jpmc_480.jpg"></a>
 							</div>
 							<div class="summary">
 								<h2>
@@ -98,7 +106,9 @@
 					<article id="nancy" class="face">
 						<div class="inner">
 							<div class="screenshots">
-
+								<a class="icon-desktop" href="/img/jpmc_full.jpg"></a>
+								<a class="icon-tablet" href="/img/jpmc_768.jpg"></a>
+								<a class="icon-phone" href="/img/jpmc_480.jpg"></a>
 							</div>
 							<div class="summary">
 								<h2>
@@ -126,10 +136,15 @@
 				
 			</div>	
 		</div>
+		<div class="controls">
+			<a href="#" class="icon-up"></a>
+			<a href="#" class="icon-right"></a>
+			<a href="#" class="icon-down"></a>
+			<a href="#" class="icon-left"></a>
+		</div>
 		
 		
-		<script>
-			new Cube(  );
-		</script>
+		
+		<script src="/dist/js/nikwhite.min.js"></script>
 	</body>
 </html>

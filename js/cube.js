@@ -113,7 +113,27 @@ var Cube = function(){
 		this.transform();
 	}
 
+	Face.prototype.goY = function(direciton) {
+		this.transition( bounceTransition );
+		this.yRotation  = direction > 0 ? 
+				this.yRotation + 90 : 
+				this.yRotation - 90 ;
 
+		this.transform();
+
+		this.snapY();
+	}
+
+	Face.prototype.goX = function(direciton) {
+		this.transition( bounceTransition );
+		this.xRotation  = direction > 0 ? 
+				this.xRotation + 90 : 
+				this.xRotation - 90 ;
+
+		this.transform();
+
+		this.snapX();
+	}
 
 	
 	// Find elements
@@ -140,16 +160,14 @@ var Cube = function(){
 		change = { },
 	
 	// Setup window dimensions
-		width = document.body.clientWidth,
-		height = document.body.clientHeight,
-		halfHeight = height / 2,
-		halfWidth = width / 2,
-		translateHeight = halfHeight,
-		translateWidth = halfWidth,
+		width,
+		height,
+		halfHeight,
+		halfWidth,
 		
 	// the amount of rotation per 1 change - this maps the full width and height of the screen to 90 degree rotation
-		yRotationPerChange = width / 90, 
-		xRotationPerChange = height / 90,
+		yRotationPerChange,
+		xRotationPerChange,
 		
 	// pointer and DOM element caches
 		activeFace = 0,
@@ -173,6 +191,8 @@ var Cube = function(){
 	
 	function init(){		
 		
+		setDimensions();
+
 		setup();
 		
 		attach();
@@ -181,6 +201,12 @@ var Cube = function(){
 
 	function attach() {
 		window.addEventListener('touchstart', events);
+
+		document.addEventListener('click', function(e) {
+			switch (e.target.className) {
+				case "icon-up" : this ; break;
+			}
+		});
 	}
 
 	function detach() {
@@ -224,12 +250,10 @@ var Cube = function(){
 			xRotation: -180 + perspectiveDiff,
 			zTranslation: halfHeight
 		});
-
-		
 		
 		contentsides.forEach(function(side, i){
 			var settings = {
-				zTranslation: translateWidth
+				zTranslation: halfWidth
 			}
 
 			if ( i === activeFace ) {
@@ -242,6 +266,17 @@ var Cube = function(){
 			middleFaces.push( new Face(side, settings) );
 
 		});
+
+		window.addEventListener('resize', setDimensions);
+	}
+
+	function setDimensions() {
+		width = document.body.clientWidth;
+		height = document.body.clientHeight;
+		halfHeight = height / 2;
+		halfWidth = width / 2;
+		yRotationPerChange = width / 90;
+		xRotationPerChange = height / 90;
 	}
 
 	function setCurrentState() {
@@ -441,6 +476,9 @@ var Cube = function(){
 		}
 	};
 	
+	this.attach = attach;
+	this.detach = detach;
+
 	// vroom vroom
 	init();
 	

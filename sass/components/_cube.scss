@@ -13,4 +13,49 @@
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	backface-visibility: hidden;
+	
+	padding: 1.625em;
+}
+
+.controls {
+	a {
+		position: absolute;
+		color: #ccc;
+		width: 1.625em;
+
+
+		&:hover {
+			color: black;
+		}
+
+		&.icon-up {
+			top: 0.25em;
+			left: 50%;
+			margin-left: -0.5em;
+		}
+		&.icon-right {
+			right: 0;
+			top: 50%;
+			margin-top: -0.5em;
+		}
+		&.icon-down {
+			bottom: 0.25em;
+			left: 50%;
+			margin-left: -0.5em;
+		}
+		&.icon-left {
+			left: 0.25em;
+			top: 50%;
+			margin-top: -0.5em;
+		}
+
+		&:before {
+			font-size: 3em;
+			margin-left: -0.25em;
+		}
+	}
+}
+
+.touch .controls {
+	display: none;
 }

@@ -1,3 +1,9 @@
+$summaryTransition: all 400ms ease-out;
+$delayedTransition: all 400ms ease-out 400ms;
+
+img {
+	max-width: 100%;
+}
 
 h1 {
 	font-size: 3.25em;
@@ -20,6 +26,16 @@ h2 {
 		margin: 0;
 	}
 }
+a {
+	text-decoration: none;
+	color: #EA1571;
+}
+
+@media screen and (max-width: $small) {
+	body { 
+		font-size: 0.875em;
+	}
+}
 
 .inner {
 	max-width: 48em;
@@ -27,15 +43,43 @@ h2 {
 }
 
 .screenshots {
-	width: 30%;
+	width: 5em;
 	float: right;
 	margin-top: 0.25em;
 	font-size: 2.5em; 
 	text-align: right;
+	position: relative;
+	z-index: 30;
+
+	a {
+		margin: 0 0 0.5em 0.5em;
+		display: inline-block;
+	}
 }
 
-.screenshots a {
-	margin-left: 0.5em;
-	margin-bottom: 0.5em;
-	display: inline-block;
+@media screen and (max-width: $small) {
+	.screenshots {
+		float: none;
+		width: auto;
+		text-align: left;
+		margin: 0;
+
+		a {
+			margin: 0 0.5em 0 0;
+		}
+	}
+}
+
+.summary {
+	-webkit-transition: $summaryTransition;
+	-moz-transition: $summaryTransition;
+	transition: $summaryTransition;
+}
+
+.overlay-visible {
+	.summary {
+		-webkit-filter: blur(10px);
+		-moz-filter: blur(10px);
+		filter: blur(10px);
+	}
 }

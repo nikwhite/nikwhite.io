@@ -32,9 +32,33 @@
 .icon-phone:before {
 	content: "\e004";
 }
-.icon-raquo:before {
-	content: "\e055";
-}
 .icon-cross:before {
 	content: "\e117";
+}
+
+$rightIconCode: "\e600";
+
+.icon-right:before {
+	content: $rightIconCode;
+}
+.icon-down:before {
+	content: $rightIconCode;
+	display: inline-block;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.icon-left:before {
+	content: $rightIconCode;
+	display: inline-block;
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.icon-up:before {
+	content: $rightIconCode;
+	display: inline-block;
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
