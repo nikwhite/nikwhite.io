@@ -1,5 +1,9 @@
-$summaryTransition: all 400ms ease-out;
-$delayedTransition: all 400ms ease-out 400ms;
+$summaryTransition: all 400ms ease-in;
+$delayedTransition: all 400ms ease-out 200ms;
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
 
 img {
 	max-width: 100%;
@@ -28,7 +32,11 @@ h2 {
 }
 a {
 	text-decoration: none;
-	color: #EA1571;
+	color: $pink;
+
+	&:hover {
+		color: $blue;
+	}
 }
 
 @media screen and (max-width: $small) {
@@ -78,8 +86,21 @@ a {
 
 .overlay-visible {
 	.summary {
-		-webkit-filter: blur(10px);
-		-moz-filter: blur(10px);
-		filter: blur(10px);
+		-webkit-filter: blur(8px);
+		-moz-filter: blur(8px);
+		filter: blur(8px);
+	}
+	
+	#cubeContainer {
+		position:fixed;
+	}
+}
+
+@media screen and (max-width: $small) {
+	.overlay-visible {
+		
+		#cubeContainer {
+			position:static;
+		}
 	}
 }

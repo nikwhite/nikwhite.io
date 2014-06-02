@@ -7,134 +7,6 @@
 var Cube = function(){
 	
 	'use strict';
-
-	var transitionEnd = (function whichTransitionEvent(){
-	    var t;
-	    var el = document.createElement('div');
-	    var transitions = {
-	      'transition':'transitionend',
-	      'OTransition':'oTransitionEnd',
-	      'MozTransition':'transitionend',
-	      'WebkitTransition':'webkitTransitionEnd'
-	    }
-
-	    for(t in transitions){
-	        if( el.style[t] !== undefined ){
-	            return transitions[t];
-	        }
-	    }
-	}());
-
-	/**
-	 * @constructor Face
-	 * holds translation and rotation values for a face of a cube and can 
-	 * snap to 90 degree angles
-	 * @param {HTMLElement} element of the face
-	 * @param {object} settings with which to initialize the face
-	**/
-	function Face( element, settings ) {
-		
-		this.el = element;
-		
-		this.zTranslation = settings.zTranslation || 0;
-		this.xRotation = settings.xRotation || 0;
-		this.yRotation = settings.yRotation || 0;
-		
-		this.transform();
-	}
-
-	Face.prototype.rotateX = function (delta) {
-		this.zTranslation = halfHeight;
-		this.xRotation += delta;
-		this.transform();
-	}
-
-	Face.prototype.rotateY = function (delta) {
-		this.zTranslation = halfWidth;
-		this.yRotation += delta;
-		this.transform();
-	}
-
-	Face.prototype.snapY = function () {
-
-		this.transition( bounceTransition );
-
-		this.yRotation = Math.round(this.yRotation / 90) * 90;
-		this.transform();
-
-		this.el.addEventListener( transitionEnd, function (e) {
-			this.transition( noTransition );
-		}.bind( this ));
-	}
-
-	Face.prototype.snapX = function () {
-
-		this.transition( bounceTransition );
-
-		this.xRotation = Math.round(this.xRotation / 90) * 90;
-		this.transform();
-
-		this.el.addEventListener( transitionEnd, function (e) {
-			this.transition( noTransition );
-		}.bind( this ));
-	}
-
-	Face.prototype.transform = function () {
-		
-		var style = this.el.style;
-
-		style.webkitTransform = 
-	    style.msTransform = 
-	    style.MozTransform = 
-	    style.OTransform =
-	    style.transform = 'rotateX(' + this.xRotation + 'deg) ' +
-                          'rotateY(' + this.yRotation + 'deg) ' +
-                          'translateZ(' + this.zTranslation + 'px)';
-
-	}
-
-	Face.prototype.transition = function ( transition ) {
-		
-		var style = this.el.style;
-		
-		style.webkitTransition = 
-	    style.msTransition = 
-	    style.MozTransition = 
-	    style.OTransition = 
-	    style.transition = transition;
-	
-	}
-
-	Face.prototype.set = function (settings) {
-		this.xRotation = settings.xRotation || this.xRotation;
-		this.yRotation = settings.yRotation || this.yRotation;
-		this.zTranslation = settings.zTranslation || this.zTranslation;
-
-		this.transform();
-	}
-
-	Face.prototype.goY = function(direciton) {
-		this.transition( bounceTransition );
-		this.yRotation  = direction > 0 ? 
-				this.yRotation + 90 : 
-				this.yRotation - 90 ;
-
-		this.transform();
-
-		this.snapY();
-	}
-
-	Face.prototype.goX = function(direciton) {
-		this.transition( bounceTransition );
-		this.xRotation  = direction > 0 ? 
-				this.xRotation + 90 : 
-				this.xRotation - 90 ;
-
-		this.transform();
-
-		this.snapX();
-	}
-
 	
 	// Find elements
 	var cube = document.getElementById('cube'),
@@ -147,9 +19,6 @@ var Cube = function(){
 
 		topFace = { },
 		bottomFace = { },
-		
-		bounceTransition = 'all 350ms ease-out 0',
-		noTransition = 'none',
 	
 	// Define reused variables
 		touchStart = undefined,
@@ -173,7 +42,10 @@ var Cube = function(){
 		activeFace = 0,
 		activePerspective = 0,
 		middleFaces = [ ],
-		contentsides = [ ]; // DOM order for middle sides
+		contentsides = [ ], // DOM order for middle sides
+
+		currentState = { },
+		map = { };
 
 	Array.prototype.nextIndex = function(index){
 		return index === this.length - 1 ? 0 : index + 1;
@@ -186,9 +58,69 @@ var Cube = function(){
 		return this[ (this.length + (index % this.length)) % this.length ];
 	}
 	
-	
-	
-	
+	// create a square-map with an array of side counts the number at 
+	// each array index corresponds to the number of sides in that perspective
+	function CubeMap(map) {
+		this.groups = [ ];
+		this.map = map;
+		this.fragment = document.createDocumentFragment();
+		
+		var maproot = document.createElement('div');
+		maproot.className = 'map';
+
+		this.mapInner = document.createElement('div');
+		this.mapInner.className = 'map-inner';
+
+		var referenceSide = document.createElement('div');
+		referenceSide.className = 'reference side';
+
+		this.fragment.appendChild(maproot);
+		maproot.appendChild(referenceSide);
+		maproot.appendChild(this.mapInner);
+
+		for ( var i=0, l=map.length; i < l; i++ ){
+			this.groups[i] = document.createElement('div');
+			this.groups[i].className = 'group';
+
+			this.mapInner.appendChild(this.groups[i]);
+
+			for ( var j=0, k=map[i]; j < k; j++ ){
+				var side = document.createElement('div');
+				side.className = 'side';
+				this.groups[i].appendChild( side );
+			}
+		}
+
+		document.body.appendChild(this.fragment);
+	}
+
+	CubeMap.prototype.translateY = function(val) {
+		var style = this.mapInner.style;
+
+		style.webkitTransform = 
+	    style.msTransform = 
+	    style.MozTransform = 
+	    style.OTransform =
+	    style.transform = 'translateY(' + (val * -12) + 'px)';
+	}
+
+	CubeMap.prototype.translateX = function(val) {
+		var style = this.groups[1].style;
+
+		style.webkitTransform = 
+	    style.msTransform = 
+	    style.MozTransform = 
+	    style.OTransform =
+	    style.transform = 'translateX(' + (val * -12) + 'px)';
+	}
+
+	CubeMap.prototype.setIndex = function(x, y) {
+		this.translateY(x);
+		this.translateX(y);
+	}
+
+
+
 	function init(){		
 		
 		setDimensions();
@@ -207,6 +139,7 @@ var Cube = function(){
 				case "icon-up" : this ; break;
 			}
 		});
+
 	}
 
 	function detach() {
@@ -215,31 +148,34 @@ var Cube = function(){
 	
 	function setup(){
 
-		var currentState = history.state || {};
+		var localState = history.state || {};
 
 		contentsides = Array.prototype.slice.call( document.querySelectorAll('.middle .face') );
 
-		// use state in local history store if possible
-		if ( currentState.indices ) {
-			activePerspective = currentState.indices[0];
-			activeFace = currentState.indices[1];
-		
-		// pull state from URL
-		} else if ( window.location.hash ) {
+		// read current state from the hash
+		if ( window.location.hash ) {
 			var ids = parseUrl(window.location.hash);
 
 			activePerspective = getPerspectiveIndex( ids[0] );
 			activeFace = getSideIndex( ids[1] );
 
+			currentState = {
+				perspective: ids[0],
+				side: ids[1]
+			}
+
 		// resort to defaults
 		} else {
 			activePerspective = 0;
-			activeFace = 0;		
+			activeFace = 0;	
+
+			currentState = {
+				perspective: top.id,
+				side: contentsides[0].id
+			}	
 		}
 
 		var perspectiveDiff = activePerspective * 90;
-
-		// cache all sides
 		
 		topFace = new Face( top, {
 			xRotation: perspectiveDiff,
@@ -267,7 +203,12 @@ var Cube = function(){
 
 		});
 
+		map = new CubeMap( [1, contentsides.length, 1] );
+
+		map.setIndex(activePerspective, activeFace);
+
 		window.addEventListener('resize', setDimensions);
+		window.onpopstate = stateChange;
 	}
 
 	function setDimensions() {
@@ -281,34 +222,54 @@ var Cube = function(){
 
 	function setCurrentState() {
 
-		var state = {
+		currentState = {
 			perspective: perspectives[activePerspective].id,
-			side: middleFaces[activeFace].el.id,
-			indices: [ activePerspective, activeFace ]
+			side: middleFaces[activeFace].el.id
 		}
 
-		history.pushState( state, '', '#/' + state.perspective + '/' + state.side );
+		map.setIndex(activePerspective, activeFace);
+
+		history.pushState( currentState, '', '#/' + currentState.perspective + '/' + currentState.side );
+	}
+
+	function getStateFromHash() {
+
+		var ids = parseUrl(window.location.hash);
+
+		return {
+			perspective: ids[0],
+			side: ids[1],
+			perspectiveIndex: getPerspectiveIndex( ids[0] ),
+			sideIndex: getSideIndex( ids[1] )
+		}
+
 	}
 
 	function getSideIndex(id) {
+
 		var ret = 0;
+
 		contentsides.forEach(function(side, i){
 			if ( side.id === id ) {
 				ret = i;
 				return;
 			}
 		});
+
 		return ret;
 	}
 
 	function getPerspectiveIndex(id) {
+		
 		var ret = 0;
+
 		perspectives.forEach(function(perspective, i) {
 			if ( perspective.id === id ) {
 				ret = i;
 				return;
 			}
 		});
+		
 		return ret;
 	}
 
@@ -316,6 +277,60 @@ var Cube = function(){
 		var path = url.substring( url.indexOf('#/') + 2 );
 		
 		return path.split('/');
+	}
+
+	function stateChange(event) { 
+		var x, y;
+		var ids = parseUrl(window.location.hash);
+
+		setupForRotation();
+		
+		x = getPerspectiveIndex(ids[0]);
+		y = getSideIndex( ids[1] );
+
+		if ( perspectives.nextIndex(activePerspective) === x ){
+			rotateX(1);
+		} else if ( perspectives.prevIndex(activePerspective) === x ){
+			rotateX(-1);
+		}
+		
+		if ( middleFaces.nextIndex(activeFace) === y ){
+			rotateY(1);
+		} else if ( middleFaces.prevIndex(activeFace) === y ){
+			rotateY(-1);
+		}
+
+		map.setIndex(x, y);
+ 
+	}
+
+	function rotateY(val) {
+
+		middleFaces.eq( activeFace-1 ).goY( val );
+		middleFaces.eq( activeFace   ).goY( val );
+		middleFaces.eq( activeFace+1 ).goY( val );
+
+		activeFace = val > 0 ?
+			middleFaces.nextIndex(activeFace) :
+			middleFaces.prevIndex(activeFace) ;
+
+	}
+
+	function rotateX(val) {
+
+		topFace.goX(val);
+		middleFaces.eq( activeFace ).goX(val);
+		bottomFace.goX(val);
+
+		activePerspective = val > 0 ?
+			perspectives.nextIndex(activePerspective) :
+			perspectives.prevIndex(activePerspective) ;
+	}
+
+	function setupForRotation(){
+		middleFaces.eq( activeFace-1 ).set({ yRotation: -90 });
+		middleFaces.eq( activeFace   ).set({ yRotation:   0 });
+		middleFaces.eq( activeFace+1 ).set({ yRotation:  90 });
 	}
 		
 // ======== Event Handlers =========	
@@ -350,9 +365,7 @@ var Cube = function(){
 			
 			direction = undefined;
 
-			middleFaces.eq( activeFace-1 ).set({ yRotation: -90 });
-			middleFaces.eq( activeFace   ).set({ yRotation:   0 });
-			middleFaces.eq( activeFace+1 ).set({ yRotation:  90 });
+			setupForRotation();
 			
 		// Add listeners to move and end
 			window.addEventListener('touchmove', events);
@@ -372,8 +385,6 @@ var Cube = function(){
 				x: touches.pageX - lastTouch.x,
 				y: touches.pageY - lastTouch.y
 			};
-			
-			console.log(change.x + ', ' + change.y);
 			
 			// update touchStart for the next move event
 			touchStart = {
@@ -415,9 +426,7 @@ var Cube = function(){
 				middleFaces.eq( activeFace ).rotateX(delta);
 				bottomFace.rotateX(delta);
 				
-				
 			}
-
 				
 		},
 		
@@ -425,8 +434,6 @@ var Cube = function(){
 			window.removeEventListener('touchmove', events);
 			window.removeEventListener('touchend', events);
 
-			console.log(totalChange.x + ', ' + totalChange.y);
-			
 			// snap the active, left and right sides based on total change
 			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var totalX = totalChange.x;
@@ -455,29 +462,20 @@ var Cube = function(){
 				if ( Math.abs( totalY ) >= halfHeight ) {
 
 					// finger moving up - rotating up
-					if ( totalY > 0 ){
-
-						activePerspective = perspectives[activePerspective - 1] ? 
-								activePerspective - 1 : 0;
-
-					// finger moving down - ratating down
-					} else {
-
-						activePerspective = perspectives[activePerspective + 1] ?
-								activePerspective + 1 : numPerspectives - 1;
-
-					}
+					activePerspective = totalY > 0 ?
+						perspectives.prevIndex( activePerspective ) :
+						perspectives.nextIndex( activePerspective );
 
 					setCurrentState();
 
 				}
-				
 			}	
 		}
 	};
 	
 	this.attach = attach;
 	this.detach = detach;
+
 
 	// vroom vroom
 	init();

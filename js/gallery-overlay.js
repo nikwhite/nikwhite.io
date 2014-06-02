@@ -70,8 +70,9 @@ Gallery.prototype.showOverlay = function () {
 
 	document.body.appendChild(this.overlayFragment);
 
+	document.body.classList.add('overlay-visible');
+
 	setTimeout( function() {
-		document.body.classList.add('overlay-visible');
 		this.active = true;
 		this.bindEvents();
 	}.bind(this), 20);
@@ -90,28 +91,37 @@ Gallery.prototype.transitionImage = function (src) {
 	
 	var img = document.createElement('img');
 	img.src = src;
-
-	if ( this.activeImage ) {
-		var currentImg = this.activeImage;
-
-		currentImg.classList.add('out');
-
-		var onEnd = function(){
-			this.imgWrap.removeChild( currentImg );
-			currentImg.removeEventListener( this.transitionEvent, onEnd );
-		}.bind(this);
-
-		currentImg.addEventListener( this.transitionEvent, onEnd);
-	}
-
 	img.classList.add('in');
 
 	this.imgWrap.appendChild(img);
-	this.activeImage = img;
 
-	setTimeout( function(){
+	function onload() {
+		img.onload = null;
 		img.classList.remove('in');
-	}, 20);
+		
+		if ( this.activeImage ) {
+			var currentImg = this.activeImage;
+
+			currentImg.classList.add('out');
+
+			var onEnd = function(){
+				this.imgWrap.removeChild( currentImg );
+				currentImg.removeEventListener( this.transitionEvent, onEnd );
+			}.bind(this);
+
+			currentImg.addEventListener( this.transitionEvent, onEnd);
+
+
+		}
+
+		// allow for browser paint
+		setTimeout( function(){
+		}.bind(this), 20);
+
+		this.activeImage = img;
+	}
+
+	img.onload = onload.bind(this);
 	
 };
 

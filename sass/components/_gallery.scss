@@ -1,3 +1,5 @@
+$imgTransition: all 400ms cubic-bezier(.25,.68,.38,1.00);
+$imgZ: translateZ(5000px);
 
 .gallery-overlay {
 	position: absolute;
@@ -5,52 +7,57 @@
 	left: 0;
 	width: 100%;
 	min-height: 100%;
-	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
 	-webkit-transition: $delayedTransition;
 	-moz-transition: $delayedTransition;
 	transition: $delayedTransition;
 	z-index: 20;
 	opacity: 0;
-
+	
 	.inner {
 		text-align: center;
 		padding: 3em 12.5em 1.625em 1.625em;
 
 		.img-wrap {
-			display: inline-block;
+			display: block;
 			position: relative;
 		}
 
 		img { 
-			-webkit-transition: $summaryTransition;
-			-moz-transition: $summaryTransition;
-			transition: $summaryTransition;
+			display: block;
+			left: 0;
+			right: 0;
+			top: 0;
+			margin: 0 auto;
+			
+			-webkit-transition: $imgTransition;
+			-moz-transition: $imgTransition;
+			transition: $imgTransition;
 
-			-webkit-filter: blur(0px);
-			-moz-filter: blur(0px);
-			filter: blur(0px);
-
-			opacity: 1;
+			-webkit-transform: translateX(0) $imgZ;
+			-moz-transform: translateX(0) $imgZ;
+			transform: translateX(0) $imgZ;
 
 			&.in {
 				-webkit-transition-delay: 200ms;
 				-moz-transition-delay: 200ms;
 				transition-delay: 200ms;
+
+				-webkit-transform: translateY(100px) $imgZ;
+				-moz-transform: translateY(100px) $imgZ;
+				transform: translateY(100px) $imgZ;
 			}
 
 			&.out {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				margin: 0 auto;
+				-webkit-transform: translateY(-100px) $imgZ;
+				-moz-transform: translateY(-100px) $imgZ;
+				transform: translateY(-100px) $imgZ;
 			}
 
 			&.in, &.out {
-				-webkit-filter: blur(10px);
-				-moz-filter: blur(10px);
-				filter: blur(10px);
+				position: absolute;
 
 				opacity: 0;
 			}
@@ -78,6 +85,28 @@
 	.gallery-overlay {
 		.inner {
 			padding: 6em 1.625em 1.625em;	
+
+			img { 
+
+				-webkit-transform: translateX(0) translateZ(5000px);
+				-moz-transform: translateX(0) translateZ(5000px);
+				transform: translateX(0) translateZ(5000px);
+
+
+
+				&.in {
+					-webkit-transform: translateX(100%) translateZ(5000px);
+					-moz-transform: translateX(100%) translateZ(5000px);
+					transform: translateX(100%) translateZ(5000px);
+				}
+
+				&.out {
+
+					-webkit-transform: translateX(-100%) translateZ(5000px);
+					-moz-transform: translateX(-100%) translateZ(5000px);
+					transform: translateX(-100%) translateZ(5000px);
+				}
+			}
 		}
 		
 	}
