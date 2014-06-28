@@ -47,15 +47,16 @@ var Cube = function(){
 		currentState = { },
 		map = { };
 
-	Array.prototype.nextIndex = function(index){
-		return index === this.length - 1 ? 0 : index + 1;
+	function nextIndex (arr, index){
+		return index === arr.length - 1 ? 0 : index + 1;
 	}
-	Array.prototype.prevIndex = function(index){
-		return index <= 0 ? this.length - 1 : index - 1;
+	function prevIndex (arr, index){
+		return index <= 0 ? arr.length - 1 : index - 1;
 	}
 	
-	Array.prototype.eq = function(index){
-		return this[ (this.length + (index % this.length)) % this.length ];
+	function eq (arr, index){
+		var len = arr.length;
+		return this[ (len + (index % len)) % len ];
 	}
 	
 	// create a square-map with an array of side counts the number at 
@@ -288,15 +289,15 @@ var Cube = function(){
 		x = getPerspectiveIndex(ids[0]);
 		y = getSideIndex( ids[1] );
 
-		if ( perspectives.nextIndex(activePerspective) === x ){
+		if ( nextIndex(perspectives, activePerspective) === x ){
 			rotateX(1);
-		} else if ( perspectives.prevIndex(activePerspective) === x ){
+		} else if ( prevIndex(perspectives, activePerspective) === x ){
 			rotateX(-1);
 		}
 		
-		if ( middleFaces.nextIndex(activeFace) === y ){
+		if ( nextIndex(middleFaces, activeFace) === y ){
 			rotateY(1);
-		} else if ( middleFaces.prevIndex(activeFace) === y ){
+		} else if ( prevIndex(middleFaces, activeFace) === y ){
 			rotateY(-1);
 		}
 
@@ -306,31 +307,31 @@ var Cube = function(){
 
 	function rotateY(val) {
 
-		middleFaces.eq( activeFace-1 ).goY( val );
-		middleFaces.eq( activeFace   ).goY( val );
-		middleFaces.eq( activeFace+1 ).goY( val );
+		eq(middleFaces, activeFace-1 ).goY( val );
+		eq(middleFaces, activeFace   ).goY( val );
+		eq(middleFaces, activeFace+1 ).goY( val );
 
 		activeFace = val > 0 ?
-			middleFaces.nextIndex(activeFace) :
-			middleFaces.prevIndex(activeFace) ;
+			nextIndex(middleFaces, activeFace) :
+			prevIndex(middleFaces, activeFace) ;
 
 	}
 
 	function rotateX(val) {
 
 		topFace.goX(val);
-		middleFaces.eq( activeFace ).goX(val);
+		eq(middleFaces, activeFace ).goX(val);
 		bottomFace.goX(val);
 
 		activePerspective = val > 0 ?
-			perspectives.nextIndex(activePerspective) :
-			perspectives.prevIndex(activePerspective) ;
+			nextIndex(perspectives, activePerspective) :
+			prevIndex(perspectives, activePerspective) ;
 	}
 
 	function setupForRotation(){
-		middleFaces.eq( activeFace-1 ).set({ yRotation: -90 });
-		middleFaces.eq( activeFace   ).set({ yRotation:   0 });
-		middleFaces.eq( activeFace+1 ).set({ yRotation:  90 });
+		eq(middleFaces, activeFace-1 ).set({ yRotation: -90 });
+		eq(middleFaces, activeFace   ).set({ yRotation:   0 });
+		eq(middleFaces, activeFace+1 ).set({ yRotation:  90 });
 	}
 		
 // ======== Event Handlers =========	
@@ -405,9 +406,9 @@ var Cube = function(){
 			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var delta = change.x / yRotationPerChange;
 
-				middleFaces.eq( activeFace-1 ).rotateY(delta);
-				middleFaces.eq( activeFace   ).rotateY(delta);
-				middleFaces.eq( activeFace+1 ).rotateY(delta);
+				eq(middleFaces, activeFace-1 ).rotateY(delta);
+				eq(middleFaces, activeFace   ).rotateY(delta);
+				eq(middleFaces, activeFace+1 ).rotateY(delta);
 				
 			} else if ( direction === 'y' ){
 
@@ -423,7 +424,7 @@ var Cube = function(){
 				var delta = -change.y / xRotationPerChange;
 
 				topFace.rotateX(delta);
-				middleFaces.eq( activeFace ).rotateX(delta);
+				eq(middleFaces, activeFace ).rotateX(delta);
 				bottomFace.rotateX(delta);
 				
 			}
@@ -438,15 +439,15 @@ var Cube = function(){
 			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var totalX = totalChange.x;
 
-				middleFaces.eq( activeFace-1 ).snapY();
-				middleFaces.eq( activeFace   ).snapY();
-				middleFaces.eq( activeFace+1 ).snapY();
+				eq(middleFaces, activeFace-1 ).snapY();
+				eq(middleFaces, activeFace   ).snapY();
+				eq(middleFaces, activeFace+1 ).snapY();
 
 				if ( Math.abs( totalX ) >= halfWidth  ) {
 
 					activeFace = totalX < 0 ?
-						middleFaces.nextIndex(activeFace) :
-						middleFaces.prevIndex(activeFace) ;
+						nextIndex(middleFaces, activeFace) :
+						prevIndex(middleFaces, activeFace) ;
 
 					setCurrentState();
 					
@@ -463,8 +464,8 @@ var Cube = function(){
 
 					// finger moving up - rotating up
 					activePerspective = totalY > 0 ?
-						perspectives.prevIndex( activePerspective ) :
-						perspectives.nextIndex( activePerspective );
+						prevIndex( perspectives, activePerspective ) :
+						nextIndex( perspectives, activePerspective );
 
 					setCurrentState();
 

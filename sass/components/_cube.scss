@@ -68,9 +68,9 @@
 	margin: 1.625em;
 	
 	.map-inner {
-		-webkit-transition: all 200ms ease 0;
-		-moz-transition: all 200ms ease 0;
-		transition: all 200ms ease 0;
+		-webkit-transition: all 350ms ease 0;
+		-moz-transition: all 350ms ease 0;
+		transition: all 350ms ease 0;
 	}
 	.group {
 		@extend .map-inner;
