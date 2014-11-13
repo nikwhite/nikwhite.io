@@ -47,16 +47,16 @@ var Cube = function(){
 		currentState = { },
 		map = { };
 
-	function nextIndex (arr, index){
+	function nextIndex(arr, index) {
 		return index === arr.length - 1 ? 0 : index + 1;
 	}
-	function prevIndex (arr, index){
+	function prevIndex(arr, index) {
 		return index <= 0 ? arr.length - 1 : index - 1;
 	}
 	
-	function eq (arr, index){
+	function eq(arr, index) {
 		var len = arr.length;
-		return this[ (len + (index % len)) % len ];
+		return arr[ (len + (index % len)) % len ];
 	}
 	
 	// create a square-map with an array of side counts the number at 
@@ -95,7 +95,7 @@ var Cube = function(){
 		document.body.appendChild(this.fragment);
 	}
 
-	CubeMap.prototype.translateY = function(val) {
+	CubeMap.prototype.translateY = function (val) {
 		var style = this.mapInner.style;
 
 		style.webkitTransform = 
@@ -105,7 +105,7 @@ var Cube = function(){
 	    style.transform = 'translateY(' + (val * -12) + 'px)';
 	}
 
-	CubeMap.prototype.translateX = function(val) {
+	CubeMap.prototype.translateX = function (val) {
 		var style = this.groups[1].style;
 
 		style.webkitTransform = 
@@ -115,21 +115,17 @@ var Cube = function(){
 	    style.transform = 'translateX(' + (val * -12) + 'px)';
 	}
 
-	CubeMap.prototype.setIndex = function(x, y) {
+	CubeMap.prototype.setIndex = function (x, y) {
 		this.translateY(x);
 		this.translateX(y);
 	}
 
 
 
-	function init(){		
-		
+	function init(){
 		setDimensions();
-
 		setup();
-		
 		attach();
-		
 	}
 
 	function attach() {
@@ -140,7 +136,6 @@ var Cube = function(){
 				case "icon-up" : this ; break;
 			}
 		});
-
 	}
 
 	function detach() {
@@ -230,7 +225,7 @@ var Cube = function(){
 
 		map.setIndex(activePerspective, activeFace);
 
-		history.pushState( currentState, '', '#/' + currentState.perspective + '/' + currentState.side );
+		history.pushState( currentState, '', '#' + currentState.perspective + '/' + currentState.side );
 	}
 
 	function getStateFromHash() {
@@ -275,7 +270,7 @@ var Cube = function(){
 	}
 
 	function parseUrl(url) {
-		var path = url.substring( url.indexOf('#/') + 2 );
+		var path = url.substring( url.indexOf('#') + 1 );
 		
 		return path.split('/');
 	}
@@ -286,7 +281,7 @@ var Cube = function(){
 
 		setupForRotation();
 		
-		x = getPerspectiveIndex(ids[0]);
+		x = getPerspectiveIndex( ids[0] );
 		y = getSideIndex( ids[1] );
 
 		if ( nextIndex(perspectives, activePerspective) === x ){
@@ -406,9 +401,11 @@ var Cube = function(){
 			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var delta = change.x / yRotationPerChange;
 
-				eq(middleFaces, activeFace-1 ).rotateY(delta);
-				eq(middleFaces, activeFace   ).rotateY(delta);
-				eq(middleFaces, activeFace+1 ).rotateY(delta);
+				window.requestAnimationFrame(function(){
+					eq(middleFaces, activeFace-1 ).rotateY(delta);
+					eq(middleFaces, activeFace   ).rotateY(delta);
+					eq(middleFaces, activeFace+1 ).rotateY(delta);
+				});
 				
 			} else if ( direction === 'y' ){
 
@@ -439,9 +436,11 @@ var Cube = function(){
 			if ( direction === 'x' && activePerspective !== 0 && activePerspective !== numPerspectives-1 ){
 				var totalX = totalChange.x;
 
-				eq(middleFaces, activeFace-1 ).snapY();
-				eq(middleFaces, activeFace   ).snapY();
-				eq(middleFaces, activeFace+1 ).snapY();
+				window.requestAnimationFrame(function(){
+					eq(middleFaces, activeFace-1 ).snapY();
+					eq(middleFaces, activeFace   ).snapY();
+					eq(middleFaces, activeFace+1 ).snapY();
+				});
 
 				if ( Math.abs( totalX ) >= halfWidth  ) {
 

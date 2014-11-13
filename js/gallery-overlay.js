@@ -7,7 +7,7 @@ function Gallery(options) {
 		if ( e.target.nodeName.toUpperCase() === 'A' ) {
 			e.preventDefault();
 
-			this.el.parentNode.parentNode.style.position = 'fixed';
+			//this.el.parentNode.parentNode.style.position = 'fixed';
 
 			if ( !this.overlay ) {
 				this.createOverlay();
@@ -47,7 +47,6 @@ Gallery.prototype.createOverlay = function () {
 }
 
 Gallery.prototype.removeOverlay = function () {
-	document.body.classList.remove('overlay-visible');
 	
 	var onEnd = function() {
 		document.body.removeChild(this.overlay);
@@ -59,21 +58,31 @@ Gallery.prototype.removeOverlay = function () {
 
 	}.bind(this);
 
-	this.el.parentNode.parentNode.style.position = '';
-	
 	this.overlay.addEventListener( this.transitionEvent, onEnd );
 
-	PubSub.publish('overlayHidden');
+	document.body.classList.remove('overlay-visible');
+
+	setTimeout(function(){
+		this.el.classList.remove('active-gallery');
+		this.overlay.classList.remove('visible');
+
+		//this.el.parentNode.parentNode.style.position = '';
+
+		PubSub.publish('overlayHidden');
+	}.bind(this), 20);
+	
 }
 
 Gallery.prototype.showOverlay = function () {
 
-	document.body.appendChild(this.overlayFragment);
-
+	this.el.classList.add('active-gallery');
 	document.body.classList.add('overlay-visible');
+
+	document.body.appendChild(this.overlayFragment);
 
 	setTimeout( function() {
 		this.active = true;
+		this.overlay.classList.add('visible');
 		this.bindEvents();
 	}.bind(this), 20);
 
@@ -105,23 +114,26 @@ Gallery.prototype.transitionImage = function (src) {
 			currentImg.classList.add('out');
 
 			var onEnd = function(){
-				this.imgWrap.removeChild( currentImg );
+				currentImg.parentNode.removeChild( currentImg );
 				currentImg.removeEventListener( this.transitionEvent, onEnd );
 			}.bind(this);
 
 			currentImg.addEventListener( this.transitionEvent, onEnd);
-
-
 		}
-
-		// allow for browser paint
-		setTimeout( function(){
-		}.bind(this), 20);
 
 		this.activeImage = img;
 	}
 
-	img.onload = onload.bind(this);
+	function addNewImage() {
+		setTimeout(onload.bind(this), 20);
+	}
+
+	if (img.complete) {
+		addNewImage.call(this);
+	} else {
+		img.onload = addNewImage.call(this);
+	}
+	
 	
 };
 

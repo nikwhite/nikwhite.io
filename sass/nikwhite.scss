@@ -1,11 +1,12 @@
 @charset 'UTF-8';
 
-$small: 30em;
-$blue: #1296E0;
-$pink: #EA1571;
-
+@import "components/variables";
 @import "components/page";
 @import "components/icons";
 @import "components/cube";
 @import "components/content";
 @import "components/gallery";
+
+.touch {
+	@include cube;
+}

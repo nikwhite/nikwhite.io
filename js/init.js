@@ -1,9 +1,17 @@
 function init() {
-	if ( 'ontouchstart' in window ) {
-		document.body.className += ' touch';
-	}
+	var cube;
 
-	var cube = new Cube();
+	if ( Modernizr.touch ) {
+
+		cube = new Cube();
+
+		PubSub.subscribe('overlayVisible', function(){
+			cube.detach();
+		});
+		PubSub.subscribe('overlayHidden', function(){
+			cube.attach();
+		});
+	}
 
 	var screenshotSections = Array.prototype.slice.call( document.querySelectorAll('.screenshots') );
 
@@ -11,14 +19,9 @@ function init() {
 
 	screenshotSections.forEach( function( section, i ) {
 		galleries.push( new Gallery({root: section}) );
+		galleries[i];
 	});
-
-	PubSub.subscribe('overlayVisible', function(){
-		cube.detach();
-	});
-	PubSub.subscribe('overlayHidden', function(){
-		cube.attach();
-	});
+	
 }
 
 window.addEventListener('DOMContentLoaded', init, false);

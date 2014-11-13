@@ -5,6 +5,10 @@ html {
 	-webkit-text-size-adjust: 100%;
 }
 
+body {
+	color: $textColor;
+}
+
 img {
 	max-width: 100%;
 }
@@ -13,14 +17,48 @@ h1 {
 	font-size: 3.25em;
 	line-height: 1em;
 	margin: 0.5em 0;
+	perspective-origin: 5% 75%;
+	perspective: 0.75em;
 
 	p {
 		font-size: 1rem;
 		margin: 0;
 		line-height: 1.625em;
 	}
+
+	span {
+	    display: inline-block;
+	    transition: all 200ms ease-out;
+	    
+	    &:first-of-type {
+	        transform: rotateY(0deg) translateX(0);
+	    }
+	    &:last-of-type {
+	        transform: rotateY(0deg) translateX(0);
+	    }
+	}
+	  
+	&:hover {
+	    span {
+	      	&:first-of-type {
+	        	transform: rotateY(-14deg) translateX(-0.25em);
+	      	}
+	      	&:last-of-type {
+	        	transform: rotateY(6deg) translateX(-0.325em);
+	      	}
+	    }
+	}
 }
+
 h2 {
+	font-size: 2em;
+}
+
+#work .headline {
+	padding: 0 1.5em;
+}
+
+h3 {
 	font-size: 1.625em;
 	line-height: 1em;
 	margin: 1em 0;
@@ -30,12 +68,27 @@ h2 {
 		margin: 0;
 	}
 }
+
 a {
 	text-decoration: none;
-	color: $pink;
+	color: $linkColor;
 
 	&:hover {
-		color: $blue;
+		color: $linkHover;
+	}
+}
+
+nav {
+	a {
+		border-left: 1px solid #333;
+		padding-left: 0.65em;
+		margin-left: 0.5em;
+
+		&:first-child {
+			border: 0;
+			padding: 0;
+			margin: 0;
+		}
 	}
 }
 
@@ -44,6 +97,11 @@ a {
 		font-size: 0.875em;
 	}
 }
+
+
+.face {
+	padding: 1.5em;
+} 
 
 .inner {
 	max-width: 48em;
@@ -78,21 +136,51 @@ a {
 	}
 }
 
-.summary {
+h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 	-webkit-transition: $summaryTransition;
 	-moz-transition: $summaryTransition;
 	transition: $summaryTransition;
 }
 
-.overlay-visible {
-	.summary {
-		-webkit-filter: blur(8px);
-		-moz-filter: blur(8px);
-		filter: blur(8px);
+// 
+.no-touch {
+	.overlay-visible {
+		overflow: hidden;
+
+		h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
+			// accelleration for scroll performance with blur
+			-webkit-transform: translate3d(0,0,0);
+			transform: translate3d(0,0,0);
+
+			-webkit-filter: blur(6px);
+			-moz-filter: blur(6px);
+			filter: blur(6px);
+			pointer-events: none;
+		}
 	}
-	
-	#cubeContainer {
-		position:fixed;
+}
+
+// For browsers with no blur filter and touch devices
+// touch devices so that scrolling is smooth
+.no-cssfilters, .touch {
+	h1, h2, h3, h4, h5, h6, p, nav a, .screenshots {
+		opacity: 1;
+		text-shadow: 0 0 0 transparent;
+		-webkit-transition: $summaryTransition;
+		-moz-transition: $summaryTransition;
+		transition: $summaryTransition;
+	}
+
+	.overlay-visible {
+		h1, h2, h3, h4, h5, h6, p {
+			opacity: 0.4;
+			text-shadow: 0 0 0.125em darken($textColor, 50%);
+		}
+		nav a,
+		.screenshots:not(.active-gallery) {
+			opacity: 0.4;
+			text-shadow: 0 0 0.125em $linkColor;
+		}
 	}
 }
 
@@ -102,5 +190,20 @@ a {
 		#cubeContainer {
 			position:static;
 		}
+	}
+}
+
+.touch-only {
+	display: none;
+}
+
+
+
+.touch  {
+	.touch-only {
+		display: inherit;
+	}
+	.no-touch {
+		display: none;
 	}
 }

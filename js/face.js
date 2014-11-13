@@ -106,16 +106,16 @@ Face.prototype.set = function (settings) {
 
 Face.prototype.goY = function(direction) {
 	this.yRotation  = direction > 0 ? 
-			this.yRotation - 90 : 
-			this.yRotation + 90 ;
+			this.yRotation - 90 * direction : 
+			this.yRotation + 90 * direction ;
 
 	this.snapY();
 }
 
 Face.prototype.goX = function(direction) {
 	this.xRotation  = direction > 0 ? 
-			this.xRotation + 90 : 
-			this.xRotation - 90 ;
+			this.xRotation + 90 * direction : 
+			this.xRotation - 90 * direction ;
 
 	this.snapX();
 }
