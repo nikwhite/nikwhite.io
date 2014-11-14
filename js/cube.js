@@ -324,9 +324,9 @@ var Cube = function(){
 	}
 
 	function setupForRotation(){
-		eq(middleFaces, activeFace-1 ).set({ yRotation: -90 });
-		eq(middleFaces, activeFace   ).set({ yRotation:   0 });
-		eq(middleFaces, activeFace+1 ).set({ yRotation:  90 });
+		eq(middleFaces, activeFace-1 ).transition(0).set({ yRotation: -90 });
+		eq(middleFaces, activeFace   ).transition(0).set({ yRotation:   0 });
+		eq(middleFaces, activeFace+1 ).transition(0).set({ yRotation:  90 });
 	}
 		
 // ======== Event Handlers =========	

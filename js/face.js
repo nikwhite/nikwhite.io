@@ -38,12 +38,16 @@ Face.prototype.rotateX = function (delta) {
 	this.zTranslation = document.body.clientHeight / 2;
 	this.xRotation += delta;
 	this.transform();
+
+	return this;
 }
 
 Face.prototype.rotateY = function (delta) {
 	this.zTranslation = document.body.clientWidth / 2;
 	this.yRotation += delta;
 	this.transform();
+
+	return this;
 }
 
 Face.prototype.snapY = function () {
@@ -56,6 +60,8 @@ Face.prototype.snapY = function () {
 	this.el.addEventListener( transitionEnd, function (e) {
 		this.transition( 'none' );
 	}.bind( this ));
+
+	return this;
 }
 
 Face.prototype.snapX = function () {
@@ -68,6 +74,8 @@ Face.prototype.snapX = function () {
 	this.el.addEventListener( transitionEnd, function (e) {
 		this.transition( 'none' );
 	}.bind( this ));
+
+	return this;
 }
 
 Face.prototype.transform = function () {
@@ -82,6 +90,7 @@ Face.prototype.transform = function () {
                       'rotateY(' + this.yRotation + 'deg) ' +
                       'translateZ(' + this.zTranslation + 'px)';
 
+    return this;
 }
 
 Face.prototype.transition = function ( transition ) {
@@ -94,6 +103,7 @@ Face.prototype.transition = function ( transition ) {
     style.OTransition = 
     style.transition = transition;
 
+    return this;
 }
 
 Face.prototype.set = function (settings) {
@@ -102,6 +112,8 @@ Face.prototype.set = function (settings) {
 	this.zTranslation = settings.zTranslation || this.zTranslation;
 
 	this.transform();
+
+	return this;
 }
 
 Face.prototype.goY = function(direction) {
@@ -110,6 +122,8 @@ Face.prototype.goY = function(direction) {
 			this.yRotation + 90 * direction ;
 
 	this.snapY();
+
+	return this;
 }
 
 Face.prototype.goX = function(direction) {
@@ -118,4 +132,6 @@ Face.prototype.goX = function(direction) {
 			this.xRotation - 90 * direction ;
 
 	this.snapX();
+
+	return this;
 }

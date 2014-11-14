@@ -17,8 +17,9 @@ h1 {
 	font-size: 3.25em;
 	line-height: 1em;
 	margin: 0.5em 0;
-	perspective-origin: 5% 75%;
+	perspective-origin: 17% 75%;
 	perspective: 0.75em;
+	width: 5em;
 
 	p {
 		font-size: 1rem;
@@ -137,9 +138,12 @@ nav {
 }
 
 h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
-	-webkit-transition: $summaryTransition;
-	-moz-transition: $summaryTransition;
-	transition: $summaryTransition;
+	-webkit-transition-property: filter, -webkit-filter;
+	-webkit-transition-duration: 400ms;
+	-webkit-transition-timing-function: ease-in; 
+	transition-property: filter, -moz-filter, -webkit-filter;
+	transition-duration: 400ms;
+	transition-timing-function: ease-in; 
 }
 
 // 
@@ -157,6 +161,13 @@ h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 			filter: blur(6px);
 			pointer-events: none;
 		}
+
+		.screenshots.active-gallery {
+			pointer-events: none;
+			a {
+				pointer-events: auto;
+			}
+		}
 	}
 }
 
@@ -166,9 +177,12 @@ h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 	h1, h2, h3, h4, h5, h6, p, nav a, .screenshots {
 		opacity: 1;
 		text-shadow: 0 0 0 transparent;
-		-webkit-transition: $summaryTransition;
-		-moz-transition: $summaryTransition;
-		transition: $summaryTransition;
+		-webkit-transition-property: text-shadow, opacity;
+		-webkit-transition-duration: 400ms;
+		-webkit-transition-timing-function: ease-in; 
+		transition-property: text-shadow, opacity;
+		transition-duration: 400ms;
+		transition-timing-function: ease-in; 
 	}
 
 	.overlay-visible {
@@ -181,6 +195,8 @@ h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 			opacity: 0.4;
 			text-shadow: 0 0 0.125em $linkColor;
 		}
+
+
 	}
 }
 
