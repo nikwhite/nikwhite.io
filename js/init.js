@@ -5,11 +5,13 @@ function init() {
 
 		cube = new Cube();
 
-		PubSub.subscribe('overlayVisible', function(){
+		PubSub.subscribe('overlayVisible', function(msg, gallery){
 			cube.detach();
+			gallery.parentNode.parentNode.classList.add('gallery-active-face');
 		});
-		PubSub.subscribe('overlayHidden', function(){
+		PubSub.subscribe('overlayHidden', function(msg, gallery){
 			cube.attach();
+			gallery.parentNode.parentNode.classList.remove('gallery-active-face');
 		});
 	}
 
@@ -19,7 +21,7 @@ function init() {
 
 	screenshotSections.forEach( function( section, i ) {
 		galleries.push( new Gallery({root: section}) );
-		galleries[i];
+		//galleries[i];
 	});
 	
 }

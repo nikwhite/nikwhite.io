@@ -28,101 +28,6 @@
 		display: block;
 	}
 
-	.controls {
-		position: fixed;
-		bottom: 2em;
-		left: 50%;
-		margin-left: -5em;
-		width: 10em;
-		height: 11em;
-		text-align: center;
-		-webkit-transform: translateZ(400px);
-
-		.icon-touch { 
-			display: none;
-			font-size: 3em;
-			top: 50%;
-			position: absolute;
-			left: 50%;
-			margin-top: -0.5em;
-			margin-left: -0.25em;
-	 	}
-
-		a {
-			position: absolute;
-			color: #aaa;
-
-			&:hover {
-				color: black;
-			}
-
-			&.icon-up {
-				top: 0;
-				left: 50%;
-				margin-left: -0.75em;
-			}
-			&.icon-right {
-				right: -0.75em;
-				top: 50%;
-				margin-top: -1.5em;
-			}
-			&.icon-down {
-				bottom: 0;
-				left: 50%;
-				margin-left: -0.75em;
-			}
-			&.icon-left {
-				left: 0;
-				top: 50%;
-				margin-top: -1.5em;
-			}
-
-			&:before {
-				font-size: 3em;
-				margin-left: -0.25em;
-			}
-		}
-	}
-
-	.controls {
-		pointer-events: none;
-
-		.icon-touch {
-			display: block;
-			opacity: 0;
-			-webkit-animation: fade-in 2s ease-in 1s 2 alternate forwards;
-		}
-
-		a {
-			opacity: 0;
-			-webkit-animation: fade-in 2s ease-in 2s 2 alternate forwards;
-		}
-	}
-
-	&.touched {
-		.controls {
-			.icon-touch {
-				display: block;
-				opacity: 0;
-				-webkit-animation: fade-in 600ms ease-in 1000ms backwards;
-			}
-
-			a {
-				opacity: 0;
-				-webkit-animation: fade-in 300ms ease-in 1500ms backwards;
-			}
-		}
-	}
-
-	@-webkit-keyframes fade-in {
-		0%   { opacity: 0; disply: none; }
-		1%   { opacity: 0; display: block;  }
-		50%  { opacity: 1; }
-		99% { opacity: 1; }
-		99% { opacity: 1;  }
-	}
-
-
 	.map {
 		position: fixed;
 		left: 0;
@@ -157,4 +62,99 @@
 			}
 		}
 	}	
+
+
+	// .controls {
+	// 	position: fixed;
+	// 	bottom: 2em;
+	// 	left: 50%;
+	// 	margin-left: -5em;
+	// 	width: 10em;
+	// 	height: 11em;
+	// 	text-align: center;
+	// 	-webkit-transform: translateZ(400px);
+
+	// 	.icon-touch { 
+	// 		display: none;
+	// 		font-size: 3em;
+	// 		top: 50%;
+	// 		position: absolute;
+	// 		left: 50%;
+	// 		margin-top: -0.5em;
+	// 		margin-left: -0.25em;
+	//  	}
+
+	// 	a {
+	// 		position: absolute;
+	// 		color: #aaa;
+
+	// 		&:hover {
+	// 			color: black;
+	// 		}
+
+	// 		&.icon-up {
+	// 			top: 0;
+	// 			left: 50%;
+	// 			margin-left: -0.75em;
+	// 		}
+	// 		&.icon-right {
+	// 			right: -0.75em;
+	// 			top: 50%;
+	// 			margin-top: -1.5em;
+	// 		}
+	// 		&.icon-down {
+	// 			bottom: 0;
+	// 			left: 50%;
+	// 			margin-left: -0.75em;
+	// 		}
+	// 		&.icon-left {
+	// 			left: 0;
+	// 			top: 50%;
+	// 			margin-top: -1.5em;
+	// 		}
+
+	// 		&:before {
+	// 			font-size: 3em;
+	// 			margin-left: -0.25em;
+	// 		}
+	// 	}
+	// }
+
+	// .controls {
+	// 	pointer-events: none;
+
+	// 	.icon-touch {
+	// 		display: block;
+	// 		opacity: 0;
+	// 		-webkit-animation: fade-in 2s ease-in 1s 2 alternate forwards;
+	// 	}
+
+	// 	a {
+	// 		opacity: 0;
+	// 		-webkit-animation: fade-in 2s ease-in 2s 2 alternate forwards;
+	// 	}
+	// }
+
+	// &.touched {
+	// 	.controls {
+	// 		.icon-touch {
+	// 			display: block;
+	// 			opacity: 0;
+	// 			-webkit-animation: fade-in 600ms ease-in 1000ms backwards;
+	// 		}
+
+	// 		a {
+	// 			opacity: 0;
+	// 			-webkit-animation: fade-in 300ms ease-in 1500ms backwards;
+	// 		}
+	// 	}
+	// }
+
+	// @-webkit-keyframes fade-in {
+	// 	0%   { opacity: 0; disply: none; }
+	// 	1%   { opacity: 0; display: block;  }
+	// 	50%  { opacity: 1; }
+	// 	99% { opacity: 1; }
+	// 	99% { opacity: 1;  }
+	// }
 }

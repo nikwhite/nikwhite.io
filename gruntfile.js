@@ -28,8 +28,8 @@ module.exports = function(grunt) {
 		},
 
 		copy: {
-			index: {
-				src: 'index.html',
+			html: {
+				src: '*.html',
 				dest: dirConfig.distPath
 			}, 
 			images: {

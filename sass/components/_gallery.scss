@@ -1,5 +1,4 @@
-$imgTransition: all 400ms cubic-bezier(.25,.68,.38,1.00);
-$imgZ: translateZ(5000px);
+
 
 .gallery-overlay {
 	position: fixed; 
@@ -10,7 +9,7 @@ $imgZ: translateZ(5000px);
 	height: 100%;
 	overflow-y: scroll;
 	background: rgba(0,0,0,0);
-	-webkit-overflow-scrolling: touch;
+	
 	-webkit-transition: $delayedTransition;
 	transition: $delayedTransition;
 	z-index: 20;
@@ -40,9 +39,6 @@ $imgZ: translateZ(5000px);
 
 		img { 
 			display: block;
-			left: 0;
-			right: 0;
-			top: 0;
 			margin: 0 auto;
 			opacity: 0;
 			box-shadow: 0 4px 20px rgba(0,0,0,0.2);
@@ -50,9 +46,9 @@ $imgZ: translateZ(5000px);
 			-webkit-transition: $imgTransition;
 			transition: $imgTransition;
 
-			-webkit-transform: translateX(0);
-			-moz-transform: translateX(0);
-			transform: translateX(0);
+			-webkit-transform: translateX(0) $imgZ;
+			-moz-transform: translateX(0) $imgZ;
+			transform: translateX(0) $imgZ;
 
 			&.in {
 				-webkit-transition-delay: 200ms;
@@ -65,29 +61,39 @@ $imgZ: translateZ(5000px);
 			}
 
 			&.out {
+				position: absolute;
+				left: 0;
+				right: 0;
+
 				-webkit-transform: translateY(-100px) $imgZ;
 				-moz-transform: translateY(-100px) $imgZ;
 				transform: translateY(-100px) $imgZ;
 			}
 
 			&.in, &.out {
-				position: absolute;
 
 				opacity: 0;
 			}
 		}
 	}
+}
 
+.close {
+	position: fixed;
+	right: 0;
+	top: 0;
+	padding: 0.8em;
+	-webkit-transition: $delayedTransition;
+	transition: $delayedTransition;
+	font-size: 2em;
+	cursor: pointer;
+	opacity: 0;
+	z-index: 30;
+}
+
+.overlay-visible {
 	.close {
-		position: fixed;
-		right: 0;
-		top: 0;
-		padding: 0.8em;
-		-webkit-transition: $delayedTransition;
-		transition: $delayedTransition;
-		font-size: 2em;
-		cursor: pointer;
-		opacity: 0;
+		opacity: 1;
 	}
 }
 
@@ -95,13 +101,10 @@ $imgZ: translateZ(5000px);
 	.gallery-overlay {
 		top: 5em;
 		padding-bottom: 5em;
-
-		.close {
-			position: absolute;
-			padding: 0.4em;
-		}
+		
 		.inner {
-			padding: 1.625em;	
+			padding: 1.625em;
+			min-height: 101%; //fixes disappearing X icon when image doesnt scroll	
 
 			img { 
 
@@ -120,5 +123,11 @@ $imgZ: translateZ(5000px);
 			}
 		}
 		
+	}
+	.close {
+		padding: 0.4em;
+		z-index: 30;
+		top: 0.4em;
+		right: 0.4em;
 	}
 }

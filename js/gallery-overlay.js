@@ -35,8 +35,8 @@ Gallery.prototype.createOverlay = function () {
 	inner.className = 'inner';
 	imgWrap.className = 'img-wrap';
 
+	frag.appendChild(close);
 	frag.appendChild(root);
-	root.appendChild(close);
 	root.appendChild(inner);
 	inner.appendChild(imgWrap);
 
@@ -50,9 +50,12 @@ Gallery.prototype.removeOverlay = function () {
 	
 	var onEnd = function() {
 		document.body.removeChild(this.overlay);
+		document.body.removeChild(this.close);
 
 		this.overlay.removeEventListener( this.transitionEvent, onEnd );
+		this.close.removeEventListener( 'click', this.boundRemoveFn )
 
+		this.close = null;
 		this.overlay = null;
 		this.active = false;
 
@@ -68,7 +71,7 @@ Gallery.prototype.removeOverlay = function () {
 
 		//this.el.parentNode.parentNode.style.position = '';
 
-		PubSub.publish('overlayHidden');
+		PubSub.publish('overlayHidden', this.el);
 	}.bind(this), 20);
 	
 }
@@ -86,14 +89,13 @@ Gallery.prototype.showOverlay = function () {
 		this.bindEvents();
 	}.bind(this), 20);
 
-	PubSub.publish('overlayVisible');
+	PubSub.publish('overlayVisible', this.el);
 	
 };
 
 Gallery.prototype.bindEvents = function () {
-	this.close.addEventListener('click', function(){
-		this.removeOverlay();
-	}.bind( this ));
+	this.boundRemoveFn = this.removeOverlay.bind(this);
+	this.close.addEventListener('click', this.boundRemoveFn);
 }
 
 Gallery.prototype.transitionImage = function (src) {

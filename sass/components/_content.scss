@@ -1,5 +1,3 @@
-$summaryTransition: all 400ms ease-in;
-$delayedTransition: all 400ms ease-out 200ms;
 
 html {
 	-webkit-text-size-adjust: 100%;
@@ -7,7 +5,8 @@ html {
 
 body {
 	color: $textColor;
-}
+	//-webkit-overflow-scrolling: touch;
+} 
 
 img {
 	max-width: 100%;
@@ -146,11 +145,29 @@ h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 	transition-timing-function: ease-in; 
 }
 
+.overlay-visible {
+	overflow: hidden;
+
+	#cubeContainer {
+		position:static;
+	}
+}
+.touch {
+	.overlay-visible {
+		#cubeContainer {
+			-webkit-transform-style: flat;
+			transform-style: flat;
+		}
+
+		.face.gallery-active-face {
+			-webkit-transform: initial !important;
+			transform: initial !important;
+		}
+	}
+}
 // 
 .no-touch {
 	.overlay-visible {
-		overflow: hidden;
-
 		h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 			// accelleration for scroll performance with blur
 			-webkit-transform: translate3d(0,0,0);
@@ -197,15 +214,6 @@ h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
 		}
 
 
-	}
-}
-
-@media screen and (max-width: $small) {
-	.overlay-visible {
-		
-		#cubeContainer {
-			position:static;
-		}
 	}
 }
 

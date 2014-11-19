@@ -290,9 +290,9 @@ var Cube = function(){
 			rotateX(-1);
 		}
 		
-		if ( nextIndex(middleFaces, activeFace) === y ){
+		if ( getNextMiddleFaceIndex( activeFace ) === y ){
 			rotateY(1);
-		} else if ( prevIndex(middleFaces, activeFace) === y ){
+		} else if ( getPrevMiddleFaceIndex( activeFace ) === y ){
 			rotateY(-1);
 		}
 
@@ -302,20 +302,20 @@ var Cube = function(){
 
 	function rotateY(val) {
 
-		eq(middleFaces, activeFace-1 ).goY( val );
-		eq(middleFaces, activeFace   ).goY( val );
-		eq(middleFaces, activeFace+1 ).goY( val );
+		getMiddleFaceByIndex( activeFace-1 ).goY( val );
+		getMiddleFaceByIndex( activeFace   ).goY( val );
+		getMiddleFaceByIndex( activeFace+1 ).goY( val );
 
 		activeFace = val > 0 ?
-			nextIndex(middleFaces, activeFace) :
-			prevIndex(middleFaces, activeFace) ;
+			getNextMiddleFaceIndex( activeFace ) :
+			getPrevMiddleFaceIndex( activeFace ) ;
 
 	}
 
 	function rotateX(val) {
 
 		topFace.goX(val);
-		eq(middleFaces, activeFace ).goX(val);
+		getMiddleFaceByIndex( activeFace ).goX(val);
 		bottomFace.goX(val);
 
 		activePerspective = val > 0 ?
@@ -324,10 +324,16 @@ var Cube = function(){
 	}
 
 	function setupForRotation(){
-		eq(middleFaces, activeFace-1 ).transition(0).set({ yRotation: -90 });
-		eq(middleFaces, activeFace   ).transition(0).set({ yRotation:   0 });
-		eq(middleFaces, activeFace+1 ).transition(0).set({ yRotation:  90 });
+		getMiddleFaceByIndex( activeFace-1 ).transition(0).set({ yRotation: -90 });
+		getMiddleFaceByIndex( activeFace   ).transition(0).set({ yRotation:   0 });
+		getMiddleFaceByIndex( activeFace+1 ).transition(0).set({ yRotation:  90 });
 	}
+
+// ======== Partially applied functions =========	
+
+	var getMiddleFaceByIndex = eq.bind(null, middleFaces);
+	var getNextMiddleFaceIndex = nextIndex.bind(null, middleFaces);
+	var getPrevMiddleFaceIndex = prevIndex.bind(null, middleFaces);
 		
 // ======== Event Handlers =========	
 	var events = {
@@ -402,9 +408,9 @@ var Cube = function(){
 				var delta = change.x / yRotationPerChange;
 
 				window.requestAnimationFrame(function(){
-					eq(middleFaces, activeFace-1 ).rotateY(delta);
-					eq(middleFaces, activeFace   ).rotateY(delta);
-					eq(middleFaces, activeFace+1 ).rotateY(delta);
+					getMiddleFaceByIndex( activeFace-1 ).rotateY(delta);
+					getMiddleFaceByIndex( activeFace   ).rotateY(delta);
+					getMiddleFaceByIndex( activeFace+1 ).rotateY(delta);
 				});
 				
 			} else if ( direction === 'y' ){
@@ -421,7 +427,7 @@ var Cube = function(){
 				var delta = -change.y / xRotationPerChange;
 
 				topFace.rotateX(delta);
-				eq(middleFaces, activeFace ).rotateX(delta);
+				getMiddleFaceByIndex( activeFace ).rotateX(delta);
 				bottomFace.rotateX(delta);
 				
 			}
@@ -437,16 +443,27 @@ var Cube = function(){
 				var totalX = totalChange.x;
 
 				window.requestAnimationFrame(function(){
-					eq(middleFaces, activeFace-1 ).snapY();
-					eq(middleFaces, activeFace   ).snapY();
-					eq(middleFaces, activeFace+1 ).snapY();
+					getMiddleFaceByIndex( activeFace-1 ).snapY();
+					getMiddleFaceByIndex( activeFace   ).snapY();
+					getMiddleFaceByIndex( activeFace+1 ).snapY();
 				});
 
 				if ( Math.abs( totalX ) >= halfWidth  ) {
 
-					activeFace = totalX < 0 ?
-						nextIndex(middleFaces, activeFace) :
-						prevIndex(middleFaces, activeFace) ;
+					if ( totalX < 0 ) {
+						// hide the old ones by making them perpendicular to the viewport
+						// this prevents being able to look through elements and see the backside 
+						// of the old sides in certain situations
+						getMiddleFaceByIndex( activeFace-1 ).transition(0).set({ yRotation: -90 });
+
+						activeFace = getNextMiddleFaceIndex( activeFace );
+						
+
+					} else if ( totalX > 0 ) {
+						getMiddleFaceByIndex( activeFace+1 ).transition(0).set({ yRotation: 90 });
+
+						activeFace = getPrevMiddleFaceIndex( activeFace );
+					}
 
 					setCurrentState();
 					

@@ -8,3 +8,10 @@ $pink: #EA1571;
 $textColor: #222;
 $linkColor: $pink;
 $linkHover: $blue;
+
+// Gallery stuff
+$imgTransition: all 400ms cubic-bezier(.25,.68,.38,1.00);
+$summaryTransition: all 400ms ease-in;
+$delayedTransition: all 400ms ease-out 200ms;
+
+$imgZ: translateZ(5000px);
