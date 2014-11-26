@@ -15,15 +15,23 @@ module.exports = function(grunt) {
 		},
 
 		uglify: {
-			options: {
-				//TODO: banner
-				compress:false,
-				mangle: false,
-				beautify: true
-			},
 			dev: {
 				src: ['js/*.js'],
-				dest: dirConfig.distPath + 'js/nikwhite.min.js'
+				dest: dirConfig.distPath + 'js/nikwhite.js',
+				options: {
+					compress: false,
+					mangle:   false,
+					beautify: true
+				}
+			},
+			prod: {
+				src: ['js/*.js'],
+				dest: dirConfig.distPath + 'js/nikwhite.min.js',
+				options: {
+					compress: true,
+					mangle:   true,
+					beautify: false
+				}
 			}
 		},
 
@@ -33,7 +41,7 @@ module.exports = function(grunt) {
 				dest: dirConfig.distPath
 			}, 
 			images: {
-				src: ['img/*.jpg'],
+				src: ['img/*.jpg', 'img/*.png'],
 				dest: dirConfig.distPath
 			},
 			fonts: {

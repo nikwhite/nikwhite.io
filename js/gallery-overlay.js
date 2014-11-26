@@ -44,6 +44,7 @@ Gallery.prototype.createOverlay = function () {
 	this.overlay = root;
 	this.imgWrap = imgWrap;
 	this.close = close;
+	this.$overlay = $(root);
 }
 
 Gallery.prototype.removeOverlay = function () {
@@ -99,7 +100,7 @@ Gallery.prototype.bindEvents = function () {
 }
 
 Gallery.prototype.transitionImage = function (src) {
-	
+
 	var img = document.createElement('img');
 	img.src = src;
 	img.classList.add('in');
@@ -127,16 +128,25 @@ Gallery.prototype.transitionImage = function (src) {
 	}
 
 	function addNewImage() {
-		setTimeout(onload.bind(this), 20);
+		if (img.complete) {
+			setTimeout(onload.bind(this), 50);
+		} else {
+			img.onload = function(){
+				setTimeout(onload.bind(this), 50);
+			}.bind(this);
+		}
 	}
 
-	if (img.complete) {
-		addNewImage.call(this);
+	// scroll back to top if not already there
+	if ( this.overlay.scrollTop ) {
+		this.$overlay.animate({ scrollTop: 0 }, 400, function(){	
+			addNewImage.call(this);
+		}.bind(this));
+
 	} else {
-		img.onload = addNewImage.call(this);
+		addNewImage.call(this);
 	}
-	
-	
+
 };
 
 Gallery.prototype.transitionEvent = (function () {

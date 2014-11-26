@@ -130,12 +130,6 @@ var Cube = function(){
 
 	function attach() {
 		window.addEventListener('touchstart', events);
-
-		document.addEventListener('click', function(e) {
-			switch (e.target.className) {
-				case "icon-up" : this ; break;
-			}
-		});
 	}
 
 	function detach() {

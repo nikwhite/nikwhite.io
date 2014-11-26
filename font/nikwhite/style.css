@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'nikwhite';
-	src:url('fonts/nikwhite.eot?9oyl5e');
-	src:url('fonts/nikwhite.eot?#iefix9oyl5e') format('embedded-opentype'),
-		url('fonts/nikwhite.woff?9oyl5e') format('woff'),
-		url('fonts/nikwhite.ttf?9oyl5e') format('truetype'),
-		url('fonts/nikwhite.svg?9oyl5e#nikwhite') format('svg');
+	src:url('fonts/nikwhite.eot?-2o5s95');
+	src:url('fonts/nikwhite.eot?#iefix-2o5s95') format('embedded-opentype'),
+		url('fonts/nikwhite.woff?-2o5s95') format('woff'),
+		url('fonts/nikwhite.ttf?-2o5s95') format('truetype'),
+		url('fonts/nikwhite.svg?-2o5s95#nikwhite') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -23,11 +23,8 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon-touch:before {
-	content: "\e601";
-}
-.icon-right:before {
-	content: "\e600";
+.icon-picture:before {
+	content: "\e00f";
 }
 .icon-desktop:before {
 	content: "\e002";
@@ -37,6 +34,12 @@
 }
 .icon-phone:before {
 	content: "\e004";
+}
+.icon-touch:before {
+	content: "\e601";
+}
+.icon-right:before {
+	content: "\e600";
 }
 .icon-cross:before {
 	content: "\e117";

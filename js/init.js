@@ -7,11 +7,11 @@ function init() {
 
 		PubSub.subscribe('overlayVisible', function(msg, gallery){
 			cube.detach();
-			gallery.parentNode.parentNode.classList.add('gallery-active-face');
+			$(gallery).closest('.face').addClass('gallery-active-face');
 		});
 		PubSub.subscribe('overlayHidden', function(msg, gallery){
 			cube.attach();
-			gallery.parentNode.parentNode.classList.remove('gallery-active-face');
+			$(gallery).closest('.face').removeClass('gallery-active-face');
 		});
 	}
 

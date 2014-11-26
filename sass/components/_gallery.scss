@@ -55,9 +55,9 @@
 				-moz-transition-delay: 200ms;
 				transition-delay: 200ms;
 
-				-webkit-transform: translateY(100px) $imgZ;
-				-moz-transform: translateY(100px) $imgZ;
-				transform: translateY(100px) $imgZ;
+				-webkit-transform: translateY(-100px) $imgZ;
+				-moz-transform: translateY(-100px) $imgZ;
+				transform: translateY(-100px) $imgZ;
 			}
 
 			&.out {
@@ -65,9 +65,9 @@
 				left: 0;
 				right: 0;
 
-				-webkit-transform: translateY(-100px) $imgZ;
-				-moz-transform: translateY(-100px) $imgZ;
-				transform: translateY(-100px) $imgZ;
+				-webkit-transform: translateY(100px) $imgZ;
+				-moz-transform: translateY(100px) $imgZ;
+				transform: translateY(100px) $imgZ;
 			}
 
 			&.in, &.out {
