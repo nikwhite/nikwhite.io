@@ -149,13 +149,9 @@ nav {
 		font-size: 2.5em;
 	}
 	.screenshots {
-		float: none;
-		width: auto;
-		text-align: left;
-		margin: 0;
-
-		a {
-			margin: 0 0.5em 0 0;
+		&:before {
+			right: initial;
+			left: 0;
 		}
 	}
 }
