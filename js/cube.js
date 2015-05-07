@@ -45,7 +45,8 @@ var Cube = function(){
 		contentsides = [ ], // DOM order for middle sides
 
 		currentState = { },
-		map = { };
+		map = { },
+		noTransition = 'none';
 
 	function nextIndex(arr, index) {
 		return index === arr.length - 1 ? 0 : index + 1;
@@ -318,9 +319,9 @@ var Cube = function(){
 	}
 
 	function setupForRotation(){
-		getMiddleFaceByIndex( activeFace-1 ).transition(0).set({ yRotation: -90 });
-		getMiddleFaceByIndex( activeFace   ).transition(0).set({ yRotation:   0 });
-		getMiddleFaceByIndex( activeFace+1 ).transition(0).set({ yRotation:  90 });
+		getMiddleFaceByIndex( activeFace-1 ).transition(noTransition).set({ yRotation: -90 });
+		getMiddleFaceByIndex( activeFace   ).transition(noTransition).set({ yRotation:   0 });
+		getMiddleFaceByIndex( activeFace+1 ).transition(noTransition).set({ yRotation:  90 });
 	}
 
 // ======== Partially applied functions =========	
@@ -448,13 +449,13 @@ var Cube = function(){
 						// hide the old ones by making them perpendicular to the viewport
 						// this prevents being able to look through elements and see the backside 
 						// of the old sides in certain situations
-						getMiddleFaceByIndex( activeFace-1 ).transition(0).set({ yRotation: -90 });
+						getMiddleFaceByIndex( activeFace-1 ).transition(noTransition).set({ yRotation: -90 });
 
 						activeFace = getNextMiddleFaceIndex( activeFace );
 						
 
 					} else if ( totalX > 0 ) {
-						getMiddleFaceByIndex( activeFace+1 ).transition(0).set({ yRotation: 90 });
+						getMiddleFaceByIndex( activeFace+1 ).transition(noTransition).set({ yRotation: 90 });
 
 						activeFace = getPrevMiddleFaceIndex( activeFace );
 					}

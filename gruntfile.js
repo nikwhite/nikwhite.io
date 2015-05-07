@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 				src: ['js/*.js'],
 				dest: dirConfig.distPath + 'js/nikwhite.min.js',
 				options: {
-					compress: true,
+					compress: {},
 					mangle:   true,
 					beautify: false
 				}
@@ -64,5 +64,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('default', ['sass', 'uglify', 'copy']);
+	grunt.registerTask('default', ['sass', 'uglify:dev', 'copy']);
+	grunt.registerTask('prod', ['sass', 'uglify:prod', 'copy']);
 }

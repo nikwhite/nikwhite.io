@@ -29,7 +29,7 @@ function Face( element, settings ) {
 	this.zTranslation = settings.zTranslation || 0;
 	this.xRotation = settings.xRotation || 0;
 	this.yRotation = settings.yRotation || 0;
-	this.snapTransition = settings.snapTransition || 'all 350ms ease-out 0';
+	this.snapTransition = settings.snapTransition || 'all 350ms ease-out 0s';
 	
 	this.transform();
 }
