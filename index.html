@@ -3,15 +3,15 @@
 	<head>
 		<title>Nik White</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui">
-		<link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
 		<link href="/css/nikwhite.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<div id="cubeContainer">
-			<div id="cube">
+			<div id="cube" class="lax">
 				
 				<!-- Top -->
-				<header id="home" class="top face">
+				<header id="home" class="top face lax-layer">
 					<div class="inner">
 
 						<h1>
@@ -24,24 +24,24 @@
 							<a href="#contact">Contact</a>
 						</nav>
 						<img class="avatar" src="/img/avatar.jpg">
-						<br>
-						<p>I love the web, and I love interfaces. Creating applications used by millions of people every day drives me to constantly improve and experiment. I have tons of front-experience in <em>massive </em> codebases and working with distributed teams across the entire technical stack. I also bring strong design sense to my projects, both in UI/UX design and application architecture. I deeply understand how to balance complexity, performance, and maintainability to create stable, successful applications.</p>
+						
+						<p class="larger">Based in Chicago, I design and build large scale front-end web apps. I lead teams to success by example and mentorship.</p>
 
-						<p class="touch-only">Explore this site by touch &mdash; start by sliding up.</p>
+						<p class="touch-only">Explore by touch &mdash; start by sliding up.</p>
 					</div>
 				</header>
 				
 				<!-- middle -->
-				<section id="work" class="middle">
+				<section id="work" class="middle lax-over">
 					<div class="headline no-touch">
 						<div class="inner">
-							<h2>Work Highlights</h2>
+							<h2>Work highlights:</h2>
 						</div>
 					</div>
 					<article id="chasepay" class="face">
 						<div class="inner">
 							<div class="screenshots">
-								<a class="icon-desktop" href="/img/chasepay_merchant.jpg"></a>
+								<!--<a class="icon-desktop" href="/img/chasepay_merchant.jpg"></a>-->
 								<a class="icon-desktop" href="/img/chasepay_desktop.jpg"></a>
 								<a class="icon-tablet" href="/img/chasepay_768.jpg"></a>
 								<a class="icon-phone" href="/img/chasepay_320.jpg"></a>
@@ -136,11 +136,18 @@
 				
 				<!-- bottom -->
 				<footer id="contact" class="bottom face">
+					<div class="headline in-face">
+						<div class="inner">
+							<h2>Say hello.</h2>
+						</div>
+					</div>
 					<div class="inner">
-						<h2>Contact</h2>
 						<p>I'm always open to new and exciting opportunites. Feel free to contact me with yours.</p>
-						<p>underscore.nik@gmail.com</p>
-						<p>
+						<form id="sayhello" action="/sayhello" method="post">
+							<input type="text" name="email" placeholder="Your email">
+							<textarea name"message" placeholder="What would you like to talk about?"></textarea>
+							<button type="submit">Send!</button>
+						</form>
 					</div>
 				</footer>
 				

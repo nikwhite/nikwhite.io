@@ -3,15 +3,39 @@
 $small: 30em;
 
 //Typography
+$baseLeading: 1.65;
+
+$primaryFont: 'Lato', helvetica, sans-serif;
+
 $blue: #1296E0;
+$slate: #7aa4b2;
 $pink: #EA1571;
 $textColor: #222;
-$linkColor: $pink;
-$linkHover: $blue;
+$halfWhite: rgba(255,255,255,0.5);
+$halfBlack: rgba(0,0,0,0.5);
 
+$linkColor: $pink;
+$linkColorHeader: darken($pink, 10%);
+$linkHover: saturate(darken($slate, 20%), 30%);
+
+
+
+$headerbg: $slate;
+$headerGradTop: darken($slate, 10%);
+$headerGradBot: $slate;
+$headerText: white;
+$footerbg: lighten($slate, 10%);
+$lightTextShadow: 2px 1px 0 lighten($headerGradTop, 10%);
+$dividerColor: desaturate($linkHover, 20%);
+$placeholder: $headerGradTop;
 // Gallery stuff
 $imgTransition: all 400ms cubic-bezier(.25,.68,.38,1.00);
 $summaryTransition: all 400ms ease-in;
 $delayedTransition: all 400ms ease-out 200ms;
 
 $imgZ: translateZ(5000px);
+
+//Cube
+$facePadding: $baseLeading + 0em;
+$halfFacePadding: $facePadding/2;
+$quarterFacePadding: $facePadding/4;
