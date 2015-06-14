@@ -7,8 +7,6 @@ function Gallery(options) {
 		if ( e.target.nodeName.toUpperCase() === 'A' ) {
 			e.preventDefault();
 
-			//this.el.parentNode.parentNode.style.position = 'fixed';
-
 			if ( !this.overlay ) {
 				this.createOverlay();
 			}
@@ -66,18 +64,16 @@ Gallery.prototype.removeOverlay = function () {
 
 	document.body.classList.remove('overlay-visible');
 
-	setTimeout(function(){
-		this.el.classList.remove('active-gallery');
-		this.overlay.classList.remove('visible');
+	this.el.classList.remove('active-gallery');
+	this.overlay.classList.remove('visible');
 
-		//this.el.parentNode.parentNode.style.position = '';
-
-		PubSub.publish('overlayHidden', this.el);
-	}.bind(this), 20);
+	PubSub.publishSync('overlayHidden', this.el);
 	
 }
 
 Gallery.prototype.showOverlay = function () {
+
+	PubSub.publishSync('beforeOverlayVisible', this.el);
 
 	this.el.classList.add('active-gallery');
 	document.body.classList.add('overlay-visible');
@@ -90,7 +86,7 @@ Gallery.prototype.showOverlay = function () {
 		this.bindEvents();
 	}.bind(this), 20);
 
-	PubSub.publish('overlayVisible', this.el);
+	PubSub.publishSync('overlayVisible', this.el);
 	
 };
 
