@@ -304,25 +304,25 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 		margin-top: 1em;
 	}
 
-	// .lax {
-	// 	perspective: 1px;
-	// 	height: 100vh;
-	// 	overflow-x: hidden;
-	// 	overflow-y: auto;
-	// }
-	// .lax-layer {
-	// 	position: absolute;
-	// 	top: 0;
-	// 	right: 0;
-	// 	bottom: 0;
-	// 	left: 0;
-	// 	transform: translateZ(-1px) scale(2);
-	// 	z-index: -1;
-	// }
-	// .lax-over {
-	// 	background-color: white;
-	// 	margin-top: 24em;
-	// }
+	.lax {
+		perspective: 1px;
+		height: 100vh;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+	.lax-layer {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		transform: translateZ(-1px) scale(2);
+		z-index: -1;
+	}
+	.lax-over {
+		background-color: white;
+		margin-top: 24em;
+	}
 
 	.overlay-visible {
 		h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
@@ -341,6 +341,12 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 			a {
 				pointer-events: auto;
 			}
+		}
+		.lax {
+			perspective: none;
+		}
+		.lax-layer {
+			transform: scale(1);
 		}
 	}
 }
