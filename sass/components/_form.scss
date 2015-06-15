@@ -1,0 +1,128 @@
+$buttonLoaderDotWidth: 4px;
+$buttonLoaderDotOffset: $buttonLoaderDotWidth/2;
+
+form {
+	input, textarea {
+		width: 100%;
+		display: block;
+		font-size: 1em;
+		font-family: $primaryFont;
+		padding: 0.25em 0.5em;
+		border: 0;
+		background-color: $halfWhite;
+		margin: 1em 0;
+		transition: box-shadow 250ms ease-in;
+		box-shadow: 0 0 16px -4px transparent;
+
+		&:focus {
+			outline: 0;
+			outline-offset: 0;
+			box-shadow: 0 3px 16px -4px $linkColor;
+		}
+	}
+	textarea {
+		height: 5em;
+	}
+
+	.button-container {
+		position: relative;
+		display:inline-block;
+		margin: 0 1em 1em 0;
+	}
+
+	.success-msg, .failure-msg {
+		color: $linkColor;
+		display: none;
+		opacity: 0;
+	}
+
+	&.loading {
+		button {
+			cursor: auto;
+			color: $linkColor;
+
+			.button-loader {
+				display: block;
+			}
+		}
+	}
+
+	&.success {
+		.success-msg {
+			display: inline-block;
+			animation: slideinleft 250ms ease-in 0s 1 normal forwards;
+		}
+	}
+	&.failure {
+		.failure-msg {
+			display: inline-block;
+			animation: slideinleft 250ms ease-in 0s 1 normal forwards;
+		}
+	}
+}
+
+button {
+	font-size: 1em;
+	cursor: pointer;
+	padding: 0.5em 1em;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	-ms-appearance: none;
+	appearance: none;
+	background-color: $linkColor;
+	border: 0;
+	color: white;
+	font-weight: 300;
+	font-family: $primaryFont;
+	transition: color 250ms ease-in 0s;
+
+	.button-loader {
+		display: none;
+		@include cover;
+
+		.one, .two, .three {
+			width: $buttonLoaderDotWidth;
+			height: $buttonLoaderDotWidth;
+			display: block;
+			position: absolute;
+			top: 50%;
+			margin: -$buttonLoaderDotOffset 0 0 -$buttonLoaderDotOffset;
+			background: white;
+			border-radius: 50%;
+		}
+
+		.one { 
+			left: 33%;
+			animation: buttonLoaderOne 1000ms linear infinite; 
+		}
+		.two { 
+			left: 50%;
+			animation: buttonLoaderTwo 1000ms linear infinite; 
+		}
+		.three { 
+			left: 66%;
+			animation: buttonLoaderThree 1000ms linear infinite; 
+		}
+	}
+}
+
+@keyframes buttonLoaderOne {
+	0% { opacity: 0 }
+	20% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
+@keyframes buttonLoaderTwo {
+	0% { opacity: 0 }
+	20% { opacity: 0 }
+	40% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
+@keyframes buttonLoaderThree {
+	0% { opacity: 0 }
+	40% { opacity: 0 }
+	60% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
