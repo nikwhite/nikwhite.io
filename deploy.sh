@@ -1,11 +1,11 @@
 #!/bin/bash
-grunt prod 
+npm prune
+npm update
 
 cp -f config/nikwhite.io /etc/nginx/sites-enabled/
 
-service nginx reload
+grunt prod 
 
-npm prune
-npm update
+service nginx reload
 
 forever restart sayhello.js || forever start sayhello.js
