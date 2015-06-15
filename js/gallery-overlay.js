@@ -2,10 +2,13 @@ function Gallery(options) {
 	this.el = options.root;
 	this.active = false;
 	this.activeImage = null;
+	this.activeTrigger = null;
 
 	this.el.addEventListener('click', function(e) {
 		if ( e.target.nodeName.toUpperCase() === 'A' ) {
 			e.preventDefault();
+
+			if ( e.target === this.activeTrigger ) return;
 
 			if ( !this.overlay ) {
 				this.createOverlay();
@@ -17,8 +20,18 @@ function Gallery(options) {
 
 			this.transitionImage(e.target.href);
 
+			this.toggleTrigger(e.target)
+
 		}
 	}.bind( this ));
+}
+
+Gallery.prototype.toggleTrigger = function (activator) {
+	if ( activator && activator.classList.contains('active') ) return
+
+	this.activeTrigger && this.activeTrigger.classList.remove('active')
+	this.activeTrigger = activator
+	activator && activator.classList.add('active')
 }
 
 Gallery.prototype.createOverlay = function () {
@@ -66,6 +79,7 @@ Gallery.prototype.removeOverlay = function () {
 
 	this.el.classList.remove('active-gallery');
 	this.overlay.classList.remove('visible');
+	this.toggleTrigger();
 
 	PubSub.publishSync('overlayHidden', this.el);
 	

@@ -17,11 +17,11 @@ $halfBlack: rgba(0,0,0,0.5);
 $linkColor: $pink;
 $linkColorHeader: darken($pink, 10%);
 $linkHover: saturate(darken($slate, 20%), 30%);
-
+$linkActive: saturate($slate, 30%);
 
 
 $headerbg: $slate;
-$headerGradTop: darken($slate, 10%);
+$headerGradTop: darken($slate, 12%);
 $headerGradBot: $slate;
 $headerText: white;
 $footerbg: lighten($slate, 10%);

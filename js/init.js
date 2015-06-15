@@ -28,10 +28,10 @@
 			lastLaxTop = 'translateY(' + laxLayer.getBoundingClientRect().top.toFixed(2) + 'px) scale(1)'
 		})
 		PubSub.subscribe('overlayVisible', function(msg, gallery){
-			laxLayer.style.transform = lastLaxTop
+			laxLayer.style.transform = laxLayer.style.webkitTransform = lastLaxTop
 		})
 		PubSub.subscribe('overlayHidden', function(msg, gallery){
-			laxLayer.style.transform = ''
+			laxLayer.style.transform = laxLayer.style.webkitTransform = ''
 		})
 	}
 
@@ -45,10 +45,9 @@
 
 		screenshotSections.forEach( function( section, i ) {
 			galleries.push( new Gallery({root: section}) )
-			//galleries[i];
 		})
-
 	}
 
 	window.addEventListener('DOMContentLoaded', init, false)
+	
 }())

@@ -15,7 +15,7 @@ img {
 
 header {
 	background: $headerGradTop;
-	background: linear-gradient(to bottom, $headerGradTop 0%,$headerGradBot 100%);
+	background: linear-gradient(to bottom, $headerGradTop 0%,$headerGradBot 24em);
 	color: white;
 	box-shadow: inset 0 -6px 6px -6px $halfBlack;
 
@@ -94,6 +94,9 @@ h2 {
 	&.in-face {
 		padding: 0;
 	}
+	&.no-touch {
+		background: white;
+	}
 }
 
 h3 {
@@ -161,6 +164,9 @@ p {
 	a {
 		margin: 0 0 0.5em 0.25em;
 		display: inline-block;
+		&.active {
+			color: $linkActive;
+		}
 	}
 
 	// &:before {
@@ -205,6 +211,26 @@ button {
 	color: white;
 	font-weight: 300;
 	font-family: $primaryFont;
+	transition: color 250ms ease-in 0s;
+
+	&:after, &:before {
+		content: '';
+		width: 5px;
+		height: 5px;
+		position: absolute;
+		display: block;
+		background:white;
+		opacity: 0;
+		transition: opacity 250ms ease-out 0s;
+	}
+	&:before {
+		top: 5px;
+		left: 5px;
+	}
+	&:after {
+		right: 5px;
+		bottom: 5px;
+	}
 }
 
 
@@ -229,6 +255,32 @@ form {
 	}
 	textarea {
 		height: 5em;
+	}
+
+	.button-container {
+		position: relative;
+		display:inline-block;
+	}
+
+	&.loading {
+		.button-container {
+			button {
+				cursor: auto;
+				color: $linkColor;
+
+				&:after, &:before {
+					opacity: 1;
+				}
+
+				&:before {
+					animation: buttonLoaderBefore 2000ms linear infinite;
+				}
+				&:after {
+					animation: buttonLoaderAfter 2000ms linear infinite;
+				}
+
+			}
+		}
 	}
 }
 
@@ -298,6 +350,7 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 
 	header {
 		padding: $facePadding $facePadding $facePadding*2;
+		min-height: 24em;
 	}
 
 	.headline {
@@ -311,6 +364,7 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	}
 
 	.lax {
+		-webkit-perspective: 1px;
 		perspective: 1px;
 		height: 100vh;
 		overflow-x: hidden;
@@ -322,24 +376,19 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 		right: 0;
 		bottom: 0;
 		left: 0;
+		-webkit-transform: translateZ(-1px) scale(2);
 		transform: translateZ(-1px) scale(2);
 		z-index: -1;
 		transition: position 400ms ease-in;
 	}
 	.lax-over {
-		background-color: white;
+		background: white;
 		margin-top: 24em;
 	}
 
 	.overlay-visible {
-		h1, h2, h3, h4, h5, h6, p, nav a, .screenshots:not(.active-gallery) {
-			// accelleration for scroll performance with blur
-			-webkit-transform: translate3d(0,0,0);
-			transform: translate3d(0,0,0);
-
-			-webkit-filter: blur(6px);
-			-moz-filter: blur(6px);
-			filter: blur(6px);
+		h1, h2, h3, p, nav a, .screenshots:not(.active-gallery), footer, .headline {
+			@include bgBlur(6px);
 			pointer-events: none;
 		}
 
@@ -350,14 +399,12 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 			}
 		}
 		.lax {
+			-webkit-perspective: none;
 			perspective: none;
 		}
 		.lax-layer {
+			-webkit-transform: scale(1);
 			transform: scale(1);
-		}
-
-		footer {
-			@include bgBlur(6px);
 		}
 	}
 }
@@ -402,4 +449,19 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	.no-touch {
 		display: none;
 	}
+}
+
+@keyframes buttonLoaderBefore {
+	0% { transform: translate(0, 0) }
+	33% { transform: translate(3.5em, 0) }
+	50% { transform: translate(3.5em, 1.2em) }
+	83% { transform: translate(0, 1.2em) }
+	100% { transform: translate(0, 0) }		
+}
+@keyframes buttonLoaderAfter {
+	0% { transform: translate(0, 0) }
+	33% { transform: translate(-3.5em, 0) }
+	50% { transform: translate(-3.5em, -1.2em) }
+	83% { transform: translate(0, -1.2em) }
+	100% { transform: translate(0, 0) }		
 }
