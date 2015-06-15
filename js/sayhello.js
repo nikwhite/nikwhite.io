@@ -15,7 +15,7 @@ $(function () {
 		toggleSuccess(false)
 		toggleFailure(false)
 
-		$.post( 'http://localhost:8080/sayhello', $(form).serialize() )
+		$.post( form.action, $(form).serialize() )
 		 .then( function success() {
 
 		 	toggleLoading(false)
@@ -25,7 +25,7 @@ $(function () {
 
 		 	toggleLoading(false)
 		 	toggleFailure(true)
-		 	
+
 		 })
 	}
 
