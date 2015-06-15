@@ -388,10 +388,6 @@ var Cube = function(){
 				x: touches.pageX,
 				y: touches.pageY
 			}
-
-			// track the total change
-			totalChange.x += change.x;
-			totalChange.y += change.y;
 			
 			// determine the direction - one time 
 			if ( !direction ) {
@@ -426,6 +422,10 @@ var Cube = function(){
 				bottomFace.rotateX(delta);
 				
 			}
+
+			// track the total change
+			totalChange.x += change.x;
+			totalChange.y += change.y;
 				
 		},
 		
