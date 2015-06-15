@@ -1,6 +1,6 @@
 grunt prod 
 
-cp config/nikwhite.io /etc/nginx/sites-enabled/
+cp -f config/nikwhite.io /etc/nginx/sites-enabled/
 
 service nginx restart
 
