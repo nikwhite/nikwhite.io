@@ -1,7 +1,6 @@
 $(function () {
 
 	var loading = false;
-	var success = false;
 	var form = document.getElementById('sayhello')
 
 	function handleSubmit(e) {
@@ -11,31 +10,31 @@ $(function () {
 
 		if ( loading ) return
 		
-		toggleLoading(true)
+		loading = toggleLoading(true)
 		toggleSuccess(false)
 		toggleFailure(false)
 
 		$.post( form.action, $(form).serialize() )
 		 .then( function success() {
 
-		 	toggleLoading(false)
+		 	loading = toggleLoading(false)
 		 	toggleSuccess(true)
 
 		 }, function failure() {
 
-		 	toggleLoading(false)
+		 	loading = toggleLoading(false)
 		 	toggleFailure(true)
 
 		 })
 	}
 
-	function toggle(class, el, toggle) {
-		if (toggle && !loading) {
-			loading = true;
-			form.classList.add('loading');
+	function toggle(classname, el, toggle) {
+		if (toggle) {
+			form.classList.add(classname);
+			return true
 		} else {
-			loading = false;
-			form.classList.remove('loading');
+			form.classList.remove(classname);
+			return false
 		}
 	}
 

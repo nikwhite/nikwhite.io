@@ -168,15 +168,6 @@ p {
 			color: $linkActive;
 		}
 	}
-
-	// &:before {
-	// 	content: "Screencaptures";
-	// 	font-size: 0.25em;
-	// 	position: absolute;
-	// 	position: a;
-	// 	right: 0;
-	// 	top: -3em;
-	// }
 }
 
 footer {
@@ -198,91 +189,6 @@ footer {
 }
 
 
-button {
-	font-size: 1em;
-	cursor: pointer;
-	padding: 0.5em 1em;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	-ms-appearance: none;
-	appearance: none;
-	background-color: $linkColor;
-	border: 0;
-	color: white;
-	font-weight: 300;
-	font-family: $primaryFont;
-	transition: color 250ms ease-in 0s;
-
-	&:after, &:before {
-		content: '';
-		width: 5px;
-		height: 5px;
-		position: absolute;
-		display: block;
-		background:white;
-		opacity: 0;
-		transition: opacity 250ms ease-out 0s;
-	}
-	&:before {
-		top: 5px;
-		left: 5px;
-	}
-	&:after {
-		right: 5px;
-		bottom: 5px;
-	}
-}
-
-
-form {
-	input, textarea {
-		width: 100%;
-		display: block;
-		font-size: 1em;
-		font-family: $primaryFont;
-		padding: 0.25em 0.5em;
-		border: 0;
-		background-color: $halfWhite;
-		margin: 1em 0;
-		transition: box-shadow 250ms ease-in;
-		box-shadow: 0 0 16px -4px transparent;
-
-		&:focus {
-			outline: 0;
-			outline-offset: 0;
-			box-shadow: 0 3px 16px -4px $linkColor;
-		}
-	}
-	textarea {
-		height: 5em;
-	}
-
-	.button-container {
-		position: relative;
-		display:inline-block;
-	}
-
-	&.loading {
-		.button-container {
-			button {
-				cursor: auto;
-				color: $linkColor;
-
-				&:after, &:before {
-					opacity: 1;
-				}
-
-				&:before {
-					animation: buttonLoaderBefore 2000ms linear infinite;
-				}
-				&:after {
-					animation: buttonLoaderAfter 2000ms linear infinite;
-				}
-
-			}
-		}
-	}
-}
 
 @media screen and ( max-width: $small ) {
 
@@ -440,8 +346,6 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	display: none;
 }
 
-
-
 .touch  {
 	.touch-only {
 		display: inherit;
@@ -449,19 +353,4 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	.no-touch {
 		display: none;
 	}
-}
-
-@keyframes buttonLoaderBefore {
-	0% { transform: translate(0, 0) }
-	33% { transform: translate(3.5em, 0) }
-	50% { transform: translate(3.5em, 1.2em) }
-	83% { transform: translate(0, 1.2em) }
-	100% { transform: translate(0, 0) }		
-}
-@keyframes buttonLoaderAfter {
-	0% { transform: translate(0, 0) }
-	33% { transform: translate(-3.5em, 0) }
-	50% { transform: translate(-3.5em, -1.2em) }
-	83% { transform: translate(0, -1.2em) }
-	100% { transform: translate(0, 0) }		
 }

@@ -1,8 +1,9 @@
+#!/bin/bash
 grunt prod 
 
 cp -f config/nikwhite.io /etc/nginx/sites-enabled/
 
-service nginx restart
+service nginx reload
 
 npm prune
 npm update
