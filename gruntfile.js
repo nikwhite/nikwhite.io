@@ -26,7 +26,7 @@ module.exports = function(grunt) {
 			},
 			prod: {
 				src: ['js/*.js'],
-				dest: dirConfig.distPath + 'js/nikwhite.min.js',
+				dest: dirConfig.distPath + 'js/nikwhite.js',
 				options: {
 					compress: {},
 					mangle:   true,
