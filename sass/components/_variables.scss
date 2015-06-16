@@ -16,18 +16,18 @@ $halfBlack: rgba(0,0,0,0.5);
 
 $linkColor: $pink;
 $linkColorHeader: darken($pink, 10%);
-$linkHover: saturate(darken($slate, 20%), 30%);
-$linkActive: saturate($slate, 30%);
-
+$linkHover: saturate(darken($slate, 20%), 50%);
+$linkActive: $linkHover;
+$headerText: white;
 
 $headerbg: $slate;
 $headerGradTop: darken($slate, 12%);
 $headerGradBot: $slate;
-$headerText: white;
 $footerbg: lighten($slate, 10%);
 $lightTextShadow: 2px 1px 0 lighten($headerGradTop, 10%);
 $dividerColor: desaturate($linkHover, 20%);
 $placeholder: $headerGradTop;
+$inputBg: lighten($slate, 30%);
 // Gallery stuff
 $imgTransition: all 400ms cubic-bezier(.25,.68,.38,1.00);
 $summaryTransition: all 400ms ease-in;
