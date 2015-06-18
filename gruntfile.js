@@ -14,6 +14,20 @@ module.exports = function(grunt) {
 			
 		},
 
+		postcss: {
+			options: {
+				map: true,
+				processors: [
+					require('autoprefixer-core')({
+						browsers: ['last 3 versions']
+					})
+				]
+			},
+			dist: {
+				src: 'dist/css/*.css'
+			}
+		},
+
 		uglify: {
 			dev: {
 				src: ['js/*.js'],
@@ -57,11 +71,11 @@ module.exports = function(grunt) {
 			},
 			sass: {
 				files: ['sass/**'],
-				tasks: ['sass', 'copy']
+				tasks: ['sass', 'postcss']
 			},
 			js: {
 				files: ['js/*.js'],
-				tasks: ['uglify:dev', 'copy']
+				tasks: ['uglify:dev']
 			}
 		},
 
@@ -70,7 +84,7 @@ module.exports = function(grunt) {
 				options: {
 					port: 8000,
 					base: 'dist',
-					hostname: 'localhost',
+					hostname: '0.0.0.0',
 					logger: 'dev',
 					middleware: function (connect, options, defaultMiddleware) {
 						return [
@@ -81,7 +95,7 @@ module.exports = function(grunt) {
 				proxies: [
 					{
 						context:'/sayhello',
-						host: 'localhost',
+						host: '0.0.0.0',
 						port: 8080,
 						secure: false,
 						rewrite: {
@@ -100,11 +114,13 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-connect-proxy');
+	grunt.loadNpmTasks('grunt-postcss');
 
 	grunt.registerTask('default', [
 		'sass',
 		'uglify:dev',
 		'copy',
+		'postcss',
 		'configureProxies:server',
 		'connect',
 		'watch'
@@ -112,6 +128,7 @@ module.exports = function(grunt) {
 	
 	grunt.registerTask('prod', [
 		'sass',
+		'postcss',
 		'uglify:prod',
 		'copy'
 	]);

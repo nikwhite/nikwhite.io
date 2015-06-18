@@ -6,11 +6,8 @@
 	}
 }
 @mixin bgBlur($amt) {
-	-webkit-filter: blur($amt);
-	-moz-filter: blur($amt);
 	filter: blur($amt);
 	// accelleration for scroll performance with blur
-	-webkit-transform: translate3d(0,0,0);
 	transform: translate3d(0,0,0);
 }
 @mixin cover {

@@ -96,6 +96,9 @@ h2 {
 	}
 	&.no-touch {
 		background: white;
+		position: relative;
+		top: -1em;
+		margin-bottom: -1em;
 	}
 }
 
@@ -203,35 +206,24 @@ footer {
 	}
 }
 
-h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
-	-webkit-transition-property: filter, -webkit-filter;
-	-webkit-transition-duration: 400ms;
-	-webkit-transition-timing-function: ease-in; 
-	transition-property: filter, -moz-filter, -webkit-filter;
+h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery), footer, .headline {
+	transition-property: -webkit-filter, filter;
 	transition-duration: 400ms;
 	transition-timing-function: ease-in; 
 }
 
 .overlay-visible {
 	overflow: hidden;
-
-	#cubeContainer {
-		position:static;
-	}
-
-	.avatar {
-		@include bgBlur(6px);
-	}
 }
+
 .touch {
 	.overlay-visible {
 		#cubeContainer {
-			-webkit-transform-style: flat;
 			transform-style: flat;
+			position: static;
 		}
 
 		.face.gallery-active-face {
-			-webkit-transform: initial !important;
 			transform: initial !important;
 		}
 	}
@@ -256,7 +248,6 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	}
 
 	.lax {
-		-webkit-perspective: 1px;
 		perspective: 1px;
 		height: 100vh;
 		overflow-x: hidden;
@@ -268,7 +259,7 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 		right: 0;
 		bottom: 0;
 		left: 0;
-		-webkit-transform: translateZ(-1px) scale(2);
+
 		transform: translateZ(-1px) scale(2);
 		z-index: -1;
 		transition: position 400ms ease-in;
@@ -279,7 +270,9 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	}
 
 	.overlay-visible {
-		h1, h2, h3, p, nav a, .screenshots:not(.active-gallery), footer, .headline {
+		h1, h2, h3, p, nav a, 
+		.screenshots:not(.active-gallery), 
+		footer, .headline, .avatar {
 			@include bgBlur(6px);
 			pointer-events: none;
 		}
@@ -291,11 +284,10 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 			}
 		}
 		.lax {
-			-webkit-perspective: none;
 			perspective: none;
 		}
 		.lax-layer {
-			-webkit-transform: scale(1);
+	
 			transform: scale(1);
 		}
 	}
@@ -307,9 +299,6 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery) {
 	h1, h2, h3, h4, h5, h6, p, nav a, .screenshots {
 		opacity: 1;
 		text-shadow: 0 0 0 transparent;
-		-webkit-transition-property: text-shadow, opacity;
-		-webkit-transition-duration: 400ms;
-		-webkit-transition-timing-function: ease-in; 
 		transition-property: text-shadow, opacity;
 		transition-duration: 400ms;
 		transition-timing-function: ease-in; 
