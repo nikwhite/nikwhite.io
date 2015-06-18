@@ -1,20 +1,30 @@
 # nikwhite.io
-## Env setup
+## Server setup
 
-### nginx config
+Server needs:
+* Node.js
+* nginx
+* Key-based authenticaton
 
-```bash
-cp config/nikwhite.io /etc/nginx/sites-enabled
-```
-
-### Node app
-
-```bash
-npm install -g forever
-```
-
-#### In .bashrc:
+In .bashrc, add:
 
 ```bash
 export MAILER_PASS="[the password for sending emails]"
+```
+
+Then do:
+
+```bash
+$ npm install -g forever
+$ mkdir -p /data/www
+$ git clone git@github.com:nikwhite/nikwhite.io.git /data/www/nikwhite.io
+$ /data/www/nikwhite.io/deploy.sh
+```
+
+## Dev machine setup
+
+In .bash_profile:
+
+```bash
+alias nikwhite-deploy="ssh [user]@[ip] 'cd /data/www/nikwhite.io && git pull && ./deploy.sh'""
 ```
