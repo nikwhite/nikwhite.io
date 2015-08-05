@@ -1,12 +1,9 @@
 
 
 .gallery-overlay {
+	@include cover;
 	position: fixed; 
-	top: 0;
-	left: 0;
-	width: 100%;
 	min-height: 100%;
-	height: 100%;
 	overflow-y: scroll;
 	background: rgba(0,0,0,0);
 	transition: $delayedTransition;
@@ -17,7 +14,7 @@
 		background-color:rgba(0, 0, 0, 0);
 		background-image: radial-gradient(center center, ellipse farthest-corner, rgba(0, 0, 0, 0), $halfBlack 100%);
 		*/
-		.inner {
+		.gallery-inner {
 			img {
 				opacity: 1;
 			}
@@ -28,20 +25,22 @@
 		}
 	}
 	
-	.inner {
+	.gallery-inner {
 		text-align: center;
-		padding: 3em 12.5em 1.625em 1.625em;
+		margin: 0;
+		padding: 1.625em 0 1.625em 1.625em;
 
 		.img-wrap {
 			display: block;
 			position: relative;
+			@include clearfix;
 		}
 
 		img { 
 			display: block;
-			margin: 0 auto;
 			opacity: 0;
-			box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+			float: right;
+			box-shadow: 0 4px 6px $halfBlack;
 			transition: $imgTransition;
 			transform: translateX(0) $imgZ;
 
@@ -52,7 +51,6 @@
 
 			&.out {
 				position: absolute;
-				left: 0;
 				right: 0;
 				transform: translateY(100px) $imgZ;
 			}

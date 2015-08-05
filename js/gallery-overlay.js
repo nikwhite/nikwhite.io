@@ -43,7 +43,7 @@ Gallery.prototype.createOverlay = function () {
 
 	root.className = 'gallery-overlay';
 	close.className = 'icon-cross close';
-	inner.className = 'inner';
+	inner.className = 'gallery-inner';
 	imgWrap.className = 'img-wrap';
 
 	frag.appendChild(close);
@@ -53,6 +53,7 @@ Gallery.prototype.createOverlay = function () {
 
 	this.overlayFragment = frag;
 	this.overlay = root;
+	this.inner = inner;
 	this.imgWrap = imgWrap;
 	this.close = close;
 	this.$overlay = $(root);
@@ -90,6 +91,9 @@ Gallery.prototype.showOverlay = function () {
 	PubSub.publishSync('beforeOverlayVisible', this.el);
 
 	this.el.classList.add('active-gallery');
+	
+	this.inner.style.width = this.el.getBoundingClientRect().left + 'px';
+
 	document.body.classList.add('overlay-visible');
 
 	document.body.appendChild(this.overlayFragment);
