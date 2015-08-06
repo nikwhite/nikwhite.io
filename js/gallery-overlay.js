@@ -76,6 +76,8 @@ Gallery.prototype.removeOverlay = function () {
 
 	this.overlay.addEventListener( this.transitionEvent, onEnd );
 
+	window.removeEventListener('resize', this._boundResize);
+
 	document.body.classList.remove('overlay-visible');
 
 	this.el.classList.remove('active-gallery');
@@ -92,7 +94,9 @@ Gallery.prototype.showOverlay = function () {
 
 	this.el.classList.add('active-gallery');
 	
-	this.inner.style.width = this.el.getBoundingClientRect().left + 'px';
+	this.resizeOverlay();
+	this._boundResize = this._boundResize || this.resizeOverlay.bind(this);
+	window.addEventListener('resize', this._boundResize)
 
 	document.body.classList.add('overlay-visible');
 
@@ -105,13 +109,16 @@ Gallery.prototype.showOverlay = function () {
 	}.bind(this), 20);
 
 	PubSub.publishSync('overlayVisible', this.el);
-	
+};
+
+Gallery.prototype.resizeOverlay = function () {
+	this.inner.style.width = this.el.getBoundingClientRect().left + 'px';
 };
 
 Gallery.prototype.bindEvents = function () {
 	this.boundRemoveFn = this.removeOverlay.bind(this);
 	this.close.addEventListener('click', this.boundRemoveFn);
-}
+};
 
 Gallery.prototype.transitionImage = function (src) {
 
