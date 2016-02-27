@@ -1,0 +1,61 @@
+$loaderDotWidth: 0.75em;
+$loaderDotOffset: $loaderDotWidth/2;
+.loader {
+	display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+
+	@include cover;
+
+	height: 100vh;
+
+	&.active {
+		display: flex;
+	}
+
+	.one, .two, .three {
+		width: $loaderDotWidth;
+		height: $loaderDotWidth;
+		background: $pink;
+		border-radius: 50%;
+		margin: 0.5em;
+		box-shadow: 0px 0px 8px rgba(0,0,0,0.5);
+		border: 1px solid white;
+	}
+
+	.one { 
+		left: 33%;
+		animation: loaderOne 1000ms linear infinite; 
+	}
+	.two { 
+		left: 50%;
+		animation: loaderTwo 1000ms linear infinite; 
+	}
+	.three { 
+		left: 66%;
+		animation: loaderThree 1000ms linear infinite; 
+	}
+}
+
+
+@keyframes loaderOne {
+	0% { opacity: 0 }
+	20% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
+@keyframes loaderTwo {
+	0% { opacity: 0 }
+	20% { opacity: 0 }
+	40% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
+@keyframes loaderThree {
+	0% { opacity: 0 }
+	40% { opacity: 0 }
+	60% { opacity: 1 }
+	80% { opacity: 1 }
+	100% { opacity: 0 }		
+}
