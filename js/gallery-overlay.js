@@ -1,3 +1,5 @@
+var ACTIVE_CLASS = 'active';
+
 function Gallery(options) {
 	this.el = options.root;
 	this.active = false;
@@ -27,11 +29,12 @@ function Gallery(options) {
 }
 
 Gallery.prototype.toggleTrigger = function (activator) {
-	if ( activator && activator.classList.contains('active') ) return
+	if ( activator && activator.classList.contains(ACTIVE_CLASS) ) return
 
-	this.activeTrigger && this.activeTrigger.classList.remove('active')
+	// Swap active trigger classes
+	this.activeTrigger && this.activeTrigger.classList.remove(ACTIVE_CLASS)
 	this.activeTrigger = activator
-	activator && activator.classList.add('active')
+	activator && activator.classList.add(ACTIVE_CLASS)
 }
 
 Gallery.prototype.createOverlay = function () {
@@ -40,22 +43,27 @@ Gallery.prototype.createOverlay = function () {
 	var inner = document.createElement('div');
 	var imgWrap = document.createElement('div');
 	var close = document.createElement('a');
+	var loader = document.createElement('div');
 
 	root.className = 'gallery-overlay';
 	close.className = 'icon-cross close';
 	inner.className = 'gallery-inner';
 	imgWrap.className = 'img-wrap';
+	loader.className = 'loader';
+	loader.innerHTML = '<div class="one"></div><div class="two"></div><div class="three"></div>';
 
 	frag.appendChild(close);
 	frag.appendChild(root);
 	root.appendChild(inner);
 	inner.appendChild(imgWrap);
+	imgWrap.appendChild(loader);
 
 	this.overlayFragment = frag;
 	this.overlay = root;
 	this.inner = inner;
 	this.imgWrap = imgWrap;
 	this.close = close;
+	this.loader = loader;
 	this.$overlay = $(root);
 }
 
@@ -131,6 +139,8 @@ Gallery.prototype.transitionImage = function (src) {
 	function onload() {
 		img.onload = null;
 		img.classList.remove('in');
+
+		this.hideLoader();
 		
 		if ( this.activeImage ) {
 			var currentImg = this.activeImage;
@@ -150,8 +160,13 @@ Gallery.prototype.transitionImage = function (src) {
 
 	function addNewImage() {
 		if (img.complete) {
+
 			setTimeout(onload.bind(this), 50);
+		
 		} else {
+
+			this.showLoader();
+			
 			img.onload = function(){
 				setTimeout(onload.bind(this), 50);
 			}.bind(this);
@@ -168,6 +183,14 @@ Gallery.prototype.transitionImage = function (src) {
 		addNewImage.call(this);
 	}
 
+};
+
+Gallery.prototype.showLoader = function () {
+	this.loader.classList.add(ACTIVE_CLASS);
+};
+
+Gallery.prototype.hideLoader = function () {
+	this.loader.classList.remove(ACTIVE_CLASS);
 };
 
 Gallery.prototype.transitionEvent = (function () {
