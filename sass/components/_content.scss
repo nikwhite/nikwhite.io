@@ -265,7 +265,6 @@ h1, h2, h3, h4, h5, h6, p, nav a, .avatar, .screenshots:not(.active-gallery), fo
 		left: 0;
 
 		transform: translateZ(-1px) scale(2);
-		z-index: -1;
 		transition: position 400ms ease-in;
 	}
 	.lax-over {
