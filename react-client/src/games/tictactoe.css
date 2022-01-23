@@ -1,5 +1,7 @@
 .ticTacToeBoard {
-    width: 100%;
+    font-size: 24px;
+    width: 9em;
+    margin: 0 auto;
 }
 .ticTacToeBoard tr {
     display: flex; 
@@ -10,10 +12,11 @@
     border-top: 0
 }
 .ticTacToeBoard td {
-    width: 33.332%;
+    width: 3em;
+    height: 2em;
     border-left: 2px solid black;
-    min-height: 2em;
     text-align: center;
+    padding: 0.325em;
 }
 .ticTacToeBoard td:first-of-type {
     border-left: none;

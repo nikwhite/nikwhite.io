@@ -102,7 +102,8 @@ class TicTacToe extends React.Component {
   render() {
     return (
       <div className="ticTacToe">
-        <p>
+        <h3>TicTacToe</h3>
+        <p className="ticTacToeControls">
           <button onClick={this.resetBoard}>Reset</button>
           {this.state.winner &&
             <span>Winner: {this.state.winner}</span> 
@@ -115,8 +116,10 @@ class TicTacToe extends React.Component {
             <tr key={rowIndex}>
               {row.map((col, colIndex) => 
                 <td 
-                  key={`${rowIndex},${colIndex}`}
-                  onClick={e => this.activate(rowIndex,colIndex)}>{col}</td>
+                  key={[rowIndex,colIndex].join()}
+                  onClick={e => this.activate(rowIndex,colIndex)}>
+                    {col}
+                </td>
               )}
             </tr>
           )}

@@ -38,8 +38,6 @@ function gameBoardFactory() {
   return emptyGameBoard
 }
 
-const EMPTY_STARTING_BOARD = gameBoardFactory()
-
 function getLowestEmptyNode(board, col) {
   let row = board.length - 1
   //bottom up simpler than top-down and back-track
@@ -119,9 +117,14 @@ function getWinners(node) {
 }
 
 function Connect4() {
-  const [board, setBoard] = useState(EMPTY_STARTING_BOARD)
+  const [board, setBoard] = useState(gameBoardFactory())
   const [turn, setTurn] = useState(PINK)
   const [winners, setWinners] = useState([])
+
+  function resetBoard() {
+    setBoard(gameBoardFactory())
+    setWinners([])
+  }
 
   function handleClick(column){
     if (winners.length) return
@@ -153,6 +156,8 @@ function Connect4() {
   return (
     <div className="connect4board">
       <h3>Connect4</h3>
+      <button onClick={resetBoard}>Reset</button>
+      
       {board.map((row, i) => (
         <div className="row" key={'c4,'+i}>
           {row.map((node, col) => (
