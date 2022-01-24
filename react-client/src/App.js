@@ -1,14 +1,14 @@
 import './App.css'
 import TicTacToe from './games/tictactoe'
 import Connect4 from './games/connect4'
+import IconLink from './components/iconLink'
 
 function App() {
   return (
     <div className="App">
       <header className="App-header container">
-        <h1>
-          Nik White <br />
-          <span>Software Engineer, Polymath, Autodidact, Neurodivergent, INTP</span>
+        <h1>Nik White<br />
+          <span>Software Engineer, Polymath, Autodidact, INTP</span>
         </h1>
       </header>
       <section className="container">
@@ -25,6 +25,13 @@ function App() {
           I also provided support and mentorship to over 500 engineers building 
           apps on the platform. I left in mid-2020 and I'm now actively looking for new opportunities.
         </p>
+        <ul className="onlineLinks">
+          <li><IconLink icon="linkedin" url="https://www.linkedin.com/in/nik-white-64631740/" /></li>
+          <li><IconLink icon="github" url="https://github.com/nikwhite" /></li>
+          <li><IconLink icon="codepen" url="https://codepen.io/nikwhite/pens/public" /></li>
+          <li><IconLink icon="imgur" url="https://imgur.com/user/nikwhite" /></li>
+          
+        </ul>
       </section>
       <section className="container">
         <h2>Games</h2>

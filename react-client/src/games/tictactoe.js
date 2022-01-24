@@ -1,6 +1,7 @@
 import './tictactoe.css'
 import React from 'react'
 
+const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/tictactoe.js'
 const X = 'X'
 const O = 'O'
 const diagLeft =  [[0,0], [1,1], [2,2]]
@@ -102,13 +103,19 @@ class TicTacToe extends React.Component {
   render() {
     return (
       <div className="ticTacToe">
-        <h3>TicTacToe</h3>
-        <p className="ticTacToeControls">
-          <button onClick={this.resetBoard}>Reset</button>
-          {this.state.winner &&
-            <span>Winner: {this.state.winner}</span> 
-          }  
-        </p>
+        <h3>TicTacToe
+          <a 
+            className="gh-link" 
+            href={GH_URL}
+            target="_blank"
+            rel="noreferrer">
+            <i className="icon-github"></i>
+          </a>
+        </h3>
+        <button onClick={this.resetBoard}>Reset</button>
+        {this.state.winner &&
+          <span>Winner: {this.state.winner}</span> 
+        }  
         
         <table className="ticTacToeBoard">
           <tbody>

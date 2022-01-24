@@ -1,0 +1,65 @@
+
+@font-face {
+    font-family: 'icomoon';
+    src:  url('icomoon.eot?d0ywkp');
+    src:  url('icomoon.eot?d0ywkp#iefix') format('embedded-opentype'),
+      url('icomoon.ttf?d0ywkp') format('truetype'),
+      url('icomoon.woff?d0ywkp') format('woff'),
+      url('icomoon.svg?d0ywkp#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+  
+  [class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-bitbucket:before {
+    content: "\e900";
+    color: #0052cc;
+  }
+  .icon-chase:before {
+    content: "\e901";
+    color: #117aca;
+  }
+  .icon-codepen:before {
+    content: "\e902";
+  }
+  .icon-github:before {
+    content: "\e903";
+  }
+  .icon-gmail:before {
+    content: "\e904";
+    color: #d14836;
+  }
+  .icon-imgur:before {
+    content: "\e905";
+    color: #1bb76e;
+  }
+  .icon-linkedin:before {
+    content: "\e906";
+    color: #0077b5;
+  }
+  .icon-reddit:before {
+    content: "\e907";
+    color: #ff4500;
+  }
+  .icon-steam:before {
+    content: "\e908";
+  }
+  .icon-twitter:before {
+    content: "\e909";
+    color: #1da1f2;
+  }
+  

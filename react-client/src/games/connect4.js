@@ -1,14 +1,17 @@
 import React, {useState} from 'react'
 import './connect4.css'
 
+const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/connect4.js'
+
 function BoardNode(row, col) {
     this.row = row
     this.col = col
     this.color = ''
     this.sameColorNeighbors = {
-        // this way, +/- 4 results in a straight line
+        // store references to same-color neighbors
         // when position < 4, compliment = position + 4
         // when position >= 4, compliment = position - 4
+        // this way, +/- 4 results in a straight line
         0: null, 1: null, 2: null, 
         7: null, /*node*/ 3: null, 
         6: null, 5: null, 4: null
@@ -155,7 +158,15 @@ function Connect4() {
   
   return (
     <div className="connect4board">
-      <h3>Connect4</h3>
+      <h3>Connect4
+        <a 
+          className="gh-link" 
+          href={GH_URL}
+          target="_blank"
+          rel="noreferrer">
+          <i className="icon-github"></i>
+        </a>
+      </h3>
       <button onClick={resetBoard}>Reset</button>
       
       {board.map((row, i) => (
