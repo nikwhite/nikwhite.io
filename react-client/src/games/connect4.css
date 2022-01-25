@@ -1,19 +1,19 @@
 .connect4board .row {
     background-color: gray;
     display: flex;
-    width: 70vh;
+    width: 100%;
     margin: 0 auto;
 }
 
 .connect4board .slot {
     box-sizing: border-box;
     border: 2px solid gray;
-    border-radius: 5vh;
+    border-radius: 100%;
     border-width: 2px;
     background-color: white;
     overflow: hidden;
-    height: 10vh;
-    width: 10vh;
+    width: calc(1/7 * 100%);
+    aspect-ratio: 1;
 }
 
 .connect4board .slot.winner {
@@ -22,13 +22,11 @@
     z-index: 2;
 }
 
-.connect4board .pink-token {
+.connect4board [class$=token] {
     background-color: #fa8acf;
-    height: 10vh;
-    width: 10vh;
+    aspect-ratio: 1;
+    width: 100%;
 }
 .connect4board .blue-token {
     background-color: #60d8e6;
-    height: 10vh;
-    width: 10vh;
 }

@@ -1,0 +1,25 @@
+.resetButton {
+  appearance: none;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 0.25em;
+  padding: 0.5em 1em;
+  margin: 0.5em 0;
+  cursor: pointer;
+  transition: background-color 100ms ease-out;
+  transition: box-shadow 50ms ease-out;
+}
+
+.resetButton:hover {
+    background-color: #e9e9e9;
+    box-shadow: 0 2px 8px -4px black
+}
+
+.resetButton:focus {
+    box-shadow: 0 2px 8px -4px black
+}
+
+.resetButton:active {
+    background-color: #ccc;
+    box-shadow: 0 0 3px -1px black;
+}

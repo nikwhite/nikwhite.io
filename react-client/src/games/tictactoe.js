@@ -1,5 +1,7 @@
 import './tictactoe.css'
 import React from 'react'
+import IconLink from '../components/iconLink'
+import ResetButton from '../components/resetButton'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/tictactoe.js'
 const X = 'X'
@@ -103,20 +105,20 @@ class TicTacToe extends React.Component {
   render() {
     return (
       <div className="ticTacToe">
-        <h3>TicTacToe
-          <a 
-            className="gh-link" 
-            href={GH_URL}
+        <h3>
+          <IconLink 
+            className="gh-link"
+            icon="github"
+            url={GH_URL}
             target="_blank"
-            rel="noreferrer">
-            <i className="icon-github"></i>
-          </a>
+            rel="noreferrer" />
+            TicTacToe
         </h3>
-        <button onClick={this.resetBoard}>Reset</button>
-        {this.state.winner &&
-          <span>Winner: {this.state.winner}</span> 
-        }  
-        
+        <div className="gameControls">
+          <ResetButton onClick={this.resetBoard} />
+          <br />
+          <span>{this.state.winner && `Winner: ${this.state.winner}`}</span> 
+        </div>
         <table className="ticTacToeBoard">
           <tbody>
           {this.state.board.map((row, rowIndex) => 

@@ -1,4 +1,6 @@
 import React, {useState} from 'react'
+import IconLink from '../components/iconLink'
+import ResetButton from '../components/resetButton'
 import './connect4.css'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/connect4.js'
@@ -158,16 +160,18 @@ function Connect4() {
   
   return (
     <div className="connect4board">
-      <h3>Connect4
-        <a 
-          className="gh-link" 
-          href={GH_URL}
+      <h3>
+        <IconLink 
+          className="gh-link"
+          icon="github"
+          url={GH_URL}
           target="_blank"
-          rel="noreferrer">
-          <i className="icon-github"></i>
-        </a>
+          rel="noreferrer" />
+          Connect4
       </h3>
-      <button onClick={resetBoard}>Reset</button>
+      <div className="gameControls">
+        <ResetButton onClick={resetBoard} />  
+      </div>
       
       {board.map((row, i) => (
         <div className="row" key={'c4,'+i}>
