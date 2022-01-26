@@ -36,11 +36,19 @@ const iconComponentMap = {
   imgur: ImgurIcon
 }
 
+const iconTitleMap = {
+  codepen: "Codepen.io",
+  linkedin: "LinkedIn",
+  github: 'Github',
+  imgur: 'Imgur'
+}
+
 function IconLink(props) {
   return (
     <a 
       className={`iconLink ${props.icon}-link`}
       href={props.url}
+      title={iconTitleMap[props.icon]}
       target="_blank"
       rel="noreferrer">
       {iconComponentMap[props.icon] && iconComponentMap[props.icon]()}

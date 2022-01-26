@@ -162,11 +162,8 @@ function Connect4() {
     <div className="connect4board">
       <h3>
         <IconLink 
-          className="gh-link"
           icon="github"
-          url={GH_URL}
-          target="_blank"
-          rel="noreferrer" />
+          url={GH_URL} />
           Connect4
       </h3>
       <div className="gameControls">

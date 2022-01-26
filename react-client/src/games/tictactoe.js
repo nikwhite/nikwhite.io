@@ -49,10 +49,8 @@ class TicTacToe extends React.Component {
   }
 
   isColWinner(col, char) {
-    let board = this.state.board
-    let values = board.map(row => row[col])
-
-    return this.allMatch(values, char)
+    let colValues = this.state.board.map(row => row[col])
+    return this.allMatch(colValues, char)
   }
 
   isRowWinner(row, char) {
@@ -107,11 +105,8 @@ class TicTacToe extends React.Component {
       <div className="ticTacToe">
         <h3>
           <IconLink 
-            className="gh-link"
             icon="github"
-            url={GH_URL}
-            target="_blank"
-            rel="noreferrer" />
+            url={GH_URL} />
             TicTacToe
         </h3>
         <div className="gameControls">

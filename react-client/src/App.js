@@ -2,6 +2,7 @@ import './App.css'
 import TicTacToe from './games/tictactoe'
 import Connect4 from './games/connect4'
 import IconLink from './components/iconLink'
+import DocIcon from './components/docIcon'
 
 function App() {
   return (
@@ -25,7 +26,14 @@ function App() {
           I also provided support and mentorship to over 500 engineers building 
           apps on the platform. I left in mid-2020 and I'm now actively looking for new opportunities.
         </p>
-        <h2>Find me online:</h2>
+        <p>
+          <a href="https://docs.google.com/document/d/e/2PACX-1vQ38zIjQZFxu1urpmR6HCwuRCa_DRHpKbgAAge2KRuiDrmn_MjbRwEJ57QzUWtTvPvihvLf7EKO94T9/pub"
+            target="_blank"
+            rel="noreferrer">
+            <DocIcon />View my resume
+          </a>
+        </p>
+        <h2>Find me online</h2>
         <ul className="onlineLinks">
           <li><IconLink icon="linkedin" url="https://www.linkedin.com/in/nik-white-64631740/" /></li>
           <li><IconLink icon="github" url="https://github.com/nikwhite" /></li>
