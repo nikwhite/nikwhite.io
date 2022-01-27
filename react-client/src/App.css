@@ -10,6 +10,18 @@ h3 > .iconLink {
   margin-right: 1em;
 }
 
+.App-header img {
+  float: left;
+  width: 125px;
+  border-radius: 100%;
+  margin: -1em 1em 0 0;
+}
+
+.App-header h1 {
+  margin: 1em 0 1.5em 0;
+  padding: 0.5em 0 0 0;
+}
+
 .onlineLinks {
   font-size: 2em;
   margin: 0;
