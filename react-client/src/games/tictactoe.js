@@ -15,9 +15,10 @@ class TicTacToe extends React.Component {
     this.state = {
       board: this.getCleanBoard(),
       turn: X,
-      winner: false 
+      winner: false,
+      winnerTypes: []
     }
-    this.activate = this.activate.bind(this)
+    this.handleClick = this.handleClick.bind(this)
     this.resetBoard = this.resetBoard.bind(this)
   }
 
@@ -31,9 +32,10 @@ class TicTacToe extends React.Component {
 
   resetBoard() {
     this.setState({
+      turn: this.state.winner === X ? O : X,
       board: this.getCleanBoard(),
       winner: false,
-      turn: this.state.winner === X ? O : X
+      winnerTypes: [],
     })
   }
 
@@ -57,50 +59,72 @@ class TicTacToe extends React.Component {
     return this.allMatch(this.state.board[row], char)
   }
 
-  isDiagWinner(char) { 
-    let diagLeftValues = diagLeft.map(([row, col]) => this.charAt(row,col))
-    let diagLeftWin = this.allMatch(diagLeftValues, char)
-
+  isDiagRightWinner(char) {
     let diagRightValues = diagRight.map(([row, col]) => this.charAt(row,col))
-    let diagRightWin = this.allMatch(diagRightValues, char)
-
-    return diagLeftWin || diagRightWin
+    return this.allMatch(diagRightValues, char)
   }
 
-  isWinner(fromRow, fromCol, char) {
-    let rowWinner = this.isRowWinner(fromRow, char)
-    let colWinner = this.isColWinner(fromCol, char)
-    let diagWinner = false
+  isDiagLeftWinner(char) {
+    let diagLeftValues = diagLeft.map(([row, col]) => this.charAt(row,col))
+    return this.allMatch(diagLeftValues, char)
+  }
+
+  isDiagSlot(row, col) {
     let max = this.state.board.length - 1
     let min = 0
 
-    // if we're checking from a corner or the center, need to check diagonal win condition
-    if (
-        ((fromRow === min || fromRow === max) && (fromCol === min || fromCol === max))
-        || (fromRow === 1 && fromCol === 1) 
-    ) {
-      diagWinner = this.isDiagWinner(char)
-    }
-    
-    return  (rowWinner || colWinner || diagWinner) ? char : false
+    return ((row === min || row === max) && (col === min || col === max)) || (row === 1 && col === 1)
   }
 
-  activate(row, col) {
+  getWinnerState(fromRow, fromCol, char) {
+    let rowWinner = this.isRowWinner(fromRow, char)
+    let colWinner = this.isColWinner(fromCol, char)
+    let diagWinner = false
+    //  a list of CSS classNames to apply the strikethrough visual for winning combos
+    let winnerTypes = []
+    if (rowWinner) {
+      winnerTypes.push(`row-${fromRow}-win`)
+    }
+    if (colWinner) {
+      winnerTypes.push(`col-${fromCol}-win`)
+    }
+    // if we're checking from a corner or the center, need to check diagonal win condition
+    if (this.isDiagSlot(fromRow, fromCol)) {
+      let diagRightWinner = this.isDiagRightWinner(char)
+      let diagLeftWinner = this.isDiagLeftWinner(char)
+
+      diagWinner = diagRightWinner || diagLeftWinner
+      diagRightWinner && winnerTypes.push('diag-right-win')
+      diagLeftWinner && winnerTypes.push('diag-left-win')
+    }
+
+    let winner = (rowWinner || colWinner || diagWinner) ? char : false
+    
+    return  {
+      winner,
+      winnerTypes
+    }
+  }
+
+  handleClick(row, col) {
     let board = this.state.board
     let nextTurn = this.state.turn === X ? O : X
     
     if (this.state.winner || board[row][col]) return;
 
     board[row][col] = this.state.turn
+
+    let winnerState = this.getWinnerState(row, col, this.state.turn)
     
     this.setState({
       turn: nextTurn,
       board: board,
-      winner: this.isWinner(row, col, this.state.turn)
+      ...winnerState
     })
   }
 
   render() {
+    let state = this.state
     return (
       <div className="ticTacToe">
         <h3>
@@ -110,18 +134,16 @@ class TicTacToe extends React.Component {
             TicTacToe
         </h3>
         <div className="gameControls">
-          <ResetButton onClick={this.resetBoard} />
-          <br />
-          <span>{this.state.winner && `Winner: ${this.state.winner}`}</span> 
+          <ResetButton onClick={() => this.resetBoard()} />
         </div>
         <table className="ticTacToeBoard">
-          <tbody>
-          {this.state.board.map((row, rowIndex) => 
+          <tbody className={state.winnerTypes.join(' ')}>
+          {state.board.map((row, rowIndex) => 
             <tr key={rowIndex}>
               {row.map((col, colIndex) => 
                 <td 
                   key={[rowIndex,colIndex].join()}
-                  onClick={e => this.activate(rowIndex,colIndex)}>
+                  onClick={() => this.handleClick(rowIndex,colIndex)}>
                     {col}
                 </td>
               )}
