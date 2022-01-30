@@ -25,24 +25,24 @@
 .ticTacToeBoard .col-0-win td:first-of-type,
 .ticTacToeBoard .col-1-win td:nth-of-type(2),
 .ticTacToeBoard .col-2-win td:nth-of-type(3) {
-    background: linear-gradient(to left, #ffffff 0%,#ffffff 48%,#000000 50%,#ffffff 52%,#ffffff 100%);
+    background: linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
 }
 
 .ticTacToeBoard .row-0-win tr:first-of-type,
 .ticTacToeBoard .row-1-win tr:nth-of-type(2),
 .ticTacToeBoard .row-2-win tr:nth-of-type(3) {
-    background: linear-gradient(to bottom, #ffffff 0%,#ffffff 48%,#000000 50%,#ffffff 52%,#ffffff 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
 }
 
 .ticTacToeBoard .diag-left-win tr:first-of-type td:first-of-type,
 .ticTacToeBoard .diag-left-win tr:nth-of-type(2) td:nth-of-type(2),
 .ticTacToeBoard .diag-left-win tr:nth-of-type(3) td:nth-of-type(3) {
-    background: linear-gradient(35deg, #ffffff 0%,#ffffff 48%,#000000 50%,#ffffff 52%,#ffffff 100%);
+    background: linear-gradient(35deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
 }
 
 .ticTacToeBoard .diag-right-win tr:first-of-type td:nth-of-type(3),
 .ticTacToeBoard .diag-right-win tr:nth-of-type(2) td:nth-of-type(2),
 .ticTacToeBoard .diag-right-win tr:nth-of-type(3) td:first-of-type {
-    background: linear-gradient(-35deg, #ffffff 0%,#ffffff 48%,#000000 50%,#ffffff 52%,#ffffff 100%);
+    background: linear-gradient(-35deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
 }
 
