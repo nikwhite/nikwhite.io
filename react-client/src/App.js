@@ -1,6 +1,7 @@
 import './App.css'
 import TicTacToe from './games/tictactoe'
 import Connect4 from './games/connect4'
+import Go from './games/go'
 import IconLink from './components/iconLink'
 import DocIcon from './components/docIcon'
 import portrait from './img/nik250.jpeg'
@@ -52,6 +53,9 @@ function App() {
         </div>
         <div className="game">
           <Connect4 />
+        </div>
+        <div className="game">
+          <Go />
         </div>
       </section>
     </div>

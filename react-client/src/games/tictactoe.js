@@ -1,7 +1,7 @@
 import './tictactoe.css'
 import React from 'react'
 import IconLink from '../components/iconLink'
-import ResetButton from '../components/resetButton'
+import Button from '../components/button'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/tictactoe.js'
 const X = 'X'
@@ -134,7 +134,7 @@ class TicTacToe extends React.Component {
             TicTacToe
         </h3>
         <div className="gameControls">
-          <ResetButton onClick={() => this.resetBoard()} />
+          <Button onClick={() => this.resetBoard()}>Reset</Button>
         </div>
         <table className="ticTacToeBoard">
           <tbody className={state.winnerTypes.join(' ')}>

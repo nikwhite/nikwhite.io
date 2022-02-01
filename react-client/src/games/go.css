@@ -1,0 +1,59 @@
+.goRow {
+    display: flex;
+}
+.goLiberty {
+    position: relative;
+    aspect-ratio: 1;
+    flex-grow: 1;
+    width: 100%;
+    background: 
+        linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 48.1%,rgba(0,0,0,1) 51.9%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%),
+        linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 48.1%,rgba(0,0,0,1) 51.9%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
+}
+
+/* Covers the ends of the board lines around the edge */
+.goLiberty:after,
+.goLiberty:before {
+    content: ' ';
+    width: 48%;
+    position: absolute;
+    display: none;
+    background: white;
+    aspect-ratio: 1;
+}
+.goRow:first-of-type .goLiberty:after {
+    top: 0;
+    right: 25%;
+    display: block;
+}
+.goRow:last-of-type .goLiberty:after {
+    bottom: 0;
+    right: 25%;
+    display: block;
+}
+.goRow .goLiberty:first-of-type:before {
+    top: 25%;
+    left: 0%;
+    display: block;
+}
+.goRow .goLiberty:last-of-type:before {
+    top: 25%;
+    right: 0%;
+    display: block;
+}
+
+.goLiberty div[class$=-stone] {
+    width: 96%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    border: 0.75vw solid black;
+    position: relative;
+    z-index: 1;
+}
+.goLiberty .black-stone {
+    background: black;
+}
+
+.goLiberty .white-stone {
+    background: white;
+}
