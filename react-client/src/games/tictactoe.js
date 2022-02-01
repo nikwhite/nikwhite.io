@@ -124,7 +124,7 @@ class TicTacToe extends React.Component {
   }
 
   render() {
-    let state = this.state
+    const state = this.state
     return (
       <div className="ticTacToe">
         <h3>
