@@ -2,10 +2,12 @@ import './go.css'
 import { useState } from 'react'
 import Button from '../components/button'
 import IconLink from '../components/iconLink'
+import GameControls from '../containers/gameControls'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/go.js'
 const BLACK = 'black'
 const WHITE = 'white'
+const DEFAULT_BOARD_SIZE = 5
 
 function oppositeColor(color) {
   return color === BLACK ? WHITE : BLACK
@@ -37,11 +39,13 @@ class BoardNode {
   }
 }
 
-function gameBoardFactory(width, height) {
+function gameBoardFactory(size = DEFAULT_BOARD_SIZE) {
+  // <option> values are strings
+  size = Number(size)
   let board = []
-  for (let i=0; i < height; i++) {
+  for (let i=0; i < size; i++) {
     let row = []
-    for (let j=0; j < width; j++) {
+    for (let j=0; j < size; j++) {
       row[j] = new BoardNode(i, j)
     }
     board[i] = row
@@ -87,39 +91,59 @@ function hasLiberty(board, node, color, visited = {}) {
 }
 
 function Go() {
+  const [passCount, setPassCount] = useState(0)
   const [turn, setTurn] = useState(BLACK)
-  const [board, setBoard] = useState(gameBoardFactory(5,5))
+  const [boardSize, setBoardSize] = useState(DEFAULT_BOARD_SIZE)
+  const [board, setBoard] = useState(gameBoardFactory(boardSize))
   const [captures, setCaptures] = useState({black: 0, white: 0})
 
   function resetBoard() {
     setTurn(BLACK)
     setCaptures({black:0, white: 0})
-    setBoard(gameBoardFactory(5,5))
+    setBoard(gameBoardFactory(boardSize))
+  }
+
+  function handleBoardSizeChange(event) {
+    setBoardSize(event.target.value)
+  }
+
+  function passTurn() {
+    let nextPassCount = passCount + 1
+    // passCount resets to 0 when a valid stone is placed
+    setPassCount(nextPassCount)
+    
+    if (nextPassCount === 2) {
+      //TODO: score game
+
+    } else {
+      setTurn(oppositeColor(turn))
+    }
   }
 
   function captureNodes(startingNodes = [], possibleCaptures) {
     if (!startingNodes.length) return []
     
-    // if a visitedGroup[i] contains a captured Node, then the 
+    // if a possibleCaptures[i] contains a captured Node, then the 
     // entire group should be removed from the board
     const captureGroup = possibleCaptures.reduce((result, group) => {
       for (const node of startingNodes) {
         if (group[node.toKey()]) {
           result.push(...Object.values(group))
+          break
         }
       }
       return result
     }, [])
 
     for (const node of captureGroup) {
-      node.removeStone()
       captures[oppositeColor(node.getColor())]++
+      node.removeStone()
     }
     setCaptures(captures)
   }
 
   function handleBoardClick(node) {
-    if (node.stone) return
+    if (node.stone || passCount >= 2) return
     
     // set stone first to make sure hasLiberty()
     // considers the open slot being played as
@@ -127,6 +151,7 @@ function Go() {
     // if this node will suicide a group,
     // or capture another group
     node.setStone(turn)
+    let nextTurn = oppositeColor(turn)
 
     // Check for captures,
     // i.e. oppsite color adjacent stones/groups with no liberties.
@@ -136,7 +161,6 @@ function Go() {
     // capturedNodes will be *just* contain the adjacent node(s) captured.
     // so if a capturedNode exists in a visitedGroup, that group
     // should be removed from the board
-    let nextTurn = oppositeColor(turn)
     let capturedNodes = getAdjacentNodes(board, node)
       .filter(isSameColor.bind(this, nextTurn))
       .filter((node, i) => {
@@ -151,7 +175,7 @@ function Go() {
     }
 
     captureNodes(capturedNodes, visitedGroups)
-    
+    setPassCount(0)
     setTurn(nextTurn)
     setBoard(board)
   }
@@ -164,9 +188,21 @@ function Go() {
           url={GH_URL} />
           Go
       </h3>
-      <div className="gameControls">
-        <Button onClick={resetBoard}>Reset</Button>  
-      </div>
+      <GameControls>
+        <label htmlFor="goBoardSizeSelect">Board size:</label>
+        <select 
+          id="goBoardSizeSelect" 
+          value={boardSize} 
+          onChange={handleBoardSizeChange}>
+          <option value="5">5x5</option>
+          <option value="9">9x9</option>
+          <option value="13">13x13</option>
+          <option value="17">17x17</option>
+          <option value="19">19x19</option>
+        </select>
+        <Button onClick={resetBoard}>Reset</Button>
+        <Button onClick={passTurn}>Pass turn</Button>
+      </GameControls>
       <div className="goBoard">
         {board.map((row, i) => 
           <div 
@@ -174,7 +210,7 @@ function Go() {
             className="goRow">
             {row.map((node) => 
               <div 
-                key={`${node.row},${node.col}`}
+                key={node.toKey()}
                 className="goLiberty" 
                 onClick={() => handleBoardClick(node)}>
                 {node.stone && node.stone}

@@ -1,0 +1,16 @@
+
+.gameControls {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.gameControls select,
+.gameControls label,
+.gameControls button {
+    margin-right: 0.5em;
+    margin-left: 0.5em;
+}
+
+.gameControls select {
+    padding-left: 0.5em;
+}

@@ -1,26 +1,28 @@
-button {
-  appearance: none;
+button, select {
   background-color: white;
   border: 1px solid black;
   border-radius: 0.25em;
   padding: 0.5em 1em;
-  margin: 0.5em 0;
   cursor: pointer;
   transition-property: background-color, box-shadow;
   transition-duration: 100ms, 50ms;
   transition-timing-function: ease-out, ease-out;
   transition-delay: 0,0;
 }
-button:hover {
-    background-color: #f1f1f1;
-    box-shadow: 0 2px 8px -4px black
+button {
+  appearance: none;
+}
+button:hover, select:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 2px 8px -4px black;
 }
 
-button:focus {
-    box-shadow: 0 2px 8px -4px black
+button:focus, select:focus, select:focus-visible {
+  box-shadow: 0 2px 8px -4px black;
+  outline: none;
 }
 
-button:active {
-    background-color: #ccc;
-    box-shadow: 0 0 3px -1px black;
+button:active, select:active {
+  background-color: #ccc;
+  box-shadow: 0 0 3px -1px black;
 }
