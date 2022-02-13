@@ -101,6 +101,7 @@ function Go() {
     setTurn(BLACK)
     setCaptures({black:0, white: 0})
     setBoard(gameBoardFactory(boardSize))
+    setPassCount(0)
   }
 
   function handleBoardSizeChange(event) {
