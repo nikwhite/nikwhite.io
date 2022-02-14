@@ -7,6 +7,7 @@ import GameControls from '../containers/gameControls'
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/go.js'
 const BLACK = 'black'
 const WHITE = 'white'
+const EDGE = 'edge'
 const DEFAULT_BOARD_SIZE = 5
 
 function oppositeColor(color) {
@@ -90,6 +91,65 @@ function hasLiberty(board, node, color, visited = {}) {
   return false
 }
 
+function getTerminalNodeColor(board, node, incRow, incCol) {
+  if (!node) return EDGE
+  if (node.stone) return node.getColor()
+
+  let nextRow = board[node.row + incRow]
+  let nextNode = nextRow && nextRow[node.col + incCol]
+  
+  return getTerminalNodeColor(board, nextNode, incRow, incCol)
+}
+
+function getOwner(board, node) {
+  const owner = getAdjacentNodes(board, node)
+    .map((node, i) => {
+      let rowInc = 0
+      let colInc = 0
+      switch (i) {
+        case 0: rowInc = -1; break;
+        case 1: colInc = 1; break;
+        case 2: rowInc = 1; break;
+        case 3: colInc = -1; break;
+        default: throw new Error('got too many nodes');
+      }
+      return getTerminalNodeColor(board, node, rowInc, colInc)
+    })
+    .reduce((owner, terminalNodeColor) => {
+      if (!owner.color && terminalNodeColor !== EDGE)
+        owner.color = terminalNodeColor
+      if (owner.color === terminalNodeColor)
+        owner.nodes++
+      if (terminalNodeColor === EDGE)
+        owner.edges++
+      return owner
+    }, {color: null, edges: 0, nodes: 0})
+
+    if (owner.color && owner.edges + owner.nodes === 4)
+      return owner
+
+    return null
+}
+
+function getScore(board) {
+  const score = {
+    [BLACK]: 0,
+    [WHITE]: 0
+  }
+  for (let i=0, li=board.length; i<li; i++) {
+    for (let j=0, lj=board[i].length; j<lj; j++) {
+      const node = board[i][j]
+      if (!node.stone) {
+        const owner = getOwner(board, node)
+        if (owner) {
+          score[owner.color]++
+        }
+      }
+    }
+  }
+  return score
+}
+
 function Go() {
   const [passCount, setPassCount] = useState(0)
   const [turn, setTurn] = useState(BLACK)
@@ -111,10 +171,13 @@ function Go() {
   function passTurn() {
     let nextPassCount = passCount + 1
     // passCount resets to 0 when a valid stone is placed
+    // or when game is reset
     setPassCount(nextPassCount)
     
-    if (nextPassCount === 2) {
-      //TODO: score game
+    if (nextPassCount >= 2) {
+      //TODO: finish scoring with Komi and captures
+      //TODO: need to build scoreboard
+      console.log(getScore(board))
 
     } else {
       setTurn(oppositeColor(turn))
