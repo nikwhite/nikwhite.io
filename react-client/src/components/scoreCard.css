@@ -1,0 +1,32 @@
+.scoreCard {
+    padding: 0.5em 1em;
+    display: flex;
+}
+.scoreCard .turnActions {
+    display: flex;
+    flex-direction: column;
+}
+.scoreCard .turnActions > button {
+    margin: 0.25em 0;
+}
+.scoreCard .score {
+    font-size: 3em;
+    margin-top: 0.5rem;
+}
+.scoreCard .teamStats {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.scoreCard .name {
+    text-transform: capitalize;
+}
+.scoreCard figure.captures {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.scoreCard .prisoners {
+    min-height: 1.625em;
+}

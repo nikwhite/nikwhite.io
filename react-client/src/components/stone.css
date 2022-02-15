@@ -1,0 +1,16 @@
+div[class$=-stone] {
+    width: 96%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    border: 4px solid black;
+    position: relative;
+    z-index: 1;
+}
+
+.black-stone {
+    background: black;
+}
+
+.white-stone {
+    background: white;
+}

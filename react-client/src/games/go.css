@@ -1,3 +1,15 @@
+.goGame .player1 {
+    background: black;
+    color: white;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.goGame .player2 {
+    background: white;
+    border: 2px solid black;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
 .goRow {
     display: flex;
 }
@@ -40,20 +52,4 @@
     top: 25%;
     right: 0%;
     display: block;
-}
-
-.goLiberty div[class$=-stone] {
-    width: 96%;
-    aspect-ratio: 1;
-    border-radius: 100%;
-    border: 4px solid black;
-    position: relative;
-    z-index: 1;
-}
-.goLiberty .black-stone {
-    background: black;
-}
-
-.goLiberty .white-stone {
-    background: white;
 }

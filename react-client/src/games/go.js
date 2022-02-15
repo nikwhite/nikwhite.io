@@ -3,21 +3,22 @@ import { useState } from 'react'
 import Button from '../components/button'
 import IconLink from '../components/iconLink'
 import GameControls from '../containers/gameControls'
+import Scoreboard from '../containers/scoreboard'
+import ScoreCard from '../components/scoreCard'
+import Stone from '../components/stone'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/go.js'
 const BLACK = 'black'
 const WHITE = 'white'
 const EDGE = 'edge'
 const DEFAULT_BOARD_SIZE = 5
+const START_SCORES_CAPTURES = {
+  black: 0,
+  white: 0
+}
 
 function oppositeColor(color) {
   return color === BLACK ? WHITE : BLACK
-}
-
-function Stone(props) {
-  return (
-    <div className={`${props.color}-stone`}></div>
-  )
 }
 
 class BoardNode {
@@ -108,34 +109,41 @@ function getOwner(board, node) {
       let colInc = 0
       switch (i) {
         case 0: rowInc = -1; break;
-        case 1: colInc = 1; break;
-        case 2: rowInc = 1; break;
+        case 1: colInc =  1; break;
+        case 2: rowInc =  1; break;
         case 3: colInc = -1; break;
-        default: throw new Error('got too many nodes');
+        default: throw new Error('Too many adjacent nodes');
       }
       return getTerminalNodeColor(board, node, rowInc, colInc)
     })
     .reduce((owner, terminalNodeColor) => {
-      if (!owner.color && terminalNodeColor !== EDGE)
+      // allow the first non-edge terminal node be the owner
+      if (!owner.color && terminalNodeColor !== EDGE) {
         owner.color = terminalNodeColor
-      if (owner.color === terminalNodeColor)
+      }
+      // count nodes of the same color and edges
+      if (terminalNodeColor === owner.color) {
         owner.nodes++
-      if (terminalNodeColor === EDGE)
+      } else if (terminalNodeColor === EDGE) {
         owner.edges++
-      return owner
-    }, {color: null, edges: 0, nodes: 0})
+      }
 
-    if (owner.color && owner.edges + owner.nodes === 4)
       return owner
+    }, /*owner*/ {color: null, edges: 0, nodes: 0})
 
+    if (owner.color && owner.edges + owner.nodes === 4){
+      return owner
+    }
     return null
 }
 
-function getScore(board) {
+function getScores(board, captures) {
+  //TODO: add Komi to white
   const score = {
-    [BLACK]: 0,
-    [WHITE]: 0
+    [BLACK]: captures[BLACK],
+    [WHITE]: captures[WHITE]
   }
+
   for (let i=0, li=board.length; i<li; i++) {
     for (let j=0, lj=board[i].length; j<lj; j++) {
       const node = board[i][j]
@@ -147,6 +155,7 @@ function getScore(board) {
       }
     }
   }
+
   return score
 }
 
@@ -155,17 +164,27 @@ function Go() {
   const [turn, setTurn] = useState(BLACK)
   const [boardSize, setBoardSize] = useState(DEFAULT_BOARD_SIZE)
   const [board, setBoard] = useState(gameBoardFactory(boardSize))
-  const [captures, setCaptures] = useState({black: 0, white: 0})
+  const [captures, setCaptures] = useState({...START_SCORES_CAPTURES})
+  const [scores, setScores] = useState({...START_SCORES_CAPTURES})
 
   function resetBoard() {
     setTurn(BLACK)
-    setCaptures({black:0, white: 0})
+    setCaptures({...START_SCORES_CAPTURES})
+    setScores({...START_SCORES_CAPTURES})
     setBoard(gameBoardFactory(boardSize))
     setPassCount(0)
   }
 
   function handleBoardSizeChange(event) {
     setBoardSize(event.target.value)
+  }
+
+  function endGame() {
+    setScores(getScores(board, captures))
+  }
+
+  function resign() {
+    endGame()
   }
 
   function passTurn() {
@@ -175,9 +194,7 @@ function Go() {
     setPassCount(nextPassCount)
     
     if (nextPassCount >= 2) {
-      //TODO: finish scoring with Komi and captures
-      //TODO: need to build scoreboard
-      console.log(getScore(board))
+      endGame()
 
     } else {
       setTurn(oppositeColor(turn))
@@ -244,8 +261,13 @@ function Go() {
     setBoard(board)
   }
 
+  const turnActions = [
+    <Button onClick={passTurn}>Pass</Button>,
+    <Button onClick={resign}>Resign</Button>
+  ]
+
   return (
-    <div>
+    <section className="goGame">
       <h3>
         <IconLink 
           icon="github"
@@ -265,8 +287,27 @@ function Go() {
           <option value="19">19x19</option>
         </select>
         <Button onClick={resetBoard}>Reset</Button>
-        <Button onClick={passTurn}>Pass turn</Button>
       </GameControls>
+      <Scoreboard
+        player1={
+          <ScoreCard
+            team={BLACK}
+            score={scores[BLACK]}
+            active={turn === BLACK}
+            captures={captures[BLACK]}
+            turnActions={turnActions}
+          />
+        }
+        player2={
+          <ScoreCard
+            team={WHITE}
+            score={scores[WHITE]}
+            active={turn === WHITE}
+            captures={captures[WHITE]}
+            turnActions={turnActions}
+          />
+        } 
+      />
       <div className="goBoard">
         {board.map((row, i) => 
           <div 
@@ -283,7 +324,7 @@ function Go() {
           </div>
         )}
       </div>
-    </div> 
+    </section> 
   )
 } 
 

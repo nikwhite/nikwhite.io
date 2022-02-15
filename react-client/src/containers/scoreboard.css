@@ -1,0 +1,16 @@
+.scoreboard {
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.scoreboard .player1,
+.scoreboard .player2 {
+    width: 50%;
+}
+.scoreboard .player2 {
+    text-align: right;
+}
+.scoreboard .player1 .scoreCard .turnActions,
+.scoreboard .player1 .scoreCard .score {
+    order: 1;
+}
