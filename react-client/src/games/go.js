@@ -13,6 +13,7 @@ const WHITE = 'white'
 const EDGE = 'edge'
 const COUNTER_LABEL = 'Captures'
 const DEFAULT_BOARD_SIZE = 5
+const PASSES_TO_END = 2
 const START_SCORES_CAPTURES = {
   black: 0,
   white: 0
@@ -185,6 +186,7 @@ function Go() {
   }
 
   function resign() {
+    setPassCount(PASSES_TO_END)
     endGame()
   }
 
@@ -194,7 +196,7 @@ function Go() {
     // or when game is reset
     setPassCount(nextPassCount)
     
-    if (nextPassCount >= 2) {
+    if (nextPassCount >= PASSES_TO_END) {
       endGame()
 
     } else {
@@ -263,8 +265,8 @@ function Go() {
   }
 
   const turnActions = [
-    <Button onClick={passTurn}>Pass</Button>,
-    <Button onClick={resign}>Resign</Button>
+    <Button onClick={resign} key={`${turn}resign`}>Resign</Button>,
+    <Button onClick={passTurn} key={`${turn}pass`}>Pass</Button>
   ]
 
   return (
