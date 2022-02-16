@@ -30,3 +30,17 @@
 .connect4board .blue-token {
     background-color: #60d8e6;
 }
+
+.connect4board .player1 .scoreCard {
+    background: #fa8acf;
+}
+.connect4board .player2 .scoreCard {
+    background: #60d8e6;
+}
+.connect4board .scoreCard .turnActions {
+    text-shadow: 1px 1px 0px white;
+}
+.connect4board .scoreCard .score {
+    text-shadow: 1px 1px 0px white;
+    font-size: 2em
+}

@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import IconLink from '../components/iconLink'
 import Button from '../components/button'
+import Scoreboard from '../containers/scoreboard'
+import ScoreCard from '../components/scoreCard'
 import './connect4.css'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/connect4.js'
@@ -24,6 +26,8 @@ const HEIGHT = 6
 const WIDTH = 7
 const PINK = 'pink'
 const BLUE = 'blue'
+const COUNTER_LABEL = 'Wins'
+const WIN_LABEL = 'You win!'
 const OPPOSITE_NODES = [
   [7,3], // row
   [1,5], // col
@@ -84,7 +88,7 @@ function filterSameColor(color, adjacentNodes) {
   }, {})
 }
 
-function setAdjacentSameColorNeighbors(node) {
+function setNeighborsAdjacentSameColorNeighbors(node) {
   Object.entries(node.sameColorNeighbors)
         .forEach(([position, neighbor]) => {
           if (neighbor && neighbor.color === node.color) {
@@ -125,6 +129,7 @@ function Connect4() {
   const [board, setBoard] = useState(gameBoardFactory())
   const [turn, setTurn] = useState(PINK)
   const [winners, setWinners] = useState([])
+  const [wins, setWins] = useState({[PINK]: 0, [BLUE]: 0})
 
   function resetBoard() {
     setBoard(gameBoardFactory())
@@ -144,20 +149,28 @@ function Connect4() {
         ...node.sameColorNeighbors,
         ...filterSameColor(node.color, adjacentNodes)
       }
+      
+      setNeighborsAdjacentSameColorNeighbors(node)
 
-      setAdjacentSameColorNeighbors(node)
-      setBoard(board)
+      let newWinners = getWinners(node)
+
+      if (newWinners.length) {
+        newWinners.forEach(winnerChain => {
+          winnerChain.forEach(node => node.winner = true)
+        })
+        wins[turn]++
+
+        setWins(wins)
+        setWinners(newWinners)
+      }
+
       setTurn(turn === PINK ? BLUE : PINK)
-      setWinners( getWinners(node) )
+      setBoard(board)
     }
   }
 
-  if (winners) {
-    winners.forEach(winnerChain => {
-      winnerChain.forEach(node => node.winner = true)
-    })
-  }
-  
+  const turnAction = <strong>Your turn!</strong>
+
   return (
     <div className="connect4board">
       <h3>
@@ -171,6 +184,28 @@ function Connect4() {
           Reset
         </Button>
       </div>
+      <Scoreboard 
+        player1={
+          <ScoreCard
+            team={PINK}
+            active={turn === PINK}
+            turnActions={turnAction}
+            counter={wins[PINK]}
+            counterLabel={COUNTER_LABEL}
+            score={winners.length && turn !== PINK && WIN_LABEL}
+          />
+        }
+        player2={
+          <ScoreCard
+            team={BLUE}
+            active={turn === BLUE}
+            turnActions={turnAction}
+            counter={wins[BLUE]}
+            counterLabel={COUNTER_LABEL}
+            score={winners.length && turn !== BLUE && WIN_LABEL}
+          />
+        }
+      />
       
       {board.map((row, i) => (
         <div className="row" key={'c4,'+i}>

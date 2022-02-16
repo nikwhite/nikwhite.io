@@ -11,6 +11,7 @@ const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client
 const BLACK = 'black'
 const WHITE = 'white'
 const EDGE = 'edge'
+const COUNTER_LABEL = 'Captures'
 const DEFAULT_BOARD_SIZE = 5
 const START_SCORES_CAPTURES = {
   black: 0,
@@ -294,7 +295,8 @@ function Go() {
             team={BLACK}
             score={scores[BLACK]}
             active={turn === BLACK}
-            captures={captures[BLACK]}
+            counter={captures[BLACK]}
+            counterLabel={COUNTER_LABEL}
             turnActions={turnActions}
           />
         }
@@ -303,7 +305,8 @@ function Go() {
             team={WHITE}
             score={scores[WHITE]}
             active={turn === WHITE}
-            captures={captures[WHITE]}
+            counter={captures[WHITE]}
+            counterLabel={COUNTER_LABEL}
             turnActions={turnActions}
           />
         } 
