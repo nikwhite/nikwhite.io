@@ -3,12 +3,29 @@ import './scoreCard.css'
 function ScoreCard({
   counter, counterLabel, active, team, score = 0, turnActions
 }) {
+  const counterIsNumber = typeof counter === typeof 0
   const counterDots = []
-  for (let i=1; i <= counter; i++) {
-    counterDots.push(<b key={i}>&#9679;</b>)
+  if (counterIsNumber) {
+    for (let i=1; i <= counter; i++) {
+      counterDots.push(<b key={i}>&#9679;</b>)
+    }
   }
+
   return (
     <div className="scoreCard">
+      <div className="teamStats"> 
+        {!!team &&
+          <h4 className="name">{team}</h4>
+        }
+        {counterIsNumber &&
+          <figure className="counter">
+            <figcaption>{counterLabel}: {counter}</figcaption>
+            <div className="dots" role="presentation">
+              {counterDots}
+            </div>
+          </figure>
+        }
+      </div>
       {!score && active && turnActions &&
         <div className="turnActions">
           {turnActions}
@@ -19,17 +36,6 @@ function ScoreCard({
           <strong>{score}</strong>
         </div>
       }
-      <div className="teamStats"> 
-        <span className="name">{team}</span>
-        {typeof counter === typeof 0 &&
-          <figure className="counter">
-            <div className="dots" role="presentation">
-              {counterDots}
-            </div>
-            <figcaption>{counterLabel}: {counter}</figcaption>
-          </figure>
-        }
-      </div>
     </div>
   )
 }

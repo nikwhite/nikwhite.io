@@ -31,16 +31,24 @@
     background-color: #60d8e6;
 }
 
-.connect4board .player1 .scoreCard {
+.connect4board .player1 {
     background: #fa8acf;
+    border: 2px solid #fc54bb;
+    border-right: none;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
-.connect4board .player2 .scoreCard {
+.connect4board .player2 {
     background: #60d8e6;
+    border: 2px solid #26bdce;
+    border-left: none;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 .connect4board .scoreCard .turnActions {
     text-shadow: 1px 1px 0px white;
 }
 .connect4board .scoreCard .score {
     text-shadow: 1px 1px 0px white;
-    font-size: 2em
+    font-size: 2em;
 }

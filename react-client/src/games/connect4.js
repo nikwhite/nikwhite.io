@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import IconLink from '../components/iconLink'
 import Button from '../components/button'
+import GameControls from '../containers/gameControls'
 import Scoreboard from '../containers/scoreboard'
 import ScoreCard from '../components/scoreCard'
 import './connect4.css'
@@ -27,7 +28,7 @@ const WIDTH = 7
 const PINK = 'pink'
 const BLUE = 'blue'
 const COUNTER_LABEL = 'Wins'
-const WIN_LABEL = 'You win!'
+const WIN_LABEL = 'Winner!'
 const OPPOSITE_NODES = [
   [7,3], // row
   [1,5], // col
@@ -139,12 +140,13 @@ function Connect4() {
   function handleClick(column){
     if (winners.length) return
 
-    let node = getLowestEmptyNode(board, column)
+    const node = getLowestEmptyNode(board, column)
 
     if (node && !node.color) {
       node.color = turn
       
-      let adjacentNodes = getAdjacentNodes(board, node)
+      const adjacentNodes = getAdjacentNodes(board, node)
+
       node.sameColorNeighbors = {
         ...node.sameColorNeighbors,
         ...filterSameColor(node.color, adjacentNodes)
@@ -152,14 +154,13 @@ function Connect4() {
       
       setNeighborsAdjacentSameColorNeighbors(node)
 
-      let newWinners = getWinners(node)
+      const newWinners = getWinners(node)
 
       if (newWinners.length) {
         newWinners.forEach(winnerChain => {
           winnerChain.forEach(node => node.winner = true)
         })
         wins[turn]++
-
         setWins(wins)
         setWinners(newWinners)
       }
@@ -179,11 +180,11 @@ function Connect4() {
           url={GH_URL} />
           Connect4
       </h3>
-      <div className="gameControls">
+      <GameControls>
         <Button onClick={resetBoard}>
           Reset
         </Button>
-      </div>
+      </GameControls>
       <Scoreboard 
         player1={
           <ScoreCard

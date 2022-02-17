@@ -3,6 +3,7 @@ import './scoreboard.css'
 function Scoreboard(props) {
   return (
     <pre className="scoreboard">
+      {props.children}
       <div className="player1">
         {props.player1}
       </div>

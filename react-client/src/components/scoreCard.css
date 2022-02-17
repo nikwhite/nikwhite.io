@@ -2,17 +2,27 @@
     padding: 0.5em 1em;
     display: flex;
 }
+.scoreboard .player2 .scoreCard {
+    flex-direction: row-reverse;
+}
+@media (max-width: 500px) {
+    .scoreCard {
+        flex-direction: column !important;
+    }
+}
 .scoreCard .turnActions,
 .scoreCard .score {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: center;
 }
 .scoreCard .turnActions > button {
     margin: 0.25em 0;
 }
 .scoreCard .score {
-    font-size: 3em;
+    font-size: 2em;
+    white-space: normal;
 }
 .scoreCard .teamStats {
     flex-grow: 1;
@@ -21,6 +31,8 @@
 }
 .scoreCard .name {
     text-transform: capitalize;
+    font-weight: bold;
+    margin: 0;
 }
 .scoreCard figure.counter {
     margin: 0;

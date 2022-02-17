@@ -2,6 +2,9 @@ import './tictactoe.css'
 import React from 'react'
 import IconLink from '../components/iconLink'
 import Button from '../components/button'
+import GameControls from '../containers/gameControls'
+import Scoreboard from '../containers/scoreboard'
+import ScoreCard from '../components/scoreCard'
 
 const GH_URL = 'https://github.com/nikwhite/nikwhite.io/blob/master/react-client/src/games/tictactoe.js'
 const X = 'X'
@@ -133,9 +136,31 @@ class TicTacToe extends React.Component {
             url={GH_URL} />
             TicTacToe
         </h3>
-        <div className="gameControls">
+        <GameControls>
           <Button onClick={() => this.resetBoard()}>Reset</Button>
-        </div>
+        </GameControls>
+
+        <Scoreboard 
+          player1={
+            <ScoreCard
+              active={state.turn === X}
+              turnActions={
+                <span>{X}</span>
+              }
+            />
+          }
+          player2={
+            <ScoreCard
+              active={state.turn === O}
+              turnActions={
+                <span>{O}</span>
+              }
+            />
+          }
+        >
+          <b>Turn:</b>
+        </Scoreboard>
+
         <table className="ticTacToeBoard">
           <tbody className={state.winnerTypes.join(' ')}>
           {state.board.map((row, rowIndex) => 
