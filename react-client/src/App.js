@@ -46,8 +46,8 @@ function App() {
       </section>
       <section className="container">
         <h2>Games</h2>
-        <p>Local multiplayer only <code>:)</code></p>
-        <p>These are just coding exercises for fun. Tap the Github icon to see the code.</p>
+        <p>Local multiplayer only, for now... <code>:)</code></p>
+        <p>These are coding exercises for fun. Tap the Github icon to see the code.</p>
         <div className="game">
           <TicTacToe />
         </div>
