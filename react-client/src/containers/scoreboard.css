@@ -5,6 +5,7 @@
 .scoreboard .player1,
 .scoreboard .player2 {
     width: 50%;
+    display:flex;
 }
 .scoreboard .player2 {
     text-align: right;

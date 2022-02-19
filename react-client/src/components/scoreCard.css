@@ -1,6 +1,7 @@
 .scoreCard {
     padding: 0.5em 1em;
     display: flex;
+    width: 100%;
 }
 .scoreboard .player2 .scoreCard {
     flex-direction: row-reverse;
@@ -42,4 +43,6 @@
 }
 .scoreCard .dots {
     min-height: 1.625em;
+    word-break: break-all;
+    white-space: normal;
 }
