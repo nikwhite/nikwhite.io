@@ -14,7 +14,7 @@
 
 Maximize privacy, minimize backend costs.
 
-The WebRTC Spec intentionaly leaves out when/where/why/how two peers decide to connect because this can be accomplished in varied ways depending on the application needs. This is why we need a Signaling Service to agree on the protocols, IPs, and ports used to establish a connection through NAT using STUN servers. We could use post-its delivered by carrier pigeon if we wanted, but a service will do it more efficiently.
+The WebRTC Spec intentionaly leaves out when/where/why/how two peers decide to connect because this can be accomplished in varied ways depending on the application needs. This is why we need a Signaling Service to agree on the protocols, IPs, and ports used to establish a connection using ICE. We could use post-its delivered by carrier pigeon if we wanted, but a service will do it more efficiently.
 
 ### Signaling Service
 
@@ -25,9 +25,10 @@ In order to establish an `RTCPeerConnection`, each peer will open an a temporary
 
 #### Why Cloud Run
 
-* App Engine Standard does not support `WebSocket`s, but can scale to 0
+* App Engine Standard can scale to 0, bug does not support `WebSocket`s
 * App Engine Flexible supports `WebSocket`s, but cold start time is lengthy and does not scale to 0, which is excess cost
 * Cloud Compute is more than needed
+* Cloud Run enables use of GKE for future needs
 
 ### Process and Diagram
 
@@ -48,16 +49,19 @@ In order to establish an `RTCPeerConnection`, each peer will open an a temporary
       1. Step 6 can begin with `player1` warming up their `RTCPeerConnection` by starting the gathering of ICE candidates, and transmitting them to the Signaling Server over the `WebSocket`
 3. __OUT OF BAND__ `Player1` sends the code via URL to `Player2`: `[URL]/#game:code` via SMS, email, etc.
 4. `Player2` opens `[URL]/#game:code`, which opens a `WebSocket` connection to the Signaling Service with `game` and `code` parameters
-    1. If the `[game][code]` tuple doesnt appear in the store, a race conditioned occurred where the timer defined in Step 1.3 has closed this session, or the Signaling Service instance is not shared (TODO: Can we find the instance where the tuple does exist and hand off to that instance? Problem of scale to be solved later). Log an error, close the socket, prompt user to start the process over as `Player1`
+    1. `Player2` Creates an `RTCPeerConnection` to start gathering ICE candidates
+    2. If the `[game][code]` tuple doesnt appear in the store, a race conditioned occurred where the timer defined in Step 1.3 has closed this session, or the Signaling Service instance is not shared (TODO: Can we find the instance where the tuple does exist and hand off to that instance? Problem of scale to be solved later). Log an error, close the socket, prompt user to start the process over as `Player1`
 5. Emit on `player1`'s `WebSocket` to start session negotiation as described in the [WebRTC Spec](https://www.w3.org/TR/webrtc/#session-negotiation-model)
 over the linked sockets. 
 6. Simplified version of [WebRTC Sequence Diagram](https://www.w3.org/TR/webrtc/images/ladder-2party-simple.svg)
     1. __Note:__ This sequence could start from either side of the connection if the RTC connection is lost, so `player1` and `player2` roles *could* be reversed. The Signaling Service should be intelligent enough to know the difference between players and adjust messaging as needed.
 7. `player2` will receive a  `'datachannel'` event to accept the basic data channel that was created by `player1`. Creating an answer after this event will provide `player1` with the answer required to start transmitting data (as soon as ICE candidates are negotiated)
-8. Both `RTCPeerConnection`s will simultaneously start trying to connect to ICE servers, and provide successful candidates in the `'icecandidate'` event. Both peers will then emit their `iceCandidate` to the Signaling Service over their respsective `WebSocket` as they are established
-9. The Signaling Service will collect these candidates, pushing them to the respective `[game][code].player[n].iceCandidates`. Ideally we would use [Trickle ICE](https://datatracker.ietf.org/doc/html/rfc8838) to trickle in ICE Candidates to `player2`, but currently Chrome does not support it, only Firefox. [[1]](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/canTrickleIceCandidates#browser_compatibility) [[2]](https://stackoverflow.com/questions/61710759/trickle-ice-not-working-in-chrome-but-fine-in-firefox) 
-    1. Since Step 6 warms up the Signaling Service with ICE Candidates as described in Step 3.1, as soon as `player2` connects to the Signaling Service, we should already have some(all) of the ICE candidates for `player1` and we can quickly(immediately) send them to `player2` over the `WebSocket` connection.
-10. When the `'connectionstatechange'` event fires on the peers, if they are connected successfully, they will emit to the Signaling Server `'rtcConnected'`. Once the Signaling server receives this from both peers, the `WebSocket`s will be torn down. 
+8. Since `RTCPeerConnection`s have been set up prior, they will have started trying to connect to STUN servers and provide successful ICE candidates in the `'icecandidate'` event once a local or remote description have been applied to the `RTCPeerConnection`. Both peers will be emitting their `iceCandidate`s to the Signaling Service over their respsective `WebSocket` as they are established
+9. The Signaling Service will collect these candidates, pushing them to the respective `[game][code].player[n].iceCandidates`. Ideally we would use [Trickle ICE](https://datatracker.ietf.org/doc/html/rfc8838) to trickle in ICE Candidates to `player2`, but currently only Firefox supports it. [[1]](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/canTrickleIceCandidates#browser_compatibility) [[2]](https://stackoverflow.com/questions/61710759/trickle-ice-not-working-in-chrome-but-fine-in-firefox) 
+    1. Since `player1`'s `RTCPeerConnection` warms up the Signaling Service with ICE Candidates as described in Step 2.1, as soon as `player2` connects to the Signaling Service, we should already have some(all) of the ICE candidates for `player1` and we can quickly(immediately) send them to `player2` over the `WebSocket` connection.
+10. When the `'connectionstatechange'` event fires on the peers, if they are connected successfully, they will emit to the Signaling Server `'rtcConnected'`. Once the Signaling server receives this from both peers, the `WebSocket`s will be torn down.
+    1. If a player receives a `'connectionstatechange'` event and the `connectionState` is `'failed'`
+       then the peers couldnt connect, TBD if retry would be successful, but guessing not.
 11. Do some cleanup on the Signaling Server for all games where one of the following conditions is met:
     1. `state === 'rtcConnected'`
     2. `currentTime - startTime > 15 * 60 * 1000` denoting negotiation sessions can last at most 15 minutes.
@@ -74,11 +78,12 @@ enum state{
 
 string playerID{ H([game]:[code]:player[n]) }
 
-
+                                |-------------------------------|
                                 |  In-Memory Store Schema       |
                                 |-------------------------------|
                                 |  [game][code]: {              |
                                 |     state: Enum(state)        |
+                                |       startTime: datetime     |
                                 |     player1:                  |
                                 |       id: playerID            |
                                 |       socket:WebSocket        |
@@ -98,31 +103,39 @@ Player1                         |  Signaling Service            |  Player2
                                 |     data under [game][code]   |
 1. recGameCode(code,id)<--------|-----returns code & playerID   | 
 2. openSocket(game,code,id)-----|->2. set player1 socket        |
-                                |     set state = 'waiting'     |
+   Creates RTCPeerConnection    |     set state = 'waiting'     |
 3. Shares url with Player2---------------------------------------->3. Opens URL
                                 |  4. associate player2 socket<-|--4. openSocket(game,code)
-                                |     create playerID, store    |
+                                |     create playerID, store    |     Creates RTCPeerConnection
                                 |     state = 'connected'       |
                                 |     return playerID-----------|->4. socket.onopen(id)
 5. socket.onmesssage<-----------|--5. Signal to start WebRTC    |     store id localStorage
-                                |     session negotiation       |
-6. Creates PeerConnection       |                               |
+6. createOffer()                |     session negotiation       |
+   setLocalDesc(offer)          |                               |     
    socket.emit({offer, id})-----|->6. player1.socket.onmessage  |
                                 |     state = 'negotiating'     |
                                 |     pleyer2.socket.emit-------|->6. socket.onmessage({offer})
-                                |                               |     Creates PeerConnection with offer 
+                                |                               |     setRemoteDesc(offer)
+                                |                               |     createAnswer()
+                                |                               |     setLocalDesc(pranswer)
                                 |  6. player2.socket.onmessage<-|-----socket.emit({pranswer, id})
-6. setRemoteDesc(pranswer)<-----|-----player1.socket.emit       |  7. 'datachannel' event
+6. setRemoteDesc(pranswer)<-----|-----player1.socket.emit       |
+                                |                               |  7. 'datachannel' event
+                                |                               |     createAnswer()
+                                |                               |     setLocalDesc(answer)
                                 |  7. player2.socket.onmessage<-|-----socket.emit({answer, id})
 7. setRemoteDesc(answer)<-------|-----player1.socket.emit       |
 8. 'iceCandidate' event         |                               |  8. 'iceCandidate' event
     socket.emit({iceCandidate})-|->8. collect iceCandidates<----|-----socket.emit({iceCandidate})
                                 |     for each player           |
-                                |  9. when we find a match,     |
-                                |     emit iceCandidate to both |
-9. socket.onmessage-------------|-----player1.socket.emit       |
-   setIceCandidate()            |     player2.socket.emit-------|->9. socket.onmessage
-                                |                               |     setIceCandidate()
+                                |  9. when we get all candidates|
+                                |     for a given player,       |
+                                |     emit iceCandidates        |
+                                |     to the other player       |
+                                |     player2.socket.emit-------|->9. socket.onmessage
+9. socket.onmessage<------------|-----player1.socket.emit       |     setIceCandidate()
+   setIceCandidate()            |                               |     
+                                |                               |
 10. 'connectionstatechange' evt |                               |  10. 'connectionstatechange' event
     if connected,               |                               |      if connected,
     socket.emit('rtcConnected')-|->10. set isRtcConnected to<---|------socket.emit('rtcConnected')
@@ -133,17 +146,29 @@ Player1                         |  Signaling Service            |  Player2
  
 ```
 
-### Threat Model
+### Threat Modeling
 
-__TODO__
+#### Websocket Session Hijacking
 
-Some things I can think of so far for the Signaling Service:
-* Max ICE Candidates per player, preserves memory/overflow
-* Max Cloud Run instances to mitigate financial impact of DDoS or Traffic spikes 
-* All data flowing from browser to Signaling Service should be validated against a JSON schema and always contain the `playerID`,
-* Excessively chatty websockets should be shut down
+* If someone brute-force-guesses a UUID `code` that is actually valid in an instance with no `player2` they automatically get to be `player2`, hijacking the session
+    * Pretty low probability given the ephemeral nature of the `WebSocket` connection and low probability of UUID collisions, but possible
+    * Instead of sharing the `code` as obviously a UUID, we could encrypt it with AES-GCM using a randomized symmetric key per session and pass the ciphertext instead as `[URL]/#[game]:[ciphertext]`. This adding overhead to the initial session setup time (how much?)
+
+#### Data Overflow
+
+* Max ICE Candidates per player (TODO: How many is typical?), preserves memory/prevents overflow
+* Max Cloud Run instances to mitigate financial impact of DDoS or Traffic spikes, thinking 1 to start with is plenty, max concurrent sessions can be extended above 1000 if necessary [as suggested by GCP](https://cloud.google.com/run/docs/triggering/websockets#maximize-concurrency)
+* All data flowing from browser to Signaling Service should be validated against a JSON schema and always contain the `playerID`
+
+* Max session negotiation time of 15min: Track and reduce to minimum viable time, its probably lower
+
+#### DDoS
+
 * Builtin GCP protections for DDoS?
-* Max session negotiation time of 15min, track and reduce to minimum viable time, its probably lower
+* More than a few attempts with wrong ciphertext from a single origin is sus
+* Rate limiting?
+* Excessively chatty websockets should be shut down
+    * Define this
 
 ### Testing
 
