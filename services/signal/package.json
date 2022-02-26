@@ -1,0 +1,14 @@
+{
+  "name": "signal",
+  "version": "0.0.1",
+  "description": "Signaling Service for 2-player WebRTC game connection negotiation on Cloud Run",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Nik White",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=14"
+  }
+}
