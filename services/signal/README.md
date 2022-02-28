@@ -24,8 +24,8 @@ In order to establish an `RTCPeerConnection`, each peer will open an a temporary
 
 ### Process and Diagram
 
-1. `Player1` generates a `game` (go, connect4, tictactoe) `code` (UUID) via the signaling service, which it stores in-memory in the hierarchy shown below 
-    1. `code` will be generated as a `randomUUID`, checked for collisions in the store, recreated as necessary, and used as the key for the signaling state, which will be constructed as follows:
+1. `Player1` generates a `game` (`string` e.g. go, connect4, tictactoe) `code` (UUID) via the signaling service, which it stores in-memory in the hierarchy shown below 
+    1. `code` will be generated as a `randomUUID`, checked for collisions in the store, recreated as necessary, and used as the key (`[game][code]`) for the signaling state, which will be constructed as follows:
         1. `state` will be initialized to `'new'`
         2. `startTime` will be initialized to the Epoch since 1/1/1970 in GMT
         2. For both `player1` and `player2` objects:
@@ -34,7 +34,8 @@ In order to establish an `RTCPeerConnection`, each peer will open an a temporary
             3. `iceCandidates` will be initialized to `[]`
             4. `isRtcConnected` will be initialized to `false`
     2. `Player1`s `id` will be set to a short, quick hash `H([game]:[code]:'player1')`. 
-        1. __Note:__ This is not meant to be cryptographically secure, just unique. We're just playing P2P games with a friend over HTTPS/WSS, after all. (See Threat Modeling section below when complete, this could change)
+        1. SHA-256 will be used, since it's relatively [resilient](https://en.wikipedia.org/wiki/SHA-1#Comparison_of_SHA_functions) and [quick](http://bench.cr.yp.to/results-hash.html#amd64-skylake)
+        1. __Note:__ It's not necessary for this value to be absolutely cryptographically secure, just unique and difficult to guess in the time between creation and first use.
     3. Start a 10 minute timer. If by the end of the timer either `player1` or `player2` do not both have valid `id` and `socket` properties, close all open sockets for this `[game][code]` tuple
     4. Respond with `{code, id}`
 2. `Player1` opens a `WebSocket` connection to the Signaling service with the `game` and newly created `code` and `id` parameters

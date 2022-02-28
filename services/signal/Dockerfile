@@ -1,6 +1,6 @@
-# Use the official lightweight Node.js 12 image.
+# Use the official lightweight Node.js 17.6 Buster (Debian) image
 # https://hub.docker.com/_/node
-FROM node:17-slim
+FROM node:17.6-buster
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
