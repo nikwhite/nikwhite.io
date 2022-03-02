@@ -66,7 +66,7 @@ test('can win vertically', () => {
   expect(buttons[7]).toBeEmptyDOMElement()
 })
 
-test('can win diagonally', () => {
+test('can win diagonally left', () => {
   fireEvent.click(buttons[0]) // x
   fireEvent.click(buttons[1]) // o
   fireEvent.click(buttons[4]) // x
@@ -76,6 +76,19 @@ test('can win diagonally', () => {
 
   let status = getByRole(board, 'status')
   expect(status).toHaveClass('diag-left-win')
+  expect(buttons[7]).toBeEmptyDOMElement()
+})
+
+test('can win diagonally right', () => {
+  fireEvent.click(buttons[2]) // x
+  fireEvent.click(buttons[1]) // o
+  fireEvent.click(buttons[4]) // x
+  fireEvent.click(buttons[3]) // o
+  fireEvent.click(buttons[6]) // x = winner
+  fireEvent.click(buttons[7]) // o trys to continue play
+
+  let status = getByRole(board, 'status')
+  expect(status).toHaveClass('diag-right-win')
   expect(buttons[7]).toBeEmptyDOMElement()
 })
 

@@ -1,5 +1,5 @@
 import './tictactoe.css'
-import React from 'react'
+import {useState} from 'react'
 import IconLink from '../components/iconLink'
 import Button from '../components/button'
 import GameControls from '../containers/gameControls'
@@ -12,76 +12,60 @@ const O = 'O'
 const diagLeft =  [[0,0], [1,1], [2,2]]
 const diagRight = [[2,0], [1,1], [0,2]]
 
-class TicTacToe extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      board: this.getCleanBoard(),
-      turn: X,
-      winner: false,
-      winnerTypes: []
-    }
-    this.handleClick = this.handleClick.bind(this)
-    this.resetBoard = this.resetBoard.bind(this)
+function getCleanBoard() {
+  return [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ]
+}
+
+function allMatch(values, char) {
+  for (let i=0; i < values.length; i++) {
+    if (values[i] !== char) return false
+  }
+  return true
+}
+
+function TicTacToe() {
+  const [board, setBoard] = useState(getCleanBoard())
+  const [turn, setTurn] = useState(X)
+  const [winner, setWinner] = useState('')
+  const [winnerTypes, setWinnerTypes] = useState([])
+
+  function resetBoard() {
+    setBoard(getCleanBoard())
+    setTurn(winner === X ? O : X)
+    setWinner('')
+    setWinnerTypes([])
   }
 
-  getCleanBoard() {
-    return [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ]
+  function charAt([row, col]) {
+    return board[row][col]
   }
 
-  resetBoard() {
-    this.setState({
-      turn: this.state.winner === X ? O : X,
-      board: this.getCleanBoard(),
-      winner: false,
-      winnerTypes: [],
-    })
+  function isColWinner(col, char) {
+    const colValues = board.map(row => row[col])
+    return allMatch(colValues, char)
   }
 
-  charAt(row,col) {
-    return this.state.board[row][col]
+  function isRowWinner(row, char) {
+    return allMatch(board[row], char)
   }
 
-  allMatch(values, char) {
-    for (let i=0; i < values.length; i++) {
-      if (values[i] !== char) return false
-    }
-    return true
+  function isDiagWinner(diagNodes, char) {
+    return allMatch(diagNodes.map(charAt), char)
   }
-
-  isColWinner(col, char) {
-    let colValues = this.state.board.map(row => row[col])
-    return this.allMatch(colValues, char)
-  }
-
-  isRowWinner(row, char) {
-    return this.allMatch(this.state.board[row], char)
-  }
-
-  isDiagRightWinner(char) {
-    let diagRightValues = diagRight.map(([row, col]) => this.charAt(row,col))
-    return this.allMatch(diagRightValues, char)
-  }
-
-  isDiagLeftWinner(char) {
-    let diagLeftValues = diagLeft.map(([row, col]) => this.charAt(row,col))
-    return this.allMatch(diagLeftValues, char)
-  }
-
-  isDiagSlot(row, col) {
-    let max = this.state.board.length - 1
+  
+  function isDiagSlot(row, col) {
+    let max = board.length - 1
     let min = 0
-
     return ((row === min || row === max) && (col === min || col === max)) || (row === 1 && col === 1)
   }
 
-  getWinnerState(fromRow, fromCol, char) {
-    let rowWinner = this.isRowWinner(fromRow, char)
-    let colWinner = this.isColWinner(fromCol, char)
+  function getWinnerState(fromRow, fromCol, char) {
+    let rowWinner = isRowWinner(fromRow, char)
+    let colWinner = isColWinner(fromCol, char)
     let diagWinner = false
     //  a list of CSS classNames to apply the strikethrough visual for winning combos
     let winnerTypes = []
@@ -92,9 +76,9 @@ class TicTacToe extends React.Component {
       winnerTypes.push(`col-${fromCol}-win`)
     }
     // if we're checking from a corner or the center, need to check diagonal win condition
-    if (this.isDiagSlot(fromRow, fromCol)) {
-      let diagRightWinner = this.isDiagRightWinner(char)
-      let diagLeftWinner = this.isDiagLeftWinner(char)
+    if (isDiagSlot(fromRow, fromCol)) {
+      let diagRightWinner = isDiagWinner(diagRight, char)
+      let diagLeftWinner = isDiagWinner(diagLeft, char)
 
       diagWinner = diagRightWinner || diagLeftWinner
       diagRightWinner && winnerTypes.push('diag-right-win')
@@ -109,87 +93,80 @@ class TicTacToe extends React.Component {
     }
   }
 
-  handleClick(row, col) {
-    let board = this.state.board
-    let nextTurn = this.state.turn === X ? O : X
-    
-    if (this.state.winner || board[row][col]) return;
+  function handleClick(row, col) {
+    if (winner || board[row][col]) return
 
-    board[row][col] = this.state.turn
+    board[row][col] = turn
 
-    let winnerState = this.getWinnerState(row, col, this.state.turn)
+    const winnerState = getWinnerState(row, col, turn)
     
-    this.setState({
-      turn: nextTurn,
-      board: board,
-      ...winnerState
-    })
+    setTurn(turn === X ? O : X)
+    setWinner(winnerState.winner)
+    setWinnerTypes(winnerState.winnerTypes)
+    setBoard(board)
   }
 
-  render() {
-    const state = this.state
-    return (
-      <div className="ticTacToe">
-        <h3>
-          <IconLink 
-            icon="github"
-            url={GH_URL} />
-            TicTacToe
-        </h3>
-        <GameControls>
-          <Button onClick={() => this.resetBoard()}>Reset</Button>
-        </GameControls>
+  return (
+    <div className="ticTacToe">
+      <h3>
+        <IconLink 
+          icon="github"
+          url={GH_URL} />
+          TicTacToe
+      </h3>
+      <GameControls>
+        <Button onClick={resetBoard}>Reset</Button>
+      </GameControls>
 
-        <Scoreboard 
-          player1={
-            <ScoreCard
-              active={state.turn === X}
-              turnActions={
-                <span>{X}</span>
-              }
-            />
-          }
-          player2={
-            <ScoreCard
-              active={state.turn === O}
-              turnActions={
-                <span>{O}</span>
-              }
-            />
-          }
-        >
-          <b>Turn:</b>
-        </Scoreboard>
+      <Scoreboard 
+        player1={
+          <ScoreCard
+            active={turn === X}
+            turnActions={
+              <span>{X}</span>
+            }
+          />
+        }
+        player2={
+          <ScoreCard
+            active={turn === O}
+            turnActions={
+              <span>{O}</span>
+            }
+          />
+        }
+      >
+        <b>Turn:</b>
+      </Scoreboard>
 
-        <table className="ticTacToeBoard">
-          <tbody
-            role='status'
-            className={state.winnerTypes.join(' ')}
-            aria-relevant='all'>
-            {state.board.map((row, rowIndex) => 
-              <tr key={rowIndex}>
-                {row.map((letter, colIndex) => 
-                  <td
-                    tabIndex='0' role='button'
-                    aria-label='tic-tac-toe square'
-                    aria-disabled={letter ? true : false}
-                    key={`${rowIndex},${colIndex}`}
-                    onClick={() => this.handleClick(rowIndex,colIndex)}
-                    onKeyDown={(e) => {
-                      if (e.keyCode === 13 || e.keyCode === 32) {
-                        this.handleClick(rowIndex, colIndex)
-                      }
-                    }}>
-                      {letter}
-                  </td>
-                )}
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
+      <table className="ticTacToeBoard">
+        <tbody
+          role='status'
+          className={winnerTypes.join(' ')}
+          aria-relevant='all'>
+          {board.map((row, rowIndex) => 
+            <tr key={rowIndex}>
+              {row.map((letter, colIndex) => 
+                <td
+                  tabIndex='0' role='button'
+                  aria-label='tic-tac-toe square'
+                  aria-disabled={letter ? true : false}
+                  key={`${rowIndex},${colIndex}`}
+                  onClick={() => handleClick(rowIndex,colIndex)}
+                  onKeyDown={(e) => {
+                    if (e.keyCode === 13 || e.keyCode === 32) {
+                      handleClick(rowIndex, colIndex)
+                    }
+                  }}>
+                    {letter}
+                </td>
+              )}
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 export default TicTacToe
