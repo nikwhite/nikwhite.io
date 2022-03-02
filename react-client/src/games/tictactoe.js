@@ -103,7 +103,7 @@ class TicTacToe extends React.Component {
 
     let winner = (rowWinner || colWinner || diagWinner) ? char : false
     
-    return  {
+    return {
       winner,
       winnerTypes
     }
@@ -162,18 +162,29 @@ class TicTacToe extends React.Component {
         </Scoreboard>
 
         <table className="ticTacToeBoard">
-          <tbody className={state.winnerTypes.join(' ')}>
-          {state.board.map((row, rowIndex) => 
-            <tr key={rowIndex}>
-              {row.map((col, colIndex) => 
-                <td 
-                  key={[rowIndex,colIndex].join()}
-                  onClick={() => this.handleClick(rowIndex,colIndex)}>
-                    {col}
-                </td>
-              )}
-            </tr>
-          )}
+          <tbody
+            role='status'
+            className={state.winnerTypes.join(' ')}
+            aria-relevant='all'>
+            {state.board.map((row, rowIndex) => 
+              <tr key={rowIndex}>
+                {row.map((letter, colIndex) => 
+                  <td
+                    tabIndex='0' role='button'
+                    aria-label='tic-tac-toe square'
+                    aria-disabled={letter ? true : false}
+                    key={`${rowIndex},${colIndex}`}
+                    onClick={() => this.handleClick(rowIndex,colIndex)}
+                    onKeyDown={(e) => {
+                      if (e.keyCode === 13 || e.keyCode === 32) {
+                        this.handleClick(rowIndex, colIndex)
+                      }
+                    }}>
+                      {letter}
+                  </td>
+                )}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
