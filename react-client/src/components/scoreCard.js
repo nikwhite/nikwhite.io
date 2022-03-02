@@ -12,7 +12,7 @@ function ScoreCard({
   }
 
   return (
-    <div className="scoreCard">
+    <div className="scoreCard" role="status">
       <div className="teamStats"> 
         {!!team &&
           <h4 className="name">{team}</h4>

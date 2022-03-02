@@ -207,21 +207,24 @@ function Connect4() {
           />
         }
       />
+      <div role="grid">
+        {board.map((row, i) => (
+          <div className="row" key={i} role="row">
+            {row.map((node, col) => (
+              <div
+                role="gridcell"
+                key={`${i},${col}`}
+                onClick={e => handleClick(col)}
+                className={`slot ${node.winner && 'winner'}`}>
+                {node.color && 
+                  <div className={node.color +'-token'}></div>
+                }
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
       
-      {board.map((row, i) => (
-        <div className="row" key={'c4,'+i}>
-          {row.map((node, col) => (
-            <div 
-              key={[i,col].join()}
-              onClick={e => handleClick(col)}
-              className={'slot '+(node.winner?'winner':'')}>
-              {node.color && 
-                <div className={node.color +'-token'}></div>
-              }
-            </div>
-          ))}
-        </div>
-      ))}
     </div>
   )
 }
