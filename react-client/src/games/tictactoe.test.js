@@ -11,12 +11,19 @@ beforeEach(() => {
 })
 
 /**
- * buttons = [
+ *  clicks clickables in order of indices = [
  *    0, 1, 2,
  *    3, 4, 5,
  *    6, 7, 8
  * ]
+ * @param {HTMLElement[]} clickables 
+ * @param {number[]} indices 
  */
+function clickStream(clickables, indices) {
+  for (let i of indices) {
+    fireEvent.click(clickables[i])
+  }
+}
 
 test('renders a tic-tac-toe board', () => {
   expect(rows).toHaveLength(3)
@@ -41,12 +48,7 @@ test('can be reset', () => {
 })
 
 test('can win horizontally', () => {
-  fireEvent.click(buttons[0]) // x
-  fireEvent.click(buttons[3]) // o
-  fireEvent.click(buttons[1]) // x
-  fireEvent.click(buttons[4]) // o
-  fireEvent.click(buttons[2]) // x = winner
-  fireEvent.click(buttons[5]) // o trys to continue play
+  clickStream(buttons, [0,3,1,4,2,5])
 
   let status = getByRole(board, 'status')
   expect(status).toHaveClass('row-0-win')
@@ -54,25 +56,22 @@ test('can win horizontally', () => {
 })
 
 test('can win vertically', () => {
-  fireEvent.click(buttons[0]) // x
-  fireEvent.click(buttons[1]) // o
-  fireEvent.click(buttons[3]) // x
-  fireEvent.click(buttons[2]) // o
-  fireEvent.click(buttons[6]) // x = winner
-  fireEvent.click(buttons[7]) // o trys to continue play
+  clickStream(buttons, [0,1,3,2,6,7])
 
   let status = getByRole(board, 'status')
   expect(status).toHaveClass('col-0-win')
   expect(buttons[7]).toBeEmptyDOMElement()
 })
 
+test('can win vertically and horizontally', () => {
+  clickStream(buttons, [2,4,6,5,3,7,1,8,0])
+
+  let status = getByRole(board, 'status')
+  expect(status).toHaveClass('col-0-win', 'row-0-win')
+})
+
 test('can win diagonally left', () => {
-  fireEvent.click(buttons[0]) // x
-  fireEvent.click(buttons[1]) // o
-  fireEvent.click(buttons[4]) // x
-  fireEvent.click(buttons[2]) // o
-  fireEvent.click(buttons[8]) // x = winner
-  fireEvent.click(buttons[7]) // o trys to continue play
+  clickStream(buttons, [0,1,4,2,8,7])
 
   let status = getByRole(board, 'status')
   expect(status).toHaveClass('diag-left-win')
@@ -80,29 +79,19 @@ test('can win diagonally left', () => {
 })
 
 test('can win diagonally right', () => {
-  fireEvent.click(buttons[2]) // x
-  fireEvent.click(buttons[1]) // o
-  fireEvent.click(buttons[4]) // x
-  fireEvent.click(buttons[3]) // o
-  fireEvent.click(buttons[6]) // x = winner
-  fireEvent.click(buttons[7]) // o trys to continue play
+  clickStream(buttons, [2,1,4,3,6,7])
 
   let status = getByRole(board, 'status')
   expect(status).toHaveClass('diag-right-win')
   expect(buttons[7]).toBeEmptyDOMElement()
 })
 
-test('can win vertically and horizontally', () => {
-  fireEvent.click(buttons[2]) // x
-  fireEvent.click(buttons[4]) // o
-  fireEvent.click(buttons[6]) // x
-  fireEvent.click(buttons[5]) // o
-  fireEvent.click(buttons[3]) // x 
-  fireEvent.click(buttons[7]) // o 
-  fireEvent.click(buttons[1]) // x
-  fireEvent.click(buttons[8]) // o 
-  fireEvent.click(buttons[0]) // x
+test('can win diagonally right and left', () => {
+  clickStream(buttons, [0,1,2,5,8,7,6,3,4])
 
   let status = getByRole(board, 'status')
-  expect(status).toHaveClass('col-0-win', 'row-0-win')
+  expect(status).toHaveClass('diag-right-win', 'diag-left-win')
 })
+
+
+

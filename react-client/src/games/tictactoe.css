@@ -55,3 +55,9 @@
     background: linear-gradient(-35deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
 }
 
+.ticTacToeBoard .diag-right-win.diag-left-win tr:nth-of-type(2) td:nth-of-type(2) {
+    background: 
+        linear-gradient(-35deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%),
+        linear-gradient(35deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 48%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,0) 100%);
+}
+
