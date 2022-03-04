@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 const STUN_HOSTS = [
   'stun:stun1.l.google.com:19302',
@@ -12,29 +12,26 @@ const ECDSA_CERT_CONFIG = {
   namedCurve: 'P-256'
 }
 
+let RTC_CERT = null
+
 function useP2PMultiplayer({
   game = '',
   gameCode = '',
-  playerID = '',
-  shouldStart = false,
-  shouldAbort = false
+  shouldStart = false
 }) {
+  const [pc, setPC] = useState(null)
+  const [ws, setWS] = useState(null)
 
-  let pc = null
-  let ws = null
-  let rtcCert = null
   function cleanup() {
-    pc = null
-    ws = null
-    rtcCert = null
+    // gracefully close pc and ws if connections are open
   }
 
   // TODO: store/retrieve from IndexedDB when available
   async function getCert() {
-    if (rtcCert) return rtcCert
+    if (RTC_CERT) return RTC_CERT
 
-    rtcCert = await RTCPeerConnection.generateCertificate(ECDSA_CERT_CONFIG)
-    return rtcCert
+    RTC_CERT = await RTCPeerConnection.generateCertificate(ECDSA_CERT_CONFIG)
+    return RTC_CERT
   }
 
   function sendIceCandidate({candidate}) {
@@ -51,25 +48,25 @@ function useP2PMultiplayer({
   async function startPeerConnection(cert) {
     if (pc) return pc
 
-    pc = new RTCPeerConnection({
+    let newPC = new RTCPeerConnection({
       iceServers,
       certificates: [cert]
     })
-    pc.addEventListener('icecandidate', sendIceCandidate)
-    pc.addEventListener('icecandidateerror', evt => console.log('iceCandidateError', evt))
-    pc.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', pc.iceConnectionState))
-    pc.addEventListener('icegatheringstatechange', ()=> console.log('iceGatheringStateChange', pc.iceGatheringState))
-    pc.addEventListener('connectionstatechange', ()=> console.log('connectionStateChange', pc.connectionState))
-    pc.addEventListener('signalingstatechange', ()=> console.log('signalingStateChange', pc.signalingState))
-    pc.addEventListener('negotiationneeded', evt => {
+    newPC.addEventListener('icecandidate', sendIceCandidate)
+    newPC.addEventListener('icecandidateerror', evt => console.log('iceCandidateError', evt))
+    newPC.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', newPC.iceConnectionState))
+    newPC.addEventListener('icegatheringstatechange', ()=> console.log('iceGatheringStateChange', newPC.iceGatheringState))
+    newPC.addEventListener('connectionstatechange', ()=> console.log('connectionStateChange', newPC.connectionState))
+    newPC.addEventListener('signalingstatechange', ()=> console.log('signalingStateChange', newPC.signalingState))
+    newPC.addEventListener('negotiationneeded', evt => {
       console.log('negotiationNeeded', evt)
     })
-
-    return pc
+    setPC(newPC)
+    return newPC
   }
 
   useEffect(() => {
-    if (!game || !gameCode) return
+    if (!game || !gameCode || !shouldStart) return
     
     async function setupPeerConnection() {
       let cert = await getCert()
@@ -84,7 +81,7 @@ function useP2PMultiplayer({
     }
 
     return cleanup
-  }, [game, gameCode, shouldStart, shouldAbort])
+  }, [game, gameCode, shouldStart])
 
   return pc
 }

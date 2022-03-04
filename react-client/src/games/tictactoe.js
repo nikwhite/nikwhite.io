@@ -2,7 +2,9 @@ import './tictactoe.css'
 import {useState} from 'react'
 import IconLink from '../components/iconLink'
 import Button from '../components/button'
+import Game from '../containers/game'
 import GameControls from '../containers/gameControls'
+import MultiplayerControl from '../components/multiplayerControl'
 import Scoreboard from '../containers/scoreboard'
 import ScoreCard from '../components/scoreCard'
 
@@ -107,7 +109,7 @@ function TicTacToe() {
   }
 
   return (
-    <div className="ticTacToe">
+    <Game name="ticTacToe">
       <h3>
         <IconLink 
           icon="github"
@@ -116,6 +118,7 @@ function TicTacToe() {
       </h3>
       <GameControls>
         <Button onClick={resetBoard}>Reset</Button>
+        <MultiplayerControl />
       </GameControls>
 
       <Scoreboard 
@@ -165,7 +168,7 @@ function TicTacToe() {
           )}
         </tbody>
       </table>
-    </div>
+    </Game>
   )
 }
 

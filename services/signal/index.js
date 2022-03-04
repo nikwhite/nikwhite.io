@@ -15,7 +15,7 @@ const {
 //  a map for sessionCode:sessionData pairs
 //------------------------------------------------//
 const store = new Map([
-  ['tictactoe', new Map()],
+  ['ticTacToe', new Map()],
   ['connect4', new Map()],
   ['go', new Map()],
 ])
@@ -49,10 +49,11 @@ function sendJsonResponse(res, data) {
 //------------------------------------------------//
 const S_KEY_TYPE = 'AES-GCM'
 
-async function generatePlayerID(game, code, player = 1) {
+async function generatePlayerID(game, code, player = 2) {
   const txtEnc = new TextEncoder()
   const data = txtEnc.encode(`${game}:${code}:player${player}`)
-  return await subtle.digest('SHA-256', data)
+  const digest = await subtle.digest('SHA-256', data)
+  return encodeBinary(digest)
 }
 
 async function generateAesKey() {
@@ -83,6 +84,24 @@ function generateSessionCode(sessions) {
   return uuid
 }
 
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+function str2ab(str) {
+  var buf = new ArrayBuffer(str.length)
+  var bufView = new Uint8Array(buf)
+  for (var i=0, strLen=str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i)
+  }
+  return buf
+}
+function encodeBinary(buf) {
+  return btoa(ab2str(buf))
+}
+function decodeBinary(str) {
+  return str2ab(atob(str))
+}
+
 //------------------------------------------------//
 //  Store object factories
 //------------------------------------------------//
@@ -103,7 +122,6 @@ async function sessionFactory(game, code) {
     generatePlayerID(game, code, 1),
     generateAesKey()
   ])
-
   return {
     aesKey,
     state: 'new',
@@ -121,19 +139,18 @@ async function createGameCode(req, res, data = {}) {
   const game = data.game
 
   if (!game || !store.has(game)) {
-    badReq(res)
+    return badReq(res)
   }
 
   const sessions = store.get(game)
   const sessionCode = generateSessionCode(sessions)
   const sessionData = await sessionFactory(game, sessionCode)
   // The session lives!
-  store.set(sessionCode, sessionData)
+  sessions.set(sessionCode, sessionData)
   console.log(`Started ${game} session: ${sessionCode}`)
-
   const ciphercode = await encryptSessionCode(sessionData.aesKey, sessionCode)
   const responseData = {
-    code: ciphercode,
+    code: encodeBinary(ciphercode),
     id: sessionData.player1.id
   }
 
@@ -156,10 +173,16 @@ const services = {
 const server = createServer()
 
 server.on('request', (req, res) => {
-  //TODO: Origin check
+  //TODO: Origin check by ENV var
+  let reqUrl;
+  try {
+    reqUrl = new URL(req.url, req.headers.origin)  
+  } catch(err) {
+    return badReq(res)
+  }
 
-  const reqUrl = new URL(req.url, req.headers.origin)
-  console.log('Request:', reqUrl)
+  const ts = new Date().toISOString()
+  console.log(`${ts} Request:`, reqUrl)
 
   const methods = services[reqUrl.pathname]
   if (!methods) {
@@ -187,10 +210,11 @@ server.on('request', (req, res) => {
   })
 })
 
-server.on('upgrade', (request, socket, head) => {
+server.on('upgrade', (req, socket, head) => {
   //TODO: Origin check
   const url = new URL(req.url, req.headers.origin)
-  console.log('Upgrade request: ', url)
+  const ts = new Date().toISOString()
+  console.log(`${ts} Upgrade Request: `, url)
 
   if (url.pathname === '/signal/ws') {
 

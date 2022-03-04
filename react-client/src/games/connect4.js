@@ -100,8 +100,7 @@ function setNeighborsAdjacentSameColorNeighbors(node) {
         })
 }
 
-function getNodesFromPosition(node, position, carry) {
-  carry = carry || []
+function getNodesFromPosition(node, position, carry = []) {
   if (node.sameColorNeighbors[position]) {
     let nextNode = node.sameColorNeighbors[position]
     carry.push(nextNode)

@@ -19,6 +19,7 @@
     "eject": "react-scripts eject",
     "deploy": "gsutil cp -r build/* gs://nikwhite.io"
   },
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": [
       "react-app",
