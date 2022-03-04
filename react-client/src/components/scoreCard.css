@@ -3,9 +3,6 @@
     display: flex;
     width: 100%;
 }
-.scoreboard .player2 .scoreCard {
-    flex-direction: row-reverse;
-}
 @media (max-width: 500px) {
     .scoreCard {
         flex-direction: column !important;

@@ -10,3 +10,6 @@
 .scoreboard .player2 {
     text-align: right;
 }
+.scoreboard .player2 > * {
+    flex-direction: row-reverse;
+}

@@ -48,9 +48,7 @@ function App() {
         <h2>Games</h2>
         <p>Local multiplayer only, for now... <code>:)</code></p>
         <p>These are coding exercises for fun. Tap the Github icon to see the code.</p>
-        <div className="game">
-          <TicTacToe />
-        </div>
+        <TicTacToe />
         <div className="game">
           <Connect4 />
         </div>

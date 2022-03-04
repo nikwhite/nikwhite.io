@@ -28,14 +28,12 @@ function Game(props) {
     shutdown,
   }
 
-
-
   return (
-    <div className={`game ${props.name}`}>
+    <section className={`game ${props.name}`}>
       <MultiplayerContext.Provider value={mpContext}>
         {props.children}
       </MultiplayerContext.Provider>
-    </div>
+    </section>
   )
 }
 

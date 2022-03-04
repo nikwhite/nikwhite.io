@@ -3,15 +3,19 @@ import MultiplayerContext from '../contexts/multiplayerContext'
 
 const FetchStates = {
   Start: 'Starting...',
-  Fetching: 'Fetching game code...',
-  Error: 'Error fetching game code',
+  Fetching: 'Fetching...',
+  Error: 'Error! Oh no!',
   Done: 'Got game code'
 }
 
 export default function useGameCode({shouldFetch = false, game = ''}) {
   const [fetchingState, setFetchingState] = useState(FetchStates.Start)
   const [fetchCount, setFetchCount] = useState(0)
-  const {gameCode, setGameCode, setPlayerID} = useContext(MultiplayerContext)
+  const {
+    gameCode, setGameCode,
+    setPlayerID,
+    setMyTurn, setTurn
+  } = useContext(MultiplayerContext)
   
   useEffect(() => {
     async function fetchCode() {
@@ -36,6 +40,8 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
         if (data?.code && data?.id) {
           setGameCode(data.code)
           setPlayerID(data.id)
+          setMyTurn(0)
+          setTurn(0)
           setFetchingState(FetchStates.Done)
           return
         }
@@ -57,7 +63,13 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
         setFetchCount(0)
       }
     }
-  }, [shouldFetch, gameCode, game, fetchCount, fetchingState, setGameCode, setPlayerID])
+  }, [
+    shouldFetch, game,
+    gameCode, setGameCode,
+    setPlayerID,
+    fetchCount, fetchingState,
+    setTurn, setMyTurn
+  ])
 
   return fetchingState
 }

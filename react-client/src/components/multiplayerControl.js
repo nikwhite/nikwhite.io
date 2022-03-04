@@ -56,7 +56,7 @@ function MultiplayerControl() {
         {isMultiplayer && <>
           <label>
             <span>Share URL</span>
-            {hasCopied && <em>copied!</em>}
+            {hasCopied && <em>Copied!</em>}
             <input
               readOnly
               className='mono'

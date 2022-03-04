@@ -22,6 +22,7 @@ const MultiplayerContext = createContext({
   setGameData: ()=>{},
   // graceful shutdown
   shutdown: ()=>{},
+  isMyTurn: ()=>{}
 })
 
 export default MultiplayerContext
