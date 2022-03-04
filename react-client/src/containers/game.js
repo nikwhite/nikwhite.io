@@ -9,6 +9,12 @@ function Game(props) {
   const [myTurn, setMyTurn] = useState('')
   const [playerID, setPlayerID] = useState('')
   const [gameData, setGameData] = useState({})
+
+  function shutdown() {
+    setIsMultiplayer(false)
+    setGameCode('')
+    setPlayerID('')
+  }
   
   const mpContext = {
     game: props.name,
@@ -19,7 +25,10 @@ function Game(props) {
     myTurn, setMyTurn,
     playerID, setPlayerID,
     gameData, setGameData,
+    shutdown,
   }
+
+
 
   return (
     <div className={`game ${props.name}`}>

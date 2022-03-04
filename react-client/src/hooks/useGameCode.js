@@ -14,8 +14,6 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
   const {gameCode, setGameCode, setPlayerID} = useContext(MultiplayerContext)
   
   useEffect(() => {
-    if (!shouldFetch || !game || gameCode) return
-
     async function fetchCode() {
       if (fetchingState === FetchStates.Fetching || fetchCount >= 5) return 
      
@@ -50,7 +48,15 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
       }
     }
 
-    fetchCode()
+    if (shouldFetch && game && !gameCode) {
+      fetchCode()
+    }
+
+    return function cleanup() {
+      if (!shouldFetch) {
+        setFetchCount(0)
+      }
+    }
   }, [shouldFetch, gameCode, game, fetchCount, fetchingState, setGameCode, setPlayerID])
 
   return fetchingState

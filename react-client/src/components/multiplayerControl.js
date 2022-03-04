@@ -1,13 +1,15 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useRef } from 'react'
 import Button from './button'
 import MultiplayerContext from '../contexts/multiplayerContext'
 import useGameCode from '../hooks/useGameCode'
+import './multiplayerControl.css'
 
 function MultiplayerControl() {
   const [hasCopied, setHasCopied] = useState(false)
   const {
     isMultiplayer, setIsMultiplayer, 
-    gameCode, game
+    gameCode, game,
+    shutdown
   } = useContext(MultiplayerContext)
 
   const fetchingState = useGameCode({ 
@@ -15,13 +17,29 @@ function MultiplayerControl() {
     game
   })
 
+  const inputRef = useRef(null)
+
   async function copyUrl() {
     try{
       await navigator.clipboard.writeText(getGameUrl())
       setHasCopied(true)
+      setTimeout(() => setHasCopied(false), 4000)
     } catch(err) {
       console.error(err)
     }
+    inputRef.current.focus()
+    inputRef.current.select()
+  }
+
+  function startMultiplayer() {
+    // triggers useGameCode shouldFetch param above
+    setIsMultiplayer(true)
+  }
+
+  function endMultiplayer() {
+    // clears existing gameCode, playerID
+    // sets isMultiplayer to false
+    shutdown()
   }
 
   function getGameUrl() {
@@ -31,25 +49,28 @@ function MultiplayerControl() {
 
   return (
     <>
-      <Button onClick={() => setIsMultiplayer(!isMultiplayer)}>
+      <Button onClick={isMultiplayer ? endMultiplayer : startMultiplayer}>
         {isMultiplayer ? 'End' : 'Start'} Multiplayer
       </Button>
-      {isMultiplayer &&
-        <div>
+      <div className={`shareUrl ${isMultiplayer && 'expandDown'}`}>
+        {isMultiplayer && <>
           <label>
-            <span>Share URL {hasCopied && <em>copied!</em>}</span>
-            <input 
+            <span>Share URL</span>
+            {hasCopied && <em>copied!</em>}
+            <input
               readOnly
+              className='mono'
+              ref={inputRef}
               value={getGameUrl() || fetchingState}
             />
-            <Button 
-              onClick={copyUrl} 
-              disabled={!gameCode}>
-              Copy
-            </Button>  
           </label>
-        </div>
-      }
+          <Button
+            onClick={copyUrl} 
+            disabled={!gameCode}>
+            Copy
+          </Button>
+        </>}
+      </div>
     </>
       
   )

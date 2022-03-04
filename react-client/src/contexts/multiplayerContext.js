@@ -20,6 +20,8 @@ const MultiplayerContext = createContext({
   // arbitrary game data, like go captures or connect4 wins
   gameData: {},
   setGameData: ()=>{},
+  // graceful shutdown
+  shutdown: ()=>{},
 })
 
 export default MultiplayerContext
