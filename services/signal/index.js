@@ -2,6 +2,7 @@
 'use strict';
 
 const { createServer } = require('http')
+const { Buffer } = require('buffer')
 const { WebSocketServer } = require('ws') 
 const { 
   subtle, 
@@ -23,14 +24,18 @@ const store = new Map([
 //------------------------------------------------//
 //  Error responders
 //------------------------------------------------//
+function endConnection(writable, reason) {
+  writable.end(`HTTP/1.1 ${reason}`, 'utf8', ()=> writable.destroy())
+  return {}
+} 
 function badReq(res) {
-  res.writeHead(400, 'Bad request').end()
+  return endConnection(res, '400 Bad request')
 }
 function notFound(res) {
-  res.writeHead(404, 'Not found').end()
+  return endConnection(res, '404 Not found')
 }
 function methodNotAllowed(res) {
-  res.writeHead(405, 'Method not allowed').end()
+  return endConnection(res, '405 Method not allowed')
 }
 
 //------------------------------------------------//
@@ -49,31 +54,47 @@ function sendJsonResponse(res, data) {
 //------------------------------------------------//
 const S_KEY_TYPE = 'AES-GCM'
 
-async function generatePlayerID(game, code, player = 2) {
+const fromBase64 = b64str => Buffer.from(b64str, 'base64')
+const toBase64 = buf => Buffer.from(buf).toString('base64')
+
+async function generatePlayerID(game, code, player) {
   const txtEnc = new TextEncoder()
   const data = txtEnc.encode(`${game}:${code}:player${player}`)
   const digest = await subtle.digest('SHA-256', data)
-  return encodeBinary(digest)
+  return toBase64(digest)
 }
 
+let AES_KEY = null
 async function generateAesKey() {
-  const key = await subtle.generateKey({
+  if (AES_KEY) return AES_KEY
+  AES_KEY = await subtle.generateKey({
     name: S_KEY_TYPE,
     length: 256
   }, true, ['encrypt', 'decrypt']);
 
-  return key
+  return AES_KEY
 }
 
-async function encryptSessionCode(key, code) {
+async function encryptSessionCode(code) {
   const txtEnc = new TextEncoder()
   const iv = getRandomValues(new Uint8Array(16))
   const ciphercode = await subtle.encrypt({
     name: S_KEY_TYPE,
     iv,
-  }, key, txtEnc.encode(code))
+  }, AES_KEY, txtEnc.encode(code))
 
-  return ciphercode
+  return [ciphercode, iv].map(toBase64).join(':')
+}
+
+async function decryptSessionCode(code) {
+  const dc = new TextDecoder()
+  const [ciphercode, iv] = code.split(':').map(fromBase64)
+  const plaintext = await subtle.decrypt({
+    name: S_KEY_TYPE,
+    iv,
+  }, AES_KEY, ciphercode)
+
+  return dc.decode(plaintext)
 }
 
 function generateSessionCode(sessions) {
@@ -84,22 +105,8 @@ function generateSessionCode(sessions) {
   return uuid
 }
 
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf));
-}
-function str2ab(str) {
-  var buf = new ArrayBuffer(str.length)
-  var bufView = new Uint8Array(buf)
-  for (var i=0, strLen=str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i)
-  }
-  return buf
-}
-function encodeBinary(buf) {
-  return btoa(ab2str(buf))
-}
-function decodeBinary(str) {
-  return str2ab(atob(str))
+function validateSession(game, code, id) {
+
 }
 
 //------------------------------------------------//
@@ -117,17 +124,17 @@ function playerFactory(id = '') {
 async function sessionFactory(game, code) {
   const [
     player1ID, 
-    aesKey
+    player2ID,
   ] = await Promise.all([
     generatePlayerID(game, code, 1),
+    generatePlayerID(game, code, 2),
     generateAesKey()
   ])
   return {
-    aesKey,
     state: 'new',
     startTime: Date.now(),
     player1: playerFactory(player1ID),
-    player2: playerFactory()
+    player2: playerFactory(player2ID)
   }
 }
 
@@ -148,13 +155,71 @@ async function createGameCode(req, res, data = {}) {
   // The session lives!
   sessions.set(sessionCode, sessionData)
   console.log(`Started ${game} session: ${sessionCode}`)
-  const ciphercode = await encryptSessionCode(sessionData.aesKey, sessionCode)
+  const ciphercode = await encryptSessionCode(sessionCode)
   const responseData = {
-    code: encodeBinary(ciphercode),
+    code: ciphercode,
     id: sessionData.player1.id
   }
 
   sendJsonResponse(res, responseData)
+}
+
+//------------------------------------------------//
+//  GET /signal/connect 
+//  upgrade: websocket
+//  searchParams: {game: string, code: string, id: string}
+//------------------------------------------------//
+async function openSocket(req, socket, head, reqUrl) {
+  console.log('Opening socket: ', reqUrl.pathname)
+  const game = reqUrl.searchParams.get('game')
+  const code = reqUrl.searchParams.get('code')
+  const playerID = reqUrl.searchParams.get('id')
+
+  // validate the game name
+  if (!store.has(game)) 
+    return badReq(socket)
+
+  // decrypt and validate the session code
+  const sessions = store.get(game)
+  const sessionCode = await decryptSessionCode(code)
+  console.log('Decrypted session code: ', sessionCode)
+
+  if (!sessions.has(sessionCode))
+    return badReq(socket)
+
+  const sessionData = sessions.get(sessionCode)
+  const isPlayer1 = sessionData.player1.id === playerID
+  const wss = new WebSocketServer({noServer: true})
+
+  wss.on('connection', (ws, req) => {
+    ws.on('message', (e) => {
+      console.log('Socket message:', e)
+    })
+    if (!isPlayer1) {
+      ws.send({id: sessionData.player2})
+    }
+  })
+
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    console.log('Handling upgrade, readyState:', ws.readyState)
+    wss.emit('connection', ws, req)
+  })
+
+  if (isPlayer1) {
+    sessionData.player1.wss = wss
+  } else {
+    sessionData.player2.wss = wss
+  }
+
+  if (sessionData.player1.wss && sessionData.state ==='new' ) {
+    sessionData.state = 'waiting'
+  }
+  if (sessionData.player1.wss && sessionData.player2.wss) {
+    sessionData.state = 'connected'
+    console.log(`Player 2 connected to session: ${sessionCode}`)
+  }
+
+  sessions.set(sessionCode, sessionData)
 }
 
 //------------------------------------------------//
@@ -167,13 +232,17 @@ const services = {
       handler: createGameCode,
       schema: 'TODO JSON Schema'
     }
+  },
+  '/signal/connect': {
+    'GET': {
+      handler: openSocket,
+      schema: 'TODO JSON Schema'
+    }
   }
 }
 
-const server = createServer()
-
-server.on('request', (req, res) => {
-  //TODO: Origin check by ENV var
+function validateRequest(req, res) {
+  //TODO: Origin check
   let reqUrl;
   try {
     reqUrl = new URL(req.url, req.headers.origin)  
@@ -181,18 +250,27 @@ server.on('request', (req, res) => {
     return badReq(res)
   }
 
-  const ts = new Date().toISOString()
-  console.log(`${ts} Request:`, reqUrl)
-
   const methods = services[reqUrl.pathname]
   if (!methods) {
     return notFound(res)
   }
 
-  const endpoint = methods[req.method]
-  if (!endpoint?.handler) {
+  const handler = methods[req.method]?.handler 
+  if (!handler) {
     return methodNotAllowed(res)
   }
+
+  return {reqUrl, handler}
+}
+
+const server = createServer()
+
+server.on('request', (req, res) => {
+  const {reqUrl, handler} = validateRequest(req, res)
+  if (!reqUrl || !handler) return
+
+  const ts = new Date().toISOString()
+  console.log(`${ts} Request:`, reqUrl.href)
 
   let body = ''
   req.setEncoding('utf8')
@@ -202,7 +280,7 @@ server.on('request', (req, res) => {
       const data = JSON.parse(body || '{}')
       // TODO: JSON Schema on data
       // send parsed reqUrl to avoid re-parsing
-      endpoint.handler(req, res, data, reqUrl)
+      handler(req, res, data, reqUrl)
     } catch (err) {
       console.log('Request JSON Parsing error', err)
       badReq(res)
@@ -211,16 +289,13 @@ server.on('request', (req, res) => {
 })
 
 server.on('upgrade', (req, socket, head) => {
-  //TODO: Origin check
-  const url = new URL(req.url, req.headers.origin)
+  const {reqUrl, handler} = validateRequest(req, socket)
+  if (!reqUrl || !handler) return
+
   const ts = new Date().toISOString()
-  console.log(`${ts} Upgrade Request: `, url)
+  console.log(`${ts} Upgrade Request: `, req.url)
 
-  if (url.pathname === '/signal/ws') {
-
-  } else {
-    socket.destroy();
-  }
+  handler(req, socket, head, reqUrl)
 })
 
 server.on('error', (...args) => {

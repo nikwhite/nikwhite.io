@@ -6,7 +6,7 @@
 
 Maximize privacy, minimize backend costs.
 
-The WebRTC Spec intentionaly leaves out when/where/why/how two peers decide to connect because this can be accomplished in varied ways depending on the application needs. This is why we need a Signaling Service to agree on the protocols, IPs, and ports used to establish a connection using [ICE](https://datatracker.ietf.org/doc/html/rfc5245). We could use post-its delivered by carrier pigeon if we wanted, but a service will do it more efficiently.
+The WebRTC Spec intentionaly leaves out when/where/why/how two peers decide to connect because this can be accomplished in varied ways depending on the application needs. This is why we need to build a Signaling Service to agree on the protocols, IPs, and ports used to establish a connection using [ICE](https://datatracker.ietf.org/doc/html/rfc5245). We could use post-its delivered by carrier pigeon if we wanted, but a service will do it more efficiently.
 
 ### Signaling Service
 

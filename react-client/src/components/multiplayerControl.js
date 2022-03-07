@@ -2,23 +2,36 @@ import { useState, useContext, useRef } from 'react'
 import Button from './button'
 import MultiplayerContext from '../contexts/multiplayerContext'
 import useGameCode from '../hooks/useGameCode'
+import useP2PMultiplayer from '../hooks/useP2PMultiplayer'
 import './multiplayerControl.css'
-
+/**
+ * MultiplayerControl implements hooks to start/stop a multiplayer
+ * session via the parent MultiplayerContext.Provider (implemented 
+ * in the <Game> container) in response to user actions
+ * @returns <ReactComponent>
+ */
 function MultiplayerControl() {
   const [hasCopied, setHasCopied] = useState(false)
   const {
     isMultiplayer, setIsMultiplayer, 
-    gameCode, game,
+    gameCode, game, playerID,
     shutdown
   } = useContext(MultiplayerContext)
-
+  // get a gameCode when one doesn't exist from the URL
+  // and the user has indicated to start the multiplayer session
   const fetchingState = useGameCode({ 
-    shouldFetch: isMultiplayer && !gameCode,
-    game
+    game,
+    shouldFetch: !gameCode && isMultiplayer,
+  })
+  // create the peer and websocket connections 
+  // once we have a gameCode
+  const peerConnection = useP2PMultiplayer({
+    game, gameCode, playerID,
+    shouldStart: gameCode && isMultiplayer,
   })
 
+  // save the url readonly input to focus and select
   const inputRef = useRef(null)
-
   async function copyUrl() {
     try{
       await navigator.clipboard.writeText(getGameUrl())

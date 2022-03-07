@@ -12,9 +12,9 @@ const MultiplayerContext = createContext({
   // the current turn
   turn: '',
   setTurn: ()=>{},
-  // if (turn === myTurn) {...}
-  myTurn: '', 
-  setMyTurn: ()=>{},
+  // if (turn !== playerTurn) {prevent board updates}
+  playerTurn: '',
+  setPlayerTurn: ()=>{},
   playerID: '',
   setPlayerID: ()=>{},
   // arbitrary game data, like go captures or connect4 wins
@@ -22,7 +22,6 @@ const MultiplayerContext = createContext({
   setGameData: ()=>{},
   // graceful shutdown
   shutdown: ()=>{},
-  isMyTurn: ()=>{}
 })
 
 export default MultiplayerContext

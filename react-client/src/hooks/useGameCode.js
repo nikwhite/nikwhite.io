@@ -14,7 +14,7 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
   const {
     gameCode, setGameCode,
     setPlayerID,
-    setMyTurn, setTurn
+    setPlayerTurn, setTurn
   } = useContext(MultiplayerContext)
   
   useEffect(() => {
@@ -38,10 +38,8 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
 
         let data = await res.json()
         if (data?.code && data?.id) {
-          setGameCode(data.code)
           setPlayerID(data.id)
-          setMyTurn(0)
-          setTurn(0)
+          setGameCode(data.code)
           setFetchingState(FetchStates.Done)
           return
         }
@@ -68,7 +66,7 @@ export default function useGameCode({shouldFetch = false, game = ''}) {
     gameCode, setGameCode,
     setPlayerID,
     fetchCount, fetchingState,
-    setTurn, setMyTurn
+    setTurn, setPlayerTurn
   ])
 
   return fetchingState
