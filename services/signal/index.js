@@ -89,11 +89,15 @@ async function encryptSessionCode(code) {
 async function decryptSessionCode(code) {
   const dc = new TextDecoder()
   const [ciphercode, iv] = code.split(':').map(fromBase64)
-  const plaintext = await subtle.decrypt({
-    name: S_KEY_TYPE,
-    iv,
-  }, AES_KEY, ciphercode)
-
+  let plaintext = new ArrayBuffer()
+  try {
+    plaintext = await subtle.decrypt({
+      name: S_KEY_TYPE,
+      iv,
+    }, AES_KEY, ciphercode)
+  } catch (err) {
+    throw err
+  }
   return dc.decode(plaintext)
 }
 
@@ -170,7 +174,6 @@ async function createGameCode(req, res, data = {}) {
 //  searchParams: {game: string, code: string, id: string}
 //------------------------------------------------//
 async function openSocket(req, socket, head, reqUrl) {
-  console.log('Opening socket: ', reqUrl.pathname)
   const game = reqUrl.searchParams.get('game')
   const code = reqUrl.searchParams.get('code')
   const playerID = reqUrl.searchParams.get('id')
@@ -181,12 +184,19 @@ async function openSocket(req, socket, head, reqUrl) {
 
   // decrypt and validate the session code
   const sessions = store.get(game)
-  const sessionCode = await decryptSessionCode(code)
+  let sessionCode = null
+  try {
+    sessionCode = await decryptSessionCode(code) 
+  } catch (err) {
+    return badReq(socket)
+  }
+   
   console.log('Decrypted session code: ', sessionCode)
 
   if (!sessions.has(sessionCode))
     return badReq(socket)
 
+  console.log('Opening socket: ', reqUrl.pathname)
   const sessionData = sessions.get(sessionCode)
   const isPlayer1 = sessionData.player1.id === playerID
   const wss = new WebSocketServer({noServer: true})
@@ -196,7 +206,7 @@ async function openSocket(req, socket, head, reqUrl) {
       console.log('Socket message:', e)
     })
     if (!isPlayer1) {
-      ws.send({id: sessionData.player2})
+      ws.send(JSON.stringify({id: sessionData.player2.id}))
     }
   })
 
@@ -293,7 +303,7 @@ server.on('upgrade', (req, socket, head) => {
   if (!reqUrl || !handler) return
 
   const ts = new Date().toISOString()
-  console.log(`${ts} Upgrade Request: `, req.url)
+  console.log(`${ts} Upgrade Request: `, reqUrl.href)
 
   handler(req, socket, head, reqUrl)
 })

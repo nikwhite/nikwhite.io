@@ -4,12 +4,12 @@ import MultiplayerContext from '../contexts/multiplayerContext'
 //TODO handle multiple games per session
 const url = new URL(window.location.href)
 const hash = url.hash?.[0] === '#' ? url.hash.substring(1) : url.hash
-const [gameFromUrl, codeFromUrl] = hash.split(':')
+const [gameFromUrl, codeFromUrl, iv] = hash.split(':')
 
 function Game(props) {
   const gameHasCode = (props.name === gameFromUrl && !!codeFromUrl)
   const [isMultiplayer, setIsMultiplayer] = useState(gameHasCode ? true : false)
-  const [gameCode, setGameCode] = useState(gameHasCode ? codeFromUrl : '')
+  const [gameCode, setGameCode] = useState(gameHasCode ? [codeFromUrl, iv].join(':') : '')
   const [board, setBoard] = useState([[]])
   const [turn, setTurn] = useState(0)
   const [playerTurn, setPlayerTurn] = useState(0)
