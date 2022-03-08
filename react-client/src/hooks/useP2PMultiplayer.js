@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const STUN_HOSTS = [
   'stun:stun1.l.google.com:19302',
@@ -18,23 +18,28 @@ function useP2PMultiplayer({
   game = '',
   gameCode = '',
   playerID = '',
-  shouldStart = false
+  shouldStart = false,
+  setPlayerID,
 }) {
-  const [pc, setPC] = useState(null)
-  const [ws, setWS] = useState(null)
+  // RTCPeerConnection
+  const pc = useRef(null)
+  // WebSocket
+  const ws = useRef(null)
+  // RTCDataChannel - returned from effect
+  const dc = useRef(null)
+
   const [hasStarted, setHasStarted] = useState(false)
-  const [iceCandidates, setIceCandidates] = useState([])
+  const [messageQueue, setMessageQueue] = useState(new Set())
 
   useEffect(() => {
     if (hasStarted && !shouldStart) {
       try {
-        ws.close()
-        pc.close()
-      } catch (err) {
-        console.log(err)
-      }
-      setWS(null)
-      setPC(null)
+        ws.current?.close()
+        pc.current?.close()
+      } catch (err) {}
+      ws.current = null
+      pc.current = null
+      dc.current = null
       setHasStarted(false)
     }
     // playerID is optional to start (for player 2), but should
@@ -67,56 +72,113 @@ function useP2PMultiplayer({
       return url.href
     }
 
-    function sendIceCandidate({candidate}) {
-      console.log('sending candidate', candidate)
-      ws.send({candidate})
+    function drainMessageQueue() {
+      if (!messageQueue.size) return
+
+      for (const msg of messageQueue) {
+        sendWebsocketMessage(msg)
+      }
+      setMessageQueue(new Set())
     }
 
-    function startWebSocketConnection(game, code) {
-      if (ws) return ws
+    function sendWebsocketMessage(msg) {
+      if (ws.current && ws.current.readyState === 1) {
+        console.log('Sending Websocket message', msg)
+        ws.current.send(JSON.stringify(msg))
+      } else {
+        messageQueue.add(msg)
+        setMessageQueue(messageQueue)
+        console.log('Websocket not ready for message: ', msg)
+        console.log('Message queue: ', messageQueue)
+      }
+    }
+
+    async function answerOffer(offer) {
+      if (!offer) return
+
+      console.log('Got offer', offer)
+      pc.current.setRemoteDescription(offer)
+      const answer = await pc.createAnswer()
+      pc.current.setLocalDescription(answer)
+      console.log('Sending answer', answer)
+      sendWebsocketMessage({answer})
+    }
+
+    async function setAnswer(answer) {
+      if (!answer) return
+
+      console.log('Got answer', answer)
+      pc.current.setRemoteDescription(answer)
+    }
+
+    function startWebSocketConnection() {
+      if (ws.current) return ws.current
       
       try {
-        let newWS = new WebSocket(getWebsocketUrl())
-        newWS.addEventListener('open', e => {
+        ws.current = new WebSocket(getWebsocketUrl())
+        ws.current.addEventListener('open', e => {
           console.log('Socket open', e)
+          drainMessageQueue()
         })
-        newWS.addEventListener('message', e => {
+        ws.current.addEventListener('message', e => {
           console.log('Socket message', e)
+          let data = {}
+          try {
+            data = JSON.parse(e.data)
+          } catch (err) {
+            return console.error(err)
+          }
+          if (data.id) {
+            setPlayerID(data.id)
+          }
+          answerOffer(data.offer)
+          setAnswer(data.answer)
         })
-        newWS.addEventListener('close', e => {
+        ws.current.addEventListener('close', e => {
           console.log('Socket closed', e)
-          setWS(null)
+          ws.current = null
         })
-        newWS.addEventListener('error', e => {
+        ws.current.addEventListener('error', e => {
           console.log('Socket error', e)
-          setWS(null)
+          ws.current = null
         })
-        setWS(newWS)
-        return newWS
+        return ws.current
       } catch(err) {
         console.error(err)
       }
     }
 
     function startPeerConnection() {
-      if (pc) return pc
+      if (pc.current) return pc.current
       try {
-        let newPC = new RTCPeerConnection({
+        pc.current = new RTCPeerConnection({
           iceServers,
           certificates: [rtcCert]
         })
-        newPC.addEventListener('icecandidate', sendIceCandidate)
-        newPC.addEventListener('icecandidateerror', evt => console.log('iceCandidateError', evt))
-        newPC.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', newPC.iceConnectionState))
-        newPC.addEventListener('icegatheringstatechange', ()=> console.log('iceGatheringStateChange', newPC.iceGatheringState))
-        newPC.addEventListener('connectionstatechange', ()=> console.log('connectionStateChange', newPC.connectionState))
-        newPC.addEventListener('signalingstatechange', ()=> console.log('signalingStateChange', newPC.signalingState))
-        newPC.addEventListener('negotiationneeded', evt => {
-          console.log('negotiationNeeded', evt)
+
+        pc.current.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', pc.current.iceConnectionState))
+        pc.current.addEventListener('icegatheringstatechange', async ()=> {
+          console.log('ICE Gathering State changed to:', pc.current.iceGatheringState)
+          if (pc.current.iceGatheringState === 'complete'){
+            const offer = await pc.current.createOffer()
+            await pc.current.setLocalDescription(offer)
+            console.log('new offer', pc.current.localDescription)
+            sendWebsocketMessage({offer: pc.current.localDescription})
+          }
         })
-        newPC.createDataChannel('gameData', {negotiated: true, id: 0})
-        setPC(newPC)
-        return newPC
+        pc.current.addEventListener('connectionstatechange', ()=> console.log('Connection State changed to', pc.current.connectionState))
+        pc.current.addEventListener('signalingstatechange', ()=> console.log('Signaling State changed to', pc.current.signalingState))
+        pc.current.addEventListener('datachannel', e => console.log('datachannel', e))
+        pc.current.addEventListener('negotiationneeded', async (e) => {
+          console.log('Negotiation started')
+          const offer = await pc.current.createOffer()
+          // This starts ICE gathering
+          pc.current.setLocalDescription(offer)
+        })
+
+        dc.current = pc.current.createDataChannel('game', {negotiated: true, id: 0})
+
+        return pc.current
       } catch(err) {
         console.error(err)
       }
@@ -134,10 +196,10 @@ function useP2PMultiplayer({
     }
     
     setupPeerConnection()
+ 
+  }, [game, gameCode, playerID, shouldStart, hasStarted, setPlayerID, messageQueue])
 
-  }, [game, gameCode, playerID, shouldStart, hasStarted, pc, ws])
-
-  return pc
+  return dc.current
 }
 
 export default useP2PMultiplayer

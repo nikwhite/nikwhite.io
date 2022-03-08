@@ -15,7 +15,7 @@ function MultiplayerControl() {
   const {
     isMultiplayer, setIsMultiplayer, 
     gameCode, game, playerID,
-    shutdown
+    shutdown, setPlayerID
   } = useContext(MultiplayerContext)
   // get a gameCode when one doesn't exist from the URL
   // and the user has indicated to start the multiplayer session
@@ -25,8 +25,8 @@ function MultiplayerControl() {
   })
   // create the peer and websocket connections 
   // once we have a gameCode
-  const peerConnection = useP2PMultiplayer({
-    game, gameCode, playerID,
+  const dataChannel = useP2PMultiplayer({
+    game, gameCode, playerID, setPlayerID,
     shouldStart: gameCode && isMultiplayer,
   })
 

@@ -119,7 +119,7 @@ function validateSession(game, code, id) {
 function playerFactory(id = '') {
   return { 
     id,
-    wss: null,
+    ws: null,
     iceCandidates: [],
     isRtcConnected: false
   }
@@ -186,11 +186,11 @@ async function openSocket(req, socket, head, reqUrl) {
   const sessions = store.get(game)
   let sessionCode = null
   try {
-    sessionCode = await decryptSessionCode(code) 
+    sessionCode = await decryptSessionCode(code)
   } catch (err) {
     return badReq(socket)
   }
-   
+
   console.log('Decrypted session code: ', sessionCode)
 
   if (!sessions.has(sessionCode))
@@ -201,35 +201,48 @@ async function openSocket(req, socket, head, reqUrl) {
   const isPlayer1 = sessionData.player1.id === playerID
   const wss = new WebSocketServer({noServer: true})
 
-  wss.on('connection', (ws, req) => {
-    ws.on('message', (e) => {
-      console.log('Socket message:', e)
-    })
-    if (!isPlayer1) {
+  wss.on('connection', (ws) => {
+    if (isPlayer1) {
+      sessionData.player1.ws = ws
+    } else {
+      sessionData.player2.ws = ws
       ws.send(JSON.stringify({id: sessionData.player2.id}))
     }
+
+    if (sessionData.player1.ws && sessionData.state ==='new' ) {
+      sessionData.state = 'waiting'
+    }
+    if (sessionData.player1.ws && sessionData.player2.ws) {
+      sessionData.state = 'connected'
+      console.log(`Player 2 connected to session: ${sessionCode}`)
+    }
+
+    sessions.set(sessionCode, sessionData)
+
+    function forwardMessage(msg) {
+
+    }
+
+    ws.on('message', (data) => {
+      console.log('Socket message:', data)
+      // if (isPlayer1) {
+      //   sessionData.player2.ws.send(msg)
+      // } else {
+      //   sessionData.player1.ws.send(msg)
+      // }
+    })
+    ws.on('close', (code, reason) => {
+      console.log('Socket closed', code, reason.toString('utf8'))
+    })
+    ws.on('error', (err) => {
+      console.log('Socket error', err)
+    })
   })
 
   wss.handleUpgrade(req, socket, head, (ws) => {
     console.log('Handling upgrade, readyState:', ws.readyState)
     wss.emit('connection', ws, req)
   })
-
-  if (isPlayer1) {
-    sessionData.player1.wss = wss
-  } else {
-    sessionData.player2.wss = wss
-  }
-
-  if (sessionData.player1.wss && sessionData.state ==='new' ) {
-    sessionData.state = 'waiting'
-  }
-  if (sessionData.player1.wss && sessionData.player2.wss) {
-    sessionData.state = 'connected'
-    console.log(`Player 2 connected to session: ${sessionCode}`)
-  }
-
-  sessions.set(sessionCode, sessionData)
 }
 
 //------------------------------------------------//
