@@ -12,7 +12,7 @@ function Game(props) {
   const [gameCode, setGameCode] = useState(gameHasCode ? [codeFromUrl, iv].join(':') : '')
   const [board, setBoard] = useState([[]])
   const [turn, setTurn] = useState(0)
-  const [playerTurn, setPlayerTurn] = useState(0)
+  const [playerTurn, setPlayerTurn] = useState(gameHasCode ? 1 : 0)
   const [playerID, setPlayerID] = useState('')
   const [gameData, setGameData] = useState({})
 

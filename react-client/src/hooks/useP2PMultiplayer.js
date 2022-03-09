@@ -20,6 +20,7 @@ function useP2PMultiplayer({
   playerID = '',
   shouldStart = false,
   setPlayerID,
+  playerTurn,
 }) {
   // RTCPeerConnection
   const pc = useRef(null)
@@ -30,6 +31,7 @@ function useP2PMultiplayer({
 
   const [hasStarted, setHasStarted] = useState(false)
   const [messageQueue, setMessageQueue] = useState(new Set())
+  const [connectionStatus, setConnectionStatus] = useState('new')
 
   useEffect(() => {
     if (hasStarted && !shouldStart) {
@@ -41,6 +43,7 @@ function useP2PMultiplayer({
       pc.current = null
       dc.current = null
       setHasStarted(false)
+      setConnectionStatus('')
     }
     // playerID is optional to start (for player 2), but should
     // be set by player 1 before shouldStart is set to true
@@ -97,8 +100,8 @@ function useP2PMultiplayer({
       if (!offer) return
 
       console.log('Got offer', offer)
-      pc.current.setRemoteDescription(offer)
-      const answer = await pc.createAnswer()
+      await pc.current.setRemoteDescription(offer)
+      const answer = await pc.current.createAnswer()
       pc.current.setLocalDescription(answer)
       console.log('Sending answer', answer)
       sendWebsocketMessage({answer})
@@ -119,6 +122,7 @@ function useP2PMultiplayer({
         ws.current.addEventListener('open', e => {
           console.log('Socket open', e)
           drainMessageQueue()
+          setConnectionStatus('Waiting for Player 2')
         })
         ws.current.addEventListener('message', e => {
           console.log('Socket message', e)
@@ -164,21 +168,28 @@ function useP2PMultiplayer({
             await pc.current.setLocalDescription(offer)
             console.log('new offer', pc.current.localDescription)
             sendWebsocketMessage({offer: pc.current.localDescription})
+            setConnectionStatus('Sending connectivity data')
           }
         })
-        pc.current.addEventListener('connectionstatechange', ()=> console.log('Connection State changed to', pc.current.connectionState))
+        pc.current.addEventListener('connectionstatechange', ()=> {
+          console.log('Connection State changed to', pc.current.connectionState)
+          setConnectionStatus(pc.current.connectionState)
+        })
         pc.current.addEventListener('signalingstatechange', ()=> console.log('Signaling State changed to', pc.current.signalingState))
-        pc.current.addEventListener('datachannel', e => console.log('datachannel', e))
+        pc.current.addEventListener('datachannel', e => console.log('DataChannel', e))
         pc.current.addEventListener('negotiationneeded', async (e) => {
+          // only player 1 starts negotiations
+          if (playerTurn !== 0) return
+
           console.log('Negotiation started')
           const offer = await pc.current.createOffer()
           // This starts ICE gathering
           pc.current.setLocalDescription(offer)
+          setConnectionStatus('Gathering connectivity data')
         })
 
         dc.current = pc.current.createDataChannel('game', {negotiated: true, id: 0})
 
-        return pc.current
       } catch(err) {
         console.error(err)
       }
@@ -197,9 +208,17 @@ function useP2PMultiplayer({
     
     setupPeerConnection()
  
-  }, [game, gameCode, playerID, shouldStart, hasStarted, setPlayerID, messageQueue])
+  }, [
+    game, gameCode, 
+    playerID,  playerTurn, setPlayerID,
+    shouldStart, hasStarted,
+    messageQueue,
+  ])
 
-  return dc.current
+  return {
+    dataChannel: dc.current,
+    connectionStatus
+  }
 }
 
 export default useP2PMultiplayer

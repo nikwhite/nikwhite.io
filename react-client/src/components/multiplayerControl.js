@@ -14,7 +14,7 @@ function MultiplayerControl() {
   const [hasCopied, setHasCopied] = useState(false)
   const {
     isMultiplayer, setIsMultiplayer, 
-    gameCode, game, playerID,
+    gameCode, game, playerID, playerTurn,
     shutdown, setPlayerID
   } = useContext(MultiplayerContext)
   // get a gameCode when one doesn't exist from the URL
@@ -28,6 +28,7 @@ function MultiplayerControl() {
   const dataChannel = useP2PMultiplayer({
     game, gameCode, playerID, setPlayerID,
     shouldStart: gameCode && isMultiplayer,
+    playerTurn
   })
 
   // save the url readonly input to focus and select

@@ -120,7 +120,7 @@ function playerFactory(id = '') {
   return { 
     id,
     ws: null,
-    iceCandidates: [],
+    messageQueue: new Set(),
     isRtcConnected: false
   }
 }
@@ -173,6 +173,7 @@ async function createGameCode(req, res, data = {}) {
 //  upgrade: websocket
 //  searchParams: {game: string, code: string, id: string}
 //------------------------------------------------//
+const WS_SEND_OPTS = {binary: false}
 async function openSocket(req, socket, head, reqUrl) {
   const game = reqUrl.searchParams.get('game')
   const code = reqUrl.searchParams.get('code')
@@ -201,12 +202,14 @@ async function openSocket(req, socket, head, reqUrl) {
   const isPlayer1 = sessionData.player1.id === playerID
   const wss = new WebSocketServer({noServer: true})
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', ws => {
     if (isPlayer1) {
       sessionData.player1.ws = ws
+      flushMessageQueue(sessionData.player1.messageQueue, ws)
     } else {
       sessionData.player2.ws = ws
-      ws.send(JSON.stringify({id: sessionData.player2.id}))
+      sendPlayer2Message(JSON.stringify({id: sessionData.player2.id}))
+      flushMessageQueue(sessionData.player2.messageQueue, ws)
     }
 
     if (sessionData.player1.ws && sessionData.state ==='new' ) {
@@ -219,17 +222,59 @@ async function openSocket(req, socket, head, reqUrl) {
 
     sessions.set(sessionCode, sessionData)
 
-    function forwardMessage(msg) {
+    function flushMessageQueue(queue, socket) {
+      if (!queue.size) return
+      if (socket.readyState === 1) {
+        for (const msg of queue) {
+          socket.send(msg, WS_SEND_OPTS)
+        }
+        queue.clear()
+      } else {
+        socket.once('open', () => {
+          flushMessageQueue(queue, socket)
+        })
+      }
+    }
 
+    function sendPlayer1Message(msg) {
+      const p1ws = sessionData.player1.ws 
+      if (p1ws && p1ws.readyState === 1) {
+        p1ws.send(msg, WS_SEND_OPTS)
+      } else {
+        sessionData.player1.messageQueue.add(msg)
+      }
+    }
+
+    function sendPlayer2Message(msg) {
+      const p2ws = sessionData.player2.ws 
+      if (p2ws && p2ws.readyState === 1) {
+        p2ws.send(msg, WS_SEND_OPTS)
+      } else {
+        sessionData.player2.messageQueue.add(msg)
+      }
+    }
+
+    function sendMessage(msg) {
+      if (isPlayer1) {
+        sendPlayer2Message(msg)
+      } else {
+        sendPlayer1Message(msg)
+      }
     }
 
     ws.on('message', (data) => {
-      console.log('Socket message:', data)
-      // if (isPlayer1) {
-      //   sessionData.player2.ws.send(msg)
-      // } else {
-      //   sessionData.player1.ws.send(msg)
-      // }
+      let json = {}
+      //TODO: JSON Schema check
+      try {
+        data = data.toString('utf8')
+        json = JSON.parse(data)
+      } catch(err) {
+        console.log('Parsing error', err)
+      }
+      console.log(`
+      Socket message ${Object.keys(json).join()} from ${isPlayer1?'player1':'player2'}
+      `)
+      sendMessage(data)
     })
     ws.on('close', (code, reason) => {
       console.log('Socket closed', code, reason.toString('utf8'))
