@@ -271,9 +271,7 @@ async function openSocket(req, socket, head, reqUrl) {
       } catch(err) {
         console.log('Parsing error', err)
       }
-      console.log(`
-      Socket message ${Object.keys(json).join()} from ${isPlayer1?'player1':'player2'}
-      `)
+      console.log(`${sessionCode}: ${Object.keys(json).join()} from ${isPlayer1?'player1':'player2'}`)
       sendMessage(data)
     })
     ws.on('close', (code, reason) => {
@@ -361,7 +359,7 @@ server.on('upgrade', (req, socket, head) => {
   if (!reqUrl || !handler) return
 
   const ts = new Date().toISOString()
-  console.log(`${ts} Upgrade Request: `, reqUrl.href)
+  console.log(`${ts} Upgrade Request: `, reqUrl.pathname)
 
   handler(req, socket, head, reqUrl)
 })

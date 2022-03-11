@@ -25,7 +25,7 @@ function MultiplayerControl() {
   })
   // create the peer and websocket connections 
   // once we have a gameCode
-  const dataChannel = useP2PMultiplayer({
+  const {dataChannel} = useP2PMultiplayer({
     game, gameCode, playerID, setPlayerID,
     shouldStart: gameCode && isMultiplayer,
     playerTurn
@@ -35,6 +35,8 @@ function MultiplayerControl() {
   const inputRef = useRef(null)
   async function copyUrl() {
     try{
+      // store the game fragment in the URL to survive refreshes
+      document.location.hash = getGameFragment(true)
       await navigator.clipboard.writeText(getGameUrl())
       setHasCopied(true)
       setTimeout(() => setHasCopied(false), 4000)
@@ -56,9 +58,14 @@ function MultiplayerControl() {
     shutdown()
   }
 
+  function getGameFragment(withID) {
+    let fragment = `${game}:${gameCode}`
+    return withID && playerID ? `${fragment}:${playerID}` : fragment
+  }
+
   function getGameUrl() {
     if (!gameCode) return
-    return `${window.location.origin}/#${game}:${gameCode}`
+    return `${window.location.origin}/#${getGameFragment(false)}`
   }
 
   return (
@@ -86,7 +93,6 @@ function MultiplayerControl() {
         </>}
       </div>
     </>
-      
   )
 }
 

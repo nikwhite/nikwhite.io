@@ -31,7 +31,7 @@ function useP2PMultiplayer({
 
   const [hasStarted, setHasStarted] = useState(false)
   const [messageQueue, setMessageQueue] = useState(new Set())
-  const [connectionStatus, setConnectionStatus] = useState('new')
+  const [connectionStatus, setConnectionStatus] = useState('')
 
   useEffect(() => {
     if (hasStarted && !shouldStart) {
@@ -114,6 +114,14 @@ function useP2PMultiplayer({
       pc.current.setRemoteDescription(answer)
     }
 
+    async function createOffer() {
+      const offer = await pc.current.createOffer()
+      pc.current.setLocalDescription(offer)
+      console.log('Created offer', offer)
+      sendWebsocketMessage({offer})
+      setConnectionStatus('Sending connectivity data')
+    }
+
     function startWebSocketConnection() {
       if (ws.current) return ws.current
       
@@ -122,7 +130,6 @@ function useP2PMultiplayer({
         ws.current.addEventListener('open', e => {
           console.log('Socket open', e)
           drainMessageQueue()
-          setConnectionStatus('Waiting for Player 2')
         })
         ws.current.addEventListener('message', e => {
           console.log('Socket message', e)
@@ -161,27 +168,28 @@ function useP2PMultiplayer({
         })
 
         pc.current.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', pc.current.iceConnectionState))
-        pc.current.addEventListener('icegatheringstatechange', async ()=> {
+        pc.current.addEventListener('icegatheringstatechange', ()=> {
           console.log('ICE Gathering State changed to:', pc.current.iceGatheringState)
           if (pc.current.iceGatheringState === 'complete'){
-            const offer = await pc.current.createOffer()
-            await pc.current.setLocalDescription(offer)
-            console.log('new offer', pc.current.localDescription)
-            sendWebsocketMessage({offer: pc.current.localDescription})
-            setConnectionStatus('Sending connectivity data')
+            createOffer()
           }
         })
         pc.current.addEventListener('connectionstatechange', ()=> {
           console.log('Connection State changed to', pc.current.connectionState)
           setConnectionStatus(pc.current.connectionState)
+          // if player 2 disconnects, attempt a resend a new offer
+          // if player 1 disconnects, negotiation will trigger a new offer
+          if (pc.current.connectionState === 'failed' && playerTurn === 0) {
+            createOffer()
+          }
         })
         pc.current.addEventListener('signalingstatechange', ()=> console.log('Signaling State changed to', pc.current.signalingState))
         pc.current.addEventListener('datachannel', e => console.log('DataChannel', e))
         pc.current.addEventListener('negotiationneeded', async (e) => {
           // only player 1 starts negotiations
+          console.log('Negotiation needed')
           if (playerTurn !== 0) return
-
-          console.log('Negotiation started')
+          
           const offer = await pc.current.createOffer()
           // This starts ICE gathering
           pc.current.setLocalDescription(offer)
