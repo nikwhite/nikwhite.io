@@ -121,8 +121,23 @@ function playerFactory(id = '') {
     id,
     ws: null,
     messageQueue: new Set(),
-    isRtcConnected: false
+    isRtcConnected: false,
   }
+}
+
+function flushMessageQueue(queue, socket) {
+  if (!queue.size) return
+  if (socket.readyState === 1) {
+    for (const msg of queue) {
+      socket.send(msg, WS_SEND_OPTS)
+    }
+    queue.clear()
+  } else {
+    socket.once('open', () => {
+      flushMessageQueue(queue, socket)
+    })
+  }
+
 }
 
 async function sessionFactory(game, code) {
@@ -137,6 +152,9 @@ async function sessionFactory(game, code) {
   return {
     state: 'new',
     startTime: Date.now(),
+    // save the initial offer in case there is a 
+    // connection issue before RTC connection established
+    initOffer: null,
     player1: playerFactory(player1ID),
     player2: playerFactory(player2ID)
   }
@@ -209,7 +227,13 @@ async function openSocket(req, socket, head, reqUrl) {
     } else {
       sessionData.player2.ws = ws
       sendPlayer2Message(JSON.stringify({id: sessionData.player2.id}))
-      flushMessageQueue(sessionData.player2.messageQueue, ws)
+      // if Player 2 reconnects before an RTC session is established
+      // we will resend the initial offer
+      if (sessionData.player2.messageQueue.size) {
+        flushMessageQueue(sessionData.player2.messageQueue, ws)
+      } else {
+        sendPlayer2Message(sessionData.initOffer)
+      }
     }
 
     if (sessionData.player1.ws && sessionData.state ==='new' ) {
@@ -221,20 +245,6 @@ async function openSocket(req, socket, head, reqUrl) {
     }
 
     sessions.set(sessionCode, sessionData)
-
-    function flushMessageQueue(queue, socket) {
-      if (!queue.size) return
-      if (socket.readyState === 1) {
-        for (const msg of queue) {
-          socket.send(msg, WS_SEND_OPTS)
-        }
-        queue.clear()
-      } else {
-        socket.once('open', () => {
-          flushMessageQueue(queue, socket)
-        })
-      }
-    }
 
     function sendPlayer1Message(msg) {
       const p1ws = sessionData.player1.ws 
@@ -271,11 +281,21 @@ async function openSocket(req, socket, head, reqUrl) {
       } catch(err) {
         console.log('Parsing error', err)
       }
-      console.log(`${sessionCode}: ${Object.keys(json).join()} from ${isPlayer1?'player1':'player2'}`)
+
+      const descriptionType = json.offer ? 'offer' : json.answer?.type
+      if (descriptionType === 'offer') {
+        sessionData.initOffer = data
+      }
+      console.log(`${sessionCode}: ${descriptionType || data} from ${isPlayer1?'player1':'player2'}`)
       sendMessage(data)
     })
     ws.on('close', (code, reason) => {
       console.log('Socket closed', code, reason.toString('utf8'))
+      if (isPlayer1) {
+        sessionData.player1.ws = null
+      } else {
+        sessionData.player2.ws = null
+      }
     })
     ws.on('error', (err) => {
       console.log('Socket error', err)

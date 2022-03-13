@@ -28,21 +28,23 @@ function useP2PMultiplayer({
   const ws = useRef(null)
   // RTCDataChannel - returned from effect
   const dc = useRef(null)
-
   const [hasStarted, setHasStarted] = useState(false)
   const [messageQueue, setMessageQueue] = useState(new Set())
   const [connectionStatus, setConnectionStatus] = useState('')
 
   useEffect(() => {
+    const isPlayer1 = playerTurn === 0
     if (hasStarted && !shouldStart) {
       try {
         ws.current?.close()
         pc.current?.close()
       } catch (err) {}
+      //TODO: is nulling satisfoactory for preventing memory leakage?
       ws.current = null
       pc.current = null
       dc.current = null
       setHasStarted(false)
+      setMessageQueue(new Set())
       setConnectionStatus('')
     }
     // playerID is optional to start (for player 2), but should
@@ -96,30 +98,35 @@ function useP2PMultiplayer({
       }
     }
 
-    async function answerOffer(offer) {
+    async function setOffer(offer) {
       if (!offer) return
 
       console.log('Got offer', offer)
-      await pc.current.setRemoteDescription(offer)
-      const answer = await pc.current.createAnswer()
-      pc.current.setLocalDescription(answer)
-      console.log('Sending answer', answer)
-      sendWebsocketMessage({answer})
+      pc.current.setRemoteDescription(offer)
     }
 
     async function setAnswer(answer) {
-      if (!answer) return
+      if (!answer || pc.current.signalingState === 'stable') return
 
       console.log('Got answer', answer)
       pc.current.setRemoteDescription(answer)
     }
 
-    async function createOffer() {
-      const offer = await pc.current.createOffer()
+    async function createOffer(iceRestart) {
+      const offer = await pc.current.createOffer({iceRestart})
       pc.current.setLocalDescription(offer)
       console.log('Created offer', offer)
       sendWebsocketMessage({offer})
-      setConnectionStatus('Sending connectivity data')
+    }
+
+    async function createAnswer() {
+      const answer = await pc.current.createAnswer()
+      if (pc.current.iceGatheringState !== 'complete') {
+        answer.type = 'pranswer'
+      }
+      pc.current.setLocalDescription(answer)
+      console.log('Sending answer', answer)
+      sendWebsocketMessage({answer})
     }
 
     function startWebSocketConnection() {
@@ -142,7 +149,7 @@ function useP2PMultiplayer({
           if (data.id) {
             setPlayerID(data.id)
           }
-          answerOffer(data.offer)
+          setOffer(data.offer)
           setAnswer(data.answer)
         })
         ws.current.addEventListener('close', e => {
@@ -159,6 +166,20 @@ function useP2PMultiplayer({
       }
     }
 
+    function needsFullOffer() {
+      return ( isPlayer1 
+        && pc.current.iceGatheringState === 'complete' 
+        && pc.current.signalingState === 'have-local-offer'
+      )
+    }
+
+    function needsFullAnswer() {
+      return ( !isPlayer1 
+        && pc.current.iceGatheringState === 'complete' 
+        && pc.current.signalingState === 'have-local-pranswer'
+      )
+    }
+
     function startPeerConnection() {
       if (pc.current) return pc.current
       try {
@@ -170,30 +191,41 @@ function useP2PMultiplayer({
         pc.current.addEventListener('iceconnectionstatechange', ()=> console.log('iceConnectionStateChange', pc.current.iceConnectionState))
         pc.current.addEventListener('icegatheringstatechange', ()=> {
           console.log('ICE Gathering State changed to:', pc.current.iceGatheringState)
-          if (pc.current.iceGatheringState === 'complete'){
+          if ( needsFullOffer() ) {
             createOffer()
+            setConnectionStatus('waiting for player 2')
+          } else if ( needsFullAnswer() ) {
+            createAnswer()
           }
         })
         pc.current.addEventListener('connectionstatechange', ()=> {
           console.log('Connection State changed to', pc.current.connectionState)
           setConnectionStatus(pc.current.connectionState)
+          // if (pc.current.connectionState === 'connected') {
+          //   sendWebsocketMessage({rtcConnected: true})
+          // }
           // if player 2 disconnects, attempt a resend a new offer
           // if player 1 disconnects, negotiation will trigger a new offer
-          if (pc.current.connectionState === 'failed' && playerTurn === 0) {
-            createOffer()
+          if (isPlayer1 && pc.current.connectionState === 'failed') {
+            createOffer(true)
           }
         })
-        pc.current.addEventListener('signalingstatechange', ()=> console.log('Signaling State changed to', pc.current.signalingState))
-        pc.current.addEventListener('datachannel', e => console.log('DataChannel', e))
+        pc.current.addEventListener('signalingstatechange', ()=> {
+          console.log('Signaling State changed to', pc.current.signalingState)
+          switch (pc.current.signalingState) {
+            case 'have-remote-offer': createAnswer(); break;
+            default: break;
+          }
+        })
         pc.current.addEventListener('negotiationneeded', async (e) => {
-          // only player 1 starts negotiations
           console.log('Negotiation needed')
-          if (playerTurn !== 0) return
-          
+          // only player 1 starts negotiations
+          if (!isPlayer1) return
+
+          setConnectionStatus('connecting')
           const offer = await pc.current.createOffer()
           // This starts ICE gathering
           pc.current.setLocalDescription(offer)
-          setConnectionStatus('Gathering connectivity data')
         })
 
         dc.current = pc.current.createDataChannel('game', {negotiated: true, id: 0})

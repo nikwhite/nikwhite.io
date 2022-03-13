@@ -25,7 +25,10 @@ function MultiplayerControl() {
   })
   // create the peer and websocket connections 
   // once we have a gameCode
-  const {dataChannel} = useP2PMultiplayer({
+  const {
+    dataChannel,
+    connectionStatus
+  } = useP2PMultiplayer({
     game, gameCode, playerID, setPlayerID,
     shouldStart: gameCode && isMultiplayer,
     playerTurn
@@ -84,6 +87,9 @@ function MultiplayerControl() {
               ref={inputRef}
               value={getGameUrl() || fetchingState}
             />
+            {connectionStatus &&
+              <span role='status'>{connectionStatus}</span>
+            }
           </label>
           <Button
             onClick={copyUrl} 

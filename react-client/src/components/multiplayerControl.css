@@ -7,7 +7,8 @@
 
 .shareUrl.expandDown {
   padding-top: 1em;
-  height: calc(3em + 2px);
+  padding-bottom: 0.5em;
+  height: calc(3.5em + 2px);
 }
 .shareUrl label {
   position: relative;
@@ -21,6 +22,14 @@
   background: white;
   padding: 0 0.25rem;
   line-height: 1.25;
+}
+
+.shareUrl label span[role="status"] {
+  bottom: -1.25em;
+  top: auto;
+  font-variant: small-caps;
+  color: #666;
+  font-weight: bold;
 }
 
 .shareUrl label em {
