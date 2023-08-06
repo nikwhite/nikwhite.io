@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import MultiplayerContext from '../contexts/multiplayerContext'
 
-//TODO handle multiple games per session
+//TODO handle 1 game session of each type (tictac/go/connect4)
 const url = new URL(window.location.href)
 const hash = url.hash?.[0] === '#' ? url.hash.substring(1) : url.hash
 const [gameFromUrl, codeFromUrl, iv, playerIDFromUrl] = hash.split(':')

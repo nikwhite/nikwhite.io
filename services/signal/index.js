@@ -110,7 +110,7 @@ function generateSessionCode(sessions) {
 }
 
 function validateSession(game, code, id) {
-
+//TODO
 }
 
 //------------------------------------------------//

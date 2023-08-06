@@ -141,35 +141,54 @@ Player1                         |  Signaling Service            |  Player2
 
 ### Threat Modeling
 
+#### Game Board Cheating
+
+These are games, so obviously cheating is something that must be prevented. Deterring cheating in games between two players in real life by the fact that the other player will validate their opponents moves in real-time. So lets do the same thing. When PLayer1 and Player2 first connect, the board state will be wiped. This state is then saved in the game board history for each player. Player1 goes first and becomes the active player. Player2 will be the inactive player
+
+Active Player:
+- Can request an update to the game board. 
+    - The move is validated locally first before sending the request to Inactive Player
+    - Inactive Player will validate the move and either accept or reject the board
+
+Inactive Player:
+- Can accept a request to update the game board. Upon validation, either:
+    - Accept the update to the game board, if the update is valid.
+        - Inactive Player's game board is updated
+        - A success response is sent to Active Player, whose game board is then updated
+        - Control passes to Inactive Player, who becomes the active player
+    - Reject the update to the game board, if the update is invalid
+        - The game boards are not updated
+        - A failure response is sent to Active Player, whose game board is *not* updated
+        - Active Player remains the active player, and can attempt another move
+
 #### Websocket Session Hijacking
 
 * If someone brute-force-guesses a UUID `code` that is actually valid in an instance with no `player2` they automatically get to be `player2`, hijacking the session
     * Pretty low probability given the ephemeral nature of the `WebSocket` connection and low probability of UUID collisions, but possible
-    * Instead of sharing the `code` as obviously a UUID, we could encrypt it with AES-GCM using a randomized symmetric key per session and pass the ciphertext instead as `[URL]/#[game]:[ciphertext]`. This adding overhead to the initial session setup time (how much?)
+    * Instead of sharing the `code` as obviously a UUID, we could encrypt it with AES-GCM using a randomized symmetric key per session and pass the ciphertext instead as `[URL]/#[game]:[ciphertext]`. This adding overhead to the initial session setup time (probably not much)
 
 #### Data Overflow
 
 * Max ICE Candidates per player (TODO: How many is typical?), preserves memory/prevents overflow
 * Max Cloud Run instances to mitigate financial impact of DDoS or Traffic spikes, thinking 1 to start with is plenty, max concurrent sessions can be extended above 1000 if necessary [as suggested by GCP](https://cloud.google.com/run/docs/triggering/websockets#maximize-concurrency)
 * All data flowing from browser to Signaling Service should be validated against a JSON schema and always contain the `playerID`
-
 * Max session negotiation time of 15min: Track and reduce to minimum viable time, its probably lower
 
 #### DDoS
 
-* Builtin GCP protections for DDoS?
+* Builtin GCP protections for DDoS? cloud armor costs $
 * More than a few attempts with wrong ciphertext from a single origin is sus
-* Rate limiting?
+* Rate limiting
 * Excessively chatty websockets should be shut down
-    * Define this
+    * Define this ( > n messages in a row? )
 
 ### Testing
 
-TODO: This will be interesting to automate...
+Both apps are tested individually
 
 ### Ops
 
-TODO: Logging/Analytics, GCP Cloud Run config
+TODO: Logging, Metrics, Analytics, GCP Cloud Run config
 
 
 ---
