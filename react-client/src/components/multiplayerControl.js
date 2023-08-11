@@ -15,7 +15,7 @@ function MultiplayerControl() {
   const {
     isMultiplayer, setIsMultiplayer, 
     gameCode, game, playerID, playerTurn,
-    shutdown, setPlayerID
+    shutdown, setPlayerID, dataChannel
   } = useContext(MultiplayerContext)
   // get a gameCode when one doesn't exist from the URL
   // and the user has indicated to start the multiplayer session
@@ -26,12 +26,11 @@ function MultiplayerControl() {
   // create the peer and websocket connections 
   // once we have a gameCode
   const {
-    dataChannel,
     connectionStatus
   } = useP2PMultiplayer({
     game, gameCode, playerID, setPlayerID,
     shouldStart: gameCode && isMultiplayer,
-    playerTurn
+    playerTurn, dataChannel
   })
 
   // save the url readonly input to focus and select

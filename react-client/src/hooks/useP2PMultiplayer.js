@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
+import MultiplayerContext from '../contexts/multiplayerContext'
 
 const STUN_HOSTS = [
   'stun:stun1.l.google.com:19302',
@@ -21,13 +22,12 @@ function useP2PMultiplayer({
   shouldStart = false,
   setPlayerID,
   playerTurn,
+  dataChannel,  // RTCDataChannel
 }) {
   // RTCPeerConnection
   const pc = useRef(null)
   // WebSocket
   const ws = useRef(null)
-  // RTCDataChannel - returned from effect
-  const dc = useRef(null)
   const [hasStarted, setHasStarted] = useState(false)
   const [messageQueue, setMessageQueue] = useState(new Set())
   const [connectionStatus, setConnectionStatus] = useState('')
@@ -245,7 +245,7 @@ function useP2PMultiplayer({
       pc.current.removeEventListener('signalingstatechange', onSignalingStateChange)
       pc.current.removeEventListener('negotiationneeded', onNegotiationNeeded)
       pc.current.close() // no close event
-      dc.current.close()
+      dataChannel.current?.close()
       pc.current = null
     }
 
@@ -261,10 +261,10 @@ function useP2PMultiplayer({
         pc.current.addEventListener('signalingstatechange', onSignalingStateChange)
         pc.current.addEventListener('negotiationneeded', onNegotiationNeeded)
 
-        dc.current = pc.current.createDataChannel('game', {negotiated: true, id: 0})
-        dc.current.onclose = () => {
-          dc.current.onclose = null
-          dc.current = null
+        dataChannel.current = pc.current.createDataChannel('game', {negotiated: true, id: 0})
+        dataChannel.current.onclose = () => {
+          dataChannel.current.onclose = null
+          dataChannel.current = null
         }
 
       } catch(err) {
@@ -293,7 +293,6 @@ function useP2PMultiplayer({
   ])
 
   return {
-    dataChannel: dc.current,
     connectionStatus
   }
 }

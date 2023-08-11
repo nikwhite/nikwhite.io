@@ -17,9 +17,8 @@ const MultiplayerContext = createContext({
   setPlayerTurn: ()=>{},
   playerID: '',
   setPlayerID: ()=>{},
-  // arbitrary game data, like go captures or connect4 wins
-  gameData: {},
-  setGameData: ()=>{},
+  // RTCDataChannel ref
+  dataChannel: null,
   // graceful shutdown
   shutdown: ()=>{},
 })

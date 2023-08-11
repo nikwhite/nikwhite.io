@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import MultiplayerContext from '../contexts/multiplayerContext'
 
 //TODO handle 1 game session of each type (tictac/go/connect4)
@@ -14,7 +14,7 @@ function Game(props) {
   const [turn, setTurn] = useState(0)
   const [playerTurn, setPlayerTurn] = useState(gameHasCode && !playerIDFromUrl ? 1 : 0)
   const [playerID, setPlayerID] = useState(playerIDFromUrl || '')
-  const [gameData, setGameData] = useState({})
+  const dataChannel = useRef(null)
 
   function shutdown() {
     setIsMultiplayer(false)
@@ -31,7 +31,7 @@ function Game(props) {
     turn, setTurn,
     playerTurn, setPlayerTurn,
     playerID, setPlayerID,
-    gameData, setGameData,
+    dataChannel,
     shutdown,
   }
 
