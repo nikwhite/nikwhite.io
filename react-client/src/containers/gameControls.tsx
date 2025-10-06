@@ -1,3 +1,4 @@
+import React from 'react'
 import './gameControls.css'
 
 function GameControls(props) {

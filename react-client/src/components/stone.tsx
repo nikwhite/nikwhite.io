@@ -1,3 +1,4 @@
+import React from 'react'
 import './stone.css'
 
 function Stone(props) {

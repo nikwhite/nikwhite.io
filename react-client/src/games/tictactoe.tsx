@@ -1,3 +1,4 @@
+import React from 'react';
 import './tictactoe.css'
 import {useState} from 'react'
 import IconLink from '../components/iconLink'

@@ -1,3 +1,4 @@
+import React from 'react'
 import './scoreCard.css'
 
 function ScoreCard({

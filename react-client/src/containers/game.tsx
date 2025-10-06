@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import MultiplayerContext from '../contexts/multiplayerContext'
 
 //TODO handle 1 game session of each type (tictac/go/connect4)

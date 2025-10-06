@@ -1,3 +1,4 @@
+import React from 'react'
 import './iconLink.css'
 
 function CodepenIcon() {
@@ -29,29 +30,38 @@ function ImgurIcon() {
   )
 }
 
-const iconComponentMap = {
-  codepen: CodepenIcon,
-  linkedin: LinkedInIcon,
-  github: GithubIcon,
-  imgur: ImgurIcon
-}
+type IconType = 'codepen' | 'linkedin' | 'github' | 'imgur';
 
-const iconTitleMap = {
+const iconTitleMap: Record<IconType, string> = {
   codepen: "Codepen.io",
   linkedin: "LinkedIn",
   github: 'Github',
   imgur: 'Imgur'
 }
 
-function IconLink(props) {
+interface IconLinkProps {
+  icon: IconType;
+  url: string;
+}
+
+const iconComponentMap: Record<IconType, React.ComponentType> = {
+  codepen: CodepenIcon,
+  linkedin: LinkedInIcon,
+  github: GithubIcon,
+  imgur: ImgurIcon
+}
+
+function IconLink({ icon, url }: IconLinkProps) {
+  const IconComponent = iconComponentMap[icon];
+  
   return (
     <a 
-      className={`iconLink ${props.icon}-link`}
-      href={props.url}
-      title={iconTitleMap[props.icon]}
+      className={`iconLink ${icon}-link`}
+      href={url}
+      title={iconTitleMap[icon]}
       target="_blank"
       rel="noreferrer">
-      {iconComponentMap[props.icon] && iconComponentMap[props.icon]()}
+      {IconComponent && <IconComponent />}
     </a>
   )
 }

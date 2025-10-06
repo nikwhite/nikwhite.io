@@ -1,5 +1,5 @@
 import './go.css'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Button from '../components/button'
 import IconLink from '../components/iconLink'
 import GameControls from '../containers/gameControls'

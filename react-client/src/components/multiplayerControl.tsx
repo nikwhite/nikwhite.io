@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 import Button from './button'
 import MultiplayerContext from '../contexts/multiplayerContext'
 import useGameCode from '../hooks/useGameCode'
