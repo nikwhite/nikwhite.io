@@ -6,7 +6,6 @@ import Go from './games/go'
 import IconLink from './components/iconLink'
 import DocIcon from './components/docIcon'
 import portrait from './img/nik250.jpeg'
-import { PhotoBrowser } from './components/photoBrowser'
 
 function Home() {
   return (
@@ -21,8 +20,8 @@ function Home() {
 
       <main className="container">
         <p>
-          I've been a web engineer building things on the internet since I was a kid
-          in the early 2000s building forums and blogs for my gaming groups before
+          I've been building things on the internet since I was a kid
+          in the early 2000s. building forums and blogs for my gaming groups before
           building websites and office networks for small businesses and individuals
           in high school.
         </p>
@@ -34,10 +33,10 @@ function Home() {
           Core Javascript Platform to build shared tools, patterns, and APIs.
         </p>
         <p>
-          I joined Etsy in 2022 for the mission of supporting independent makers and
-          small businesses. I'm a Staff Software Engineer working on the Frontend
-          Infrastructure team supporting all of our frontend tooling and in-house
-          PHP Framework.
+          I joined Etsy in 2022 to join the mission: supporting independent makers and
+          small businesses by keeping commerce human. I'm a Staff Software Engineer 
+          working on the Frontend Infrastructure team supporting all of our frontend
+          tooling and in-house PHP Framework.
         </p>
 
         <p>
