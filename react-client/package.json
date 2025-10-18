@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite serve",
     "build": "vite build",
-    "deploy": "gsutil cp -r build/* gs://nikwhite.io"
+    "deploy": "gsutil cp -r dist/* gs://nikwhite.io"
   },
   "dependencies": {
     "react": "19.2.0",
