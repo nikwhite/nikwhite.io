@@ -29,13 +29,24 @@ const listItemStyle = {
   marginBottom: '8px',
 }
 
-interface Item {
-  type: 'folder' | 'photo';
+type FolderItem = {
+  type: 'folder';
   name: string;
-}
+};
+
+type PhotoItem = {
+  type: 'photo';
+  name: string;
+  downloadUri: string;
+};
+
+type Item = 
+  | FolderItem 
+  | PhotoItem;
 
 interface StorageItem {
   name: string;
+  mediaLink: string;
 }
 
 interface StorageResponse {
@@ -45,7 +56,7 @@ interface StorageResponse {
 
 function getCurrentPath(): string {
   const params = new URLSearchParams(window.location.search);
-  return params.get('path') || '/';
+  return params.get('path') || '';
 }
 
 export const PhotoBrowser: React.FC = () => {
@@ -56,13 +67,14 @@ export const PhotoBrowser: React.FC = () => {
 
   // Update path when URL changes
   useEffect(() => {
-    window.history.pushState({path: currentPath}, '',  window.location.href);
-    window.addEventListener('popstate', (ev) => {
-      const newPath = ev.state.path;
-      if (newPath !== currentPath) {
-        setCurrentPath(newPath);
-      }
-    });
+    const handlePopState = (ev: PopStateEvent) => {
+      const newPath = ev.state?.path || '';
+      setCurrentPath(newPath);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
   
   const navigateTo = (newPath: string) => {
@@ -72,8 +84,10 @@ export const PhotoBrowser: React.FC = () => {
     } else {
       url.searchParams.delete('path');
     }
-    window.history.pushState({path: newPath}, '', url.toString());
-    setCurrentPath(newPath);
+    if (newPath !== currentPath) {
+      window.history.pushState({path: newPath}, '', url.toString());
+      setCurrentPath(newPath);
+    }
   };
 
   function getParentPath(): string {
@@ -101,15 +115,15 @@ export const PhotoBrowser: React.FC = () => {
     fetch(apiUrl)
       .then(res => res.json())
       .then((data: StorageResponse) => {
-        const folders: string[] = [];
-        const photos: string[] = [];
+        const folders: FolderItem[] = [];
+        const photos: PhotoItem[] = [];
         
         // Handle folders from prefixes
         if (data.prefixes) {
           for (const prefix of data.prefixes) {
-            const folderPath = prefix.replace(fullPrefix, '');
-            if (folderPath) {
-              folders.push(folderPath);
+            const name = prefix.replace(fullPrefix, '');
+            if (name) {
+              folders.push({ type: 'folder', name });
             }
           }
         }
@@ -117,16 +131,20 @@ export const PhotoBrowser: React.FC = () => {
         // Handle photos from items
         if (data.items) {
           for (const item of data.items) {
-            const photoPath = item.name.replace(fullPrefix, '');
-            if (photoPath && !photoPath.endsWith('/')) {
-              photos.push(photoPath);
+            const name = item.name.replace(fullPrefix, '');
+            if (name && !name.endsWith('/')) {
+              photos.push({ 
+                name,
+                type: 'photo' as const,
+                downloadUri: item.mediaLink
+              });
             }
           }
         }
         
         setItems([
-          ...folders.map(f => ({ type: 'folder' as const, name: f })),
-          ...photos.map(p => ({ type: 'photo' as const, name: p }))
+          ...folders,
+          ...photos,
         ]);
         setLoading(false);
       })
@@ -142,9 +160,7 @@ export const PhotoBrowser: React.FC = () => {
     return (
       <section>
         <div>
-          <button 
-            style={buttonStyle}
-            onClick={() => window.history.back()}>
+          <button style={buttonStyle} onClick={() => window.history.back()}>
             ← Back
           </button>
         </div>
@@ -164,8 +180,7 @@ export const PhotoBrowser: React.FC = () => {
           if (item.type === 'folder') {
             return (
               <li key={i} style={listItemStyle}>
-                <button
-                  style={clickableItemStyle}
+                <button style={clickableItemStyle}
                   onClick={() => navigateTo(currentPath ? `${currentPath}${item.name}` : item.name)}>
                   ➳ {item.name}
                 </button>
@@ -174,8 +189,7 @@ export const PhotoBrowser: React.FC = () => {
           } else {
             return (
               <li key={i} style={listItemStyle}>
-                <button
-                  style={clickableItemStyle}
+                <button style={clickableItemStyle}
                   onClick={() => navigateTo(currentPath ? `${currentPath}${item.name}` : item.name)}>
                   {item.name}
                 </button>
@@ -185,13 +199,9 @@ export const PhotoBrowser: React.FC = () => {
         })}
       </ul>
       {currentPath && (
-        <div>
-          <button
-            style={buttonStyle}
-            onClick={() => navigateTo(getParentPath())}>
-            ← Back
-          </button>
-        </div>
+        <button style={buttonStyle} onClick={() => navigateTo(getParentPath())}>
+          ← Back
+        </button>
       )}
     </section>
   );
