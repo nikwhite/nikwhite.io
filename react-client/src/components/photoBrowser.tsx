@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { BackButton } from './backButton';
+
 const BUCKET_API = 'https://storage.googleapis.com/storage/v1/b/nikwhite.io/o';
 
 const BUCKET_PARAMS = {
@@ -159,11 +161,7 @@ export const PhotoBrowser: React.FC = () => {
     const photoUrl = `https://storage.googleapis.com/nikwhite.io/static/photos/${currentPath}`;
     return (
       <section>
-        <div>
-          <button style={buttonStyle} onClick={() => window.history.back()}>
-            ← Back
-          </button>
-        </div>
+        <BackButton />
         <img src={photoUrl} alt={currentPath} style={{ maxWidth: '100%', maxHeight: '80vh' }} />
       </section>
     );
@@ -176,6 +174,8 @@ export const PhotoBrowser: React.FC = () => {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <ul style={{ listStyle: 'none', padding: 0 }}>
+        <li><BackButton /></li>
+
         {items.map((item, i) => {
           if (item.type === 'folder') {
             return (
@@ -198,11 +198,6 @@ export const PhotoBrowser: React.FC = () => {
           }
         })}
       </ul>
-      {currentPath && (
-        <button style={buttonStyle} onClick={() => navigateTo(getParentPath())}>
-          ← Back
-        </button>
-      )}
     </section>
   );
 }
