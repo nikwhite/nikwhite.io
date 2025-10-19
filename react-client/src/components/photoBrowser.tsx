@@ -136,7 +136,6 @@ export const PhotoBrowser: React.FC = () => {
   const [currentPath, setCurrentPath] = useState<string>(getCurrentPath());
   const storagePath = getFullStoragePath(currentPath);
 
-
   const navigateTo = (newPath: string) => {
     const url = new URL(window.location.href);
     if (newPath) {
@@ -150,6 +149,9 @@ export const PhotoBrowser: React.FC = () => {
     }
   };
 
+  // Pathing has a quirk where folders end with a slash, and photos do not.
+  // thiis makes working with the storage API easier because it's required
+  // to list the contents of a folder.
   function getParentPath(): string {
     const endIndex = /\.[a-zA-Z0-9]{2,5}$/.test(currentPath)
       ? -1 // slice only last path component (image)
@@ -207,7 +209,7 @@ export const PhotoBrowser: React.FC = () => {
     );
   }
 
-  // Otherwise, show folders/photos
+  // Otherwise, show list of folders and photos
   return (
     <section>
       <h2>{`nikwhite.io > ${currentPath || ''}`}</h2>
@@ -245,7 +247,6 @@ export const PhotoBrowser: React.FC = () => {
           }
         })}
       </ul>
-
     </section>
   );
 }
