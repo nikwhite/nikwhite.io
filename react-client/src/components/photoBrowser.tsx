@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import { BackButton } from './backButton';
+import './photoBrowser.css';
 
 const BUCKET_API = 'https://storage.googleapis.com/storage/v1/b/nikwhite.io/o';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-
 const BUCKET_PARAMS = {
   prefix: 'static/photos/',
   includeFoldersAsPrefixes: 'true',
   delimiter: '/',
-}
-
-const clickableItemStyle = {
-  background: 'none',
-  border: 'none',
-  padding: '8px 16px',
-  cursor: 'pointer',
-  fontSize: '18px',
-}
-
-const listItemStyle = {
-  marginBottom: '8px',
 }
 
 type FolderItem = {
@@ -136,7 +124,10 @@ export const PhotoBrowser: React.FC = () => {
   const [currentPath, setCurrentPath] = useState<string>(getCurrentPath());
   const storagePath = getFullStoragePath(currentPath);
 
-  const navigateTo = (newPath: string) => {
+  const navigateTo = (newPath: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     const url = new URL(window.location.href);
     if (newPath) {
       url.searchParams.set('path', newPath);
@@ -173,6 +164,10 @@ export const PhotoBrowser: React.FC = () => {
   useEffect(() => {
     const handlePopState = (ev: PopStateEvent) => {
       const newPath = ev.state?.path || '';
+      if (newPath === currentPath) {
+        ev.preventDefault();
+        return false;
+      }
       setCurrentPath(newPath);
     };
     window.addEventListener('popstate', handlePopState);
@@ -200,48 +195,65 @@ export const PhotoBrowser: React.FC = () => {
   if (currentPath && !currentPath.endsWith('/')) {
     const photoUrl = `https://storage.googleapis.com/nikwhite.io/static/photos/${currentPath}`;
     return (
-      <section>
+      <section className="photo-view">
         <div>
           <BackButton onClick={backOnClick} />
         </div>
-        <img src={photoUrl} alt={currentPath} style={{ maxWidth: '100%', maxHeight: '80vh' }} />
+        <img src={photoUrl} alt={currentPath} />
       </section>
     );
   }
 
   // Otherwise, show list of folders and photos
   return (
-    <section>
-      <h2>{`nikwhite.io > ${currentPath || ''}`}</h2>
+    <section className="photo-browser">
+      <h2 className="breadcrumb">
+        <a href="?" onClick={(e) => navigateTo('', e)}>
+          nikwhite.io
+        </a>
+        {currentPath && currentPath
+          .split('/')
+          .filter(Boolean)
+          .map((segment, index, array) => {
+            // Build path up to this segment (including trailing /)
+            const pathUpToHere = array.slice(0, index + 1).join('/') + '/';
+            const href = `?path=${encodeURIComponent(pathUpToHere)}`;
+            return (
+              <span key={index}>
+                <span className="breadcrumb-separator"> &gt; </span>
+                <a href={href} onClick={(e) => navigateTo(pathUpToHere, e)}>
+                  {segment}
+                </a>
+              </span>
+            );
+          })
+        }
+      </h2>
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        <li>
+      <ul className="item-list">
+        <li className="item-list-item">
           <BackButton onClick={backOnClick} />
         </li>
         {items.map((item, i) => {
           if (item.type === 'folder') {
+            const folderPath = currentPath ? `${currentPath}${item.name}` : item.name;
+            const href = `?path=${encodeURIComponent(folderPath)}`;
             return (
-              <li key={i} style={listItemStyle}>
-                <button style={clickableItemStyle}
-                  onClick={() => navigateTo(currentPath ? `${currentPath}${item.name}` : item.name)}>
-                  <span style={{
-                    display: 'inline-block',
-                    fontSize: '2em',
-                    marginRight: '0.5em',
-                    lineHeight: '0',
-                    verticalAlign: 'middle',
-                  }}>➳</span> {item.name}
-                </button>
+              <li key={i} className="item-list-item">
+                <a href={href} className="item-link" onClick={(e) => navigateTo(folderPath, e)}>
+                  <span className="folder-icon">➳</span> {item.name}
+                </a>
               </li>
             );
           } else {
+            const photoPath = currentPath ? `${currentPath}${item.name}` : item.name;
+            const href = `?path=${encodeURIComponent(photoPath)}`;
             return (
-              <li key={i} style={listItemStyle}>
-                <button style={clickableItemStyle}
-                  onClick={() => navigateTo(currentPath ? `${currentPath}${item.name}` : item.name)}>
+              <li key={i} className="item-list-item">
+                <a href={href} className="item-link" onClick={(e) => navigateTo(photoPath, e)}>
                   {item.name}
-                </button>
+                </a>
               </li>
             );
           }
