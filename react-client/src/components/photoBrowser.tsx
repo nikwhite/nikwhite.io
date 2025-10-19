@@ -4,6 +4,7 @@ import { BackButton } from './backButton';
 import './photoBrowser.css';
 
 const BUCKET_API = 'https://storage.googleapis.com/storage/v1/b/nikwhite.io/o';
+const PHOTOS_URL_BASE = 'https://storage.googleapis.com/nikwhite.io/static/photos/';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const BUCKET_PARAMS = {
   prefix: 'static/photos/',
@@ -125,9 +126,8 @@ export const PhotoBrowser: React.FC = () => {
   const storagePath = getFullStoragePath(currentPath);
 
   const navigateTo = (newPath: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
+    if (e) e.preventDefault();
+
     const url = new URL(window.location.href);
     if (newPath) {
       url.searchParams.set('path', newPath);
@@ -157,8 +157,8 @@ export const PhotoBrowser: React.FC = () => {
   // when we have state in the history, use the browser back button, otherwise
   // otherwise navigate to the parent path by using the url path.
   const backOnClick = window.history.state
-    ? window.history.back.bind(window.history)
-    : navigateTo.bind(null, getParentPath());
+    ? () => window.history.back()
+    : () => navigateTo(getParentPath());
 
   // Update path when URL changes
   useEffect(() => {
@@ -193,7 +193,7 @@ export const PhotoBrowser: React.FC = () => {
 
   // If viewing a photo, show the photo
   if (currentPath && !currentPath.endsWith('/')) {
-    const photoUrl = `https://storage.googleapis.com/nikwhite.io/static/photos/${currentPath}`;
+    const photoUrl = `${PHOTOS_URL_BASE}${currentPath}`;
     return (
       <section className="photo-view">
         <div>
