@@ -232,17 +232,19 @@ export const PhotoBrowser: React.FC = () => {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <ul className="item-list">
-        <li className="item-list-item">
-          <BackButton onClick={backOnClick} />
-        </li>
         {items.map((item, i) => {
           if (item.type === 'folder') {
-            const folderPath = currentPath ? `${currentPath}${item.name}` : item.name;
+            const folderPath = currentPath
+              ? `${currentPath}${item.name}`
+              : item.name;
             const href = `?path=${encodeURIComponent(folderPath)}`;
             return (
               <li key={i} className="item-list-item">
-                <a href={href} className="item-link" onClick={(e) => navigateTo(folderPath, e)}>
-                  <span className="folder-icon">➳</span> {item.name}
+                <a href={href}
+                  className="item-link"
+                  onClick={(e) => navigateTo(folderPath, e)}>
+                  <span className="folder-icon">➳</span>
+                  {item.name}
                 </a>
               </li>
             );
@@ -251,13 +253,18 @@ export const PhotoBrowser: React.FC = () => {
             const href = `?path=${encodeURIComponent(photoPath)}`;
             return (
               <li key={i} className="item-list-item">
-                <a href={href} className="item-link" onClick={(e) => navigateTo(photoPath, e)}>
+                <a href={href}
+                  className="item-link"
+                  onClick={(e) => navigateTo(photoPath, e)}>
                   {item.name}
                 </a>
               </li>
             );
           }
         })}
+        <li className="item-list-item">
+          <BackButton onClick={backOnClick} />
+        </li>
       </ul>
     </section>
   );
