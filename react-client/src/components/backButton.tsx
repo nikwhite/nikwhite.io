@@ -17,7 +17,11 @@ export function BackButton({
       <span style={{
         display: "inline-block",
         transform: "scaleX(-1)",
-      }}>➼</span> Back
+        fontSize: '2em',
+        marginRight: '0.5em',
+        lineHeight: '0',
+        verticalAlign: 'middle',
+      }}>➳</span> back
     </button>
   )
 }

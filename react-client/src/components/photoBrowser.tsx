@@ -190,7 +190,13 @@ export const PhotoBrowser: React.FC = () => {
               <li key={i} style={listItemStyle}>
                 <button style={clickableItemStyle}
                   onClick={() => navigateTo(currentPath ? `${currentPath}${item.name}` : item.name)}>
-                  ➼ {item.name}
+                  <span style={{
+                    display: 'inline-block',
+                    fontSize: '2em',
+                    marginRight: '0.5em',
+                    lineHeight: '0',
+                    verticalAlign: 'middle',
+                  }}>➳</span> {item.name}
                 </button>
               </li>
             );
