@@ -154,11 +154,7 @@ export const PhotoBrowser: React.FC = () => {
       .join('/');
   }
 
-  // when we have state in the history, use the browser back button, otherwise
-  // otherwise navigate to the parent path by using the url path.
-  const backOnClick = window.history.state
-    ? () => window.history.back()
-    : () => navigateTo(getParentPath());
+  const backOnClick = () => navigateTo(getParentPath());
 
   // Update path when URL changes
   useEffect(() => {
