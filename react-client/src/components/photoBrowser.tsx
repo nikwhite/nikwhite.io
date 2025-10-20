@@ -191,15 +191,58 @@ export const PhotoBrowser: React.FC = () => {
       });
   }, [storagePath]);
 
+  // Navigate to previous or next photo
+  const navigateToAdjacentPhoto = async (direction: 'prev' | 'next') => {
+    const parentPath = getParentPath();
+    const parentStoragePath = getFullStoragePath(parentPath);
+
+    // Get parent folder items (from cache or fetch)
+    let parentItems = getCachedData(parentStoragePath);
+    if (!parentItems) {
+      parentItems = await fetchStorageData(parentStoragePath);
+    }
+
+    // Filter to photos only
+    const photos = parentItems.filter((item): item is PhotoItem => item.type === 'photo');
+    if (photos.length === 0) return;
+
+    // Find current photo index
+    const currentFileName = currentPath.split('/').pop() || '';
+    const currentIndex = photos.findIndex(photo => photo.name === currentFileName);
+    if (currentIndex === -1) return;
+
+    // Calculate next/prev index with wraparound
+    const nextIndex = direction === 'next'
+      ? (currentIndex + 1) % photos.length
+      : (currentIndex - 1 + photos.length) % photos.length;
+
+    // Navigate to the adjacent photo
+    const adjacentPhoto = photos[nextIndex];
+    const newPhotoPath = parentPath ? `${parentPath}${adjacentPhoto.name}` : adjacentPhoto.name;
+    navigateTo(newPhotoPath);
+  };
+
   // If viewing a photo, show the photo
   if (currentPath && !currentPath.endsWith('/')) {
     const photoUrl = `${PHOTOS_URL_BASE}${currentPath}`;
     return (
       <section className="photo-view">
-        <div>
+        <div className="photo-controls">
           <BackButton onClick={backOnClick} />
+          <button
+            className="nav-button"
+            onClick={() => navigateToAdjacentPhoto('prev')}
+          >
+            <span className="nav-icon prev-icon">➳</span> previous
+          </button>
+          <button
+            className="nav-button"
+            onClick={() => navigateToAdjacentPhoto('next')}
+          >
+            next <span className="nav-icon next-icon">➳</span>
+          </button>
         </div>
-        <img src={photoUrl} alt={currentPath} />
+        <img src={photoUrl} />
       </section>
     );
   }
