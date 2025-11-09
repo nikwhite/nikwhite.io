@@ -1,0 +1,35 @@
+{
+  "name": "functhumb",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20 <=22"
+  },
+  "description": "It's a cloud function for generating thumbnails. get it? whatever, it's dumb.",
+  "homepage": "https://github.com/nikwhite/nikwhite.io#readme",
+  "bugs": {
+    "url": "https://github.com/nikwhite/nikwhite.io/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikwhite/nikwhite.io.git"
+  },
+  "license": "ISC",
+  "author": "Nik White <underscore.nik@gmail.com>",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "generate": "./index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@google-cloud/storage": "^7.0.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^2.0.0"
+  }
+}
