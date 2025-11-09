@@ -5,6 +5,7 @@ import Connect4 from './games/connect4'
 import Go from './games/go'
 import IconLink from './components/iconLink'
 import DocIcon from './components/docIcon'
+// @ts-expect-error
 import portrait from './img/nik250.jpeg'
 
 function Home() {
@@ -34,13 +35,13 @@ function Home() {
         </p>
         <p>
           I joined Etsy in 2022 to join the mission: supporting independent makers and
-          small businesses by keeping commerce human. I'm a Staff Software Engineer 
+          small businesses by keeping commerce human. I'm a Staff Software Engineer
           working on the Frontend Infrastructure team supporting all of our frontend
           tooling and in-house PHP Framework.
         </p>
 
         <p>
-          <a href="https://docs.google.com/document/d/e/2PACX-1vQ38zIjQZFxu1urpmR6HCwuRCa_DRHpKbgAAge2KRuiDrmn_MjbRwEJ57QzUWtTvPvihvLf7EKO94T9/pub"
+          <a href="https://docs.google.com/document/d/e/2PACX-1vTVP-I8VCg1yCSK5l9rvugTHxUjJhjZRB5dPof8kf-V4ZvGEXwgJCa8NplaTlVRzpBq_wARZdhqsCXN/pub"
             target="_blank"
             rel="noreferrer">
             <DocIcon />View my resume
